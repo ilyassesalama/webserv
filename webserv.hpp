@@ -19,5 +19,9 @@ class Network {
         void startWebServer(void);
 };
 
+class RequestParser {
+    
+};
+
 
 #endif
