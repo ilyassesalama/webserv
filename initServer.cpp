@@ -43,7 +43,7 @@ int initServer::getSocket() {
 }
 
 initServer::initServer(int port) {
-
+    (void)port; // to avoid compilation error
     std::cout << "Configuring local network...\n" << std::endl;
     std::memset(&(*this).hint,0,sizeof((*this).hint));
     (*this).hint.ai_family = AF_INET;

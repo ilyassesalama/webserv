@@ -7,29 +7,23 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <iostream>
-
-// Side note: this fixes `exit()` failing to be resolved!
 #include <cstdlib>
-// Since the subject implies that we should rely on using C++ish stuff. I added `cstdlib` header.
-
-// According to the subject:
-// Try to always develop using the most C++ features you can (for example, choose
-// <cstring> over <string.h>). You are allowed to use C functions, but always prefer
-// their C++ versions if possible.
+#include <cstring>
 
 class Network {
-    private:
-        int port;
     public:
         Network();
         ~Network();
-
-        void startWebServer(void);
 };
 
+
+// -------- start request-related code -------
 class RequestParser {
-    
+    public:
+        void initRequestParser(std::string requestData);
 };
+// -------- end request-related code -------
+
 
 
 #endif
