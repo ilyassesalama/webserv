@@ -23,17 +23,16 @@ void parsingTest(){
     headers = requestParser.getHeaders();
     body = requestParser.getBody();
 
+    std::cout << "-------------- request line ----------------" << std::endl;
+
+    std::cout << "method: " << requestLine["method"] << std::endl;
+    std::cout << "path: " << requestLine["path"] << std::endl;
+    std::cout << "httpVersion: " << requestLine["httpVersion"] << std::endl;
+
     std::cout << "-------------- request headers ----------------" << std::endl;
     std::map<std::string, std::string>::iterator it;
     for (it = headers.begin(); it != headers.end(); it++){
         std::cout << it->first << ": " << it->second << std::endl;
-    }
-
-    std::cout << "-------------- request line ----------------" << std::endl;
-
-    std::map<std::string, std::string>::iterator it2;
-    for (it2 = requestLine.begin(); it2 != requestLine.end(); it2++){
-        std::cout << it2->first << ": " << it2->second << std::endl;
     }
 
     std::cout << "--------------- body ---------------" << std::endl;
