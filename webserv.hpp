@@ -9,6 +9,8 @@
 #include <iostream>
 #include <cstdlib>
 #include <cstring>
+#include <sstream>
+#include <map>
 
 class Network {
     public:
@@ -19,8 +21,24 @@ class Network {
 
 // -------- start request-related code -------
 class RequestParser {
+    private:
+        std::map<std::string, std::string> requestLine;
+        std::map<std::string, std::string> headers;
+        std::string body;
     public:
-        void initRequestParser(std::string requestData);
+        RequestParser();
+        void initRequestParser(std::string &requestData);
+        void parseRequestLine(std::string &requestData);
+        void parseRequestHeaders(std::string &requestData);
+        void parseRequestBody(std::stringstream &httpStream);
+
+        const std::map<std::string, std::string> &getRequestLine();
+        const std::map<std::string, std::string> &getHeaders();
+        const std::string &getBody();
+
+        void setRequestLine(std::map<std::string, std::string> requestLine);
+        void setHeaders(std::map<std::string, std::string> headers);
+        void setBody(std::string body);
 };
 // -------- end request-related code -------
 
