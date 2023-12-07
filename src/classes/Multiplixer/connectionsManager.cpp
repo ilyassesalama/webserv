@@ -12,7 +12,7 @@ connectionsManager::~connectionsManager() {
 
 void connectionsManager::addClientToFdSet(int clientFd) {
     if (clientFd < 0) {
-        logs("Invalid Client FD ...");
+        Log::e("Invalid Client FD ...");
         return;
     }
     struct pollfd client;
@@ -25,10 +25,10 @@ void connectionsManager::addClientToFdSet(int clientFd) {
 
 void connectionsManager::setListeningSocket(int listenSocket, int port) {
     std::string log_msg = "Listening for incoming connections on port " + std::to_string(port);
-    logs(log_msg);
+    Log::i(log_msg);
     setSocketNonBlocking(listenSocket);
     if(listen(listenSocket,(*this).backlog)) {
-        logs("Failed Listening for incoming connections");
+        Log::e("Failed Listening for incoming connections");
         exit(1);
     }
     addClientToFdSet(listenSocket);
@@ -56,7 +56,7 @@ void connectionsManager::acceptNewIncommingConnections(int listenSocket) {
     client.address_length = sizeof(client.address);
     client.SocketFD = accept(listenSocket,(struct sockaddr*)&client.address,&client.address_length);
     if(client.SocketFD < 0) {
-        logs("accept Failed");
+        Log::e("accept Failed");
         exit(1);
     }
     setSocketNonBlocking(client.SocketFD);
@@ -67,19 +67,19 @@ void connectionsManager::acceptNewIncommingConnections(int listenSocket) {
     client.ipAdress = ipAdress;
     std::string logMsg = "New client connected: " + ipAdress + " on Port 8080 ";
     (*this).cProfile.push_back(client);
-    logs(logMsg);
+    Log::d(logMsg);
 }
 
 void connectionsManager::setSocketNonBlocking(int clientFd) {
     int flag = fcntl(clientFd,F_GETFL,0);
 
     if(flag == -1) {
-        logs("fcntl eroor");
+        Log::e("fcntl eroor");
         close(clientFd);
         return;
     }
     if(fcntl(clientFd, F_SETFL, flag | O_NONBLOCK) == -1) {
-        logs("fcntl eroor");
+        Log::e("fcntl eroor");
         close(clientFd);
     }
 }
@@ -100,7 +100,7 @@ int connectionsManager::recvRequest(int clinetFD) {
 void connectionsManager::monitoreSocketsState() {
     while(true) {
         if(poll((*this).pollfds.data(),(*this).pollfds.size(),-1) < 0) {
-            logs("POLL FAILED");
+            Log::e("POLL FAILED");
             exit(1);
         }
         std::vector<struct pollfd>::iterator it = pollfds.begin();

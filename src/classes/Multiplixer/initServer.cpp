@@ -17,7 +17,7 @@ initServer::~initServer() {
 }
 
 void initServer::startServer(int port) {
-    logs("Configuring local network...");
+    Log::i("Configuring local network...");
     std::string s_port = std::to_string(port);
     (*this).setPort(port);
     
@@ -35,15 +35,15 @@ int initServer::getPort() {
 
 void initServer::setListenSocket() {
     std::string log_msg = "Created a listening socket on port " + std::to_string((*this).port);
-    logs(log_msg);
+    Log::i(log_msg);
     (*this).listenSocket = socket((*this).bind_address->ai_family, (*this).bind_address->ai_socktype, (*this).bind_address->ai_protocol);
     if((*this).listenSocket < 0) {
-        logs("Failed Creating a listening socket");
+        Log::e("Failed Creating a listening socket");
         exit(1);
     }
-    logs("Binding socket to local address...");
+    Log::i("Binding socket to local address...");
     if (bind((*this).listenSocket, (*this).bind_address->ai_addr, (*this).bind_address->ai_addrlen)){
-        logs("Failed Binding socket to local address...");
+        Log::e("Failed Binding socket to local address...");
         exit(1);
     }
     freeaddrinfo((*this).bind_address);
@@ -68,5 +68,5 @@ void initServer::printBanner() {
               << "                       Welcome to Web Server!\n"
               << "    ===========================================================\n\n"
               << "\033[0m";
-    logs("Server is starting...");
+    Log::d("Server is starting...");
 }
