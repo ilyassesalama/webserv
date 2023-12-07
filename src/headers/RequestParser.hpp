@@ -12,11 +12,6 @@
 #include <sstream>
 #include <map>
 
-class Network {
-    public:
-        Network();
-        ~Network();
-};
 
 
 // -------- start request-related code -------

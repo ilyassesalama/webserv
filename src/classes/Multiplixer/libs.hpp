@@ -10,6 +10,16 @@
 #include <netdb.h>
 #include <cstring> 
 #include <cstdlib>
+#include <fstream>
+#include <ctime>
+#include<unistd.h>
+#include"tools.hpp"
+#include"poll.h"
+#include<exception>
+#include<vector>
+#include<sstream>
+
+
 
 
 #endif
