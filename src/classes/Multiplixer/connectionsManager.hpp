@@ -17,6 +17,7 @@ class connectionsManager {
         void dropClient(int clientIndex, int clientFd);
         int getFileDescriptor(int fdIndex);
         void changeClientMonitoringState(int clientIndex, int stateToMonitore);
+        void setSocketNonBlocking(int clinetFd);
         int recvRequest(int clinetFd);
     
     private:

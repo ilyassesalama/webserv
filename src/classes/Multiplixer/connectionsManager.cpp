@@ -26,6 +26,7 @@ void connectionsManager::addClientToFdSet(int clientFd) {
 void connectionsManager::setListeningSocket(int listenSocket, int port) {
     std::string log_msg = "Listening for incoming connections on port " + std::to_string(port);
     logs(log_msg);
+    setSocketNonBlocking(listenSocket);
     if(listen(listenSocket,(*this).backlog)) {
         logs("Failed Listening for incoming connections");
         exit(1);
@@ -58,6 +59,7 @@ void connectionsManager::acceptNewIncommingConnections(int listenSocket) {
         logs("accept Failed");
         exit(1);
     }
+    setSocketNonBlocking(client.SocketFD);
     addClientToFdSet(client.SocketFD);
     char address_buffer[100];
     getnameinfo((struct sockaddr*)&client.address, client.address_length, address_buffer, sizeof(address_buffer), 0, 0, NI_NUMERICHOST);
@@ -68,8 +70,31 @@ void connectionsManager::acceptNewIncommingConnections(int listenSocket) {
     logs(logMsg);
 }
 
-int connectionsManager::recvRequest(int clinetFD) {
+void connectionsManager::setSocketNonBlocking(int clientFd) {
+    int flag = fcntl(clientFd,F_GETFL,0);
 
+    if(flag == -1) {
+        logs("fcntl eroor");
+        close(clientFd);
+        return;
+    }
+    if(fcntl(clientFd, F_SETFL, flag | O_NONBLOCK) == -1) {
+        logs("fcntl eroor");
+        close(clientFd);
+    }
+}
+
+int connectionsManager::recvRequest(int clinetFD) {
+    char read[1024];
+    int bytes_received = recv(clinetFD, read, sizeof(read), 0);
+    if (bytes_received < 1) {
+        dropClient(clinetFD,-1);
+        close(clinetFD);
+        return(-1);
+    }
+    //handle the request 
+    // printf("%s\n",read);
+    return(1);
 }
 
 void connectionsManager::monitoreSocketsState() {
@@ -85,7 +110,7 @@ void connectionsManager::monitoreSocketsState() {
                     (*this).acceptNewIncommingConnections((*it).fd);
                 }
                 else {
-                    
+                    recvRequest((*it).fd);
                 }
             }
             it++;
@@ -104,3 +129,5 @@ int connectionsManager::getFileDescriptor(int fdIndex) {
 void connectionsManager::changeClientMonitoringState(int clientIndex, int stateToMonitore) {
     (*this).pollfds[clientIndex].events = stateToMonitore;
 }
+
+
