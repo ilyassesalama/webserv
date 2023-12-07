@@ -1,4 +1,4 @@
-#include "../../headers/RequestParser.hpp"
+#include "../../headers/requestParser.hpp"
 
 RequestParser::RequestParser(){
     // null out the request line, headers and body to avoid segfaults >:(
@@ -8,7 +8,7 @@ RequestParser::RequestParser(){
 }
 
 void RequestParser::initRequestParser(std::string &requestData){
-    parseRequestLine(requestData);
+    parseRequestLine(requestData); // this will also parse the url params
     parseRequestHeaders(requestData); // this will also parse the body
 }
 
@@ -40,8 +40,8 @@ void RequestParser::parseRequestLine(std::string &requestData) {
     keyValuePairs["method"] = method;
     keyValuePairs["path"] = path;
     keyValuePairs["httpVersion"] = httpVersion;
-
     this->requestLine = keyValuePairs;
+    parseRequestParams(path);
 }
 
 void RequestParser::parseRequestHeaders(std::string &requestData) {
@@ -62,6 +62,24 @@ void RequestParser::parseRequestHeaders(std::string &requestData) {
     parseRequestBody(httpStream);
 }
 
+void RequestParser::parseRequestParams(std::string &requestData){
+    size_t start = requestData.find("?"); // look for the first param
+    if (start == std::string::npos) return; // no parameters found! get out!!!
+
+    std::map<std::string, std::string> keyValuePairs;
+    std::string token;
+    std::istringstream tokenStream(requestData.substr(start + 1)); // start from the first param
+
+    while (std::getline(tokenStream, token, '&')) { // look for each param separated by &
+        size_t equalPos = token.find('=');
+        if (equalPos != std::string::npos) {
+            std::string key = token.substr(0, equalPos);
+            std::string value = token.substr(equalPos + 1);
+            this->params[key] = value;
+        }
+    }
+}
+
 void RequestParser::parseRequestBody(std::stringstream &httpStream) {
     // i saved the body line by line, idk if it's the best way to do it but ok lol
     std::string line;
@@ -78,6 +96,10 @@ std::map<std::string, std::string> const &RequestParser::getRequestLine(){
 
 std::map<std::string, std::string> const &RequestParser::getHeaders(){
     return(this->headers);
+}
+
+std::map<std::string, std::string> const &RequestParser::getParams(){
+    return(this->params);
 }
 
 std::string const &RequestParser::getBody(){
