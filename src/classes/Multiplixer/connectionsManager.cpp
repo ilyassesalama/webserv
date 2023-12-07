@@ -63,6 +63,13 @@ void connectionsManager::acceptNewIncommingConnections(int listenSocket) {
     getnameinfo((struct sockaddr*)&client.address, client.address_length, address_buffer, sizeof(address_buffer), 0, 0, NI_NUMERICHOST);
     std::string ipAdress(address_buffer);
     client.ipAdress = ipAdress;
+    std::string logMsg = "New client connected: " + ipAdress + " on Port 8080 ";
+    (*this).cProfile.push_back(client);
+    logs(logMsg);
+}
+
+int connectionsManager::recvRequest(int clinetFD) {
+
 }
 
 void connectionsManager::monitoreSocketsState() {
@@ -71,15 +78,17 @@ void connectionsManager::monitoreSocketsState() {
             logs("POLL FAILED");
             exit(1);
         }
-        for(std::vector<struct pollfd>::iterator it = pollfds.begin(); it != pollfds.end(); ++it) {
+        std::vector<struct pollfd>::iterator it = pollfds.begin();
+        for(int i = 0; i < (*this).pollfds.size(); i++) {
             if((*it).revents & POLLIN) {
                 if(it == (*this).pollfds.begin()) {
                     (*this).acceptNewIncommingConnections((*it).fd);
                 }
                 else {
-                    std::cout << "lol" << std::endl;
+                    
                 }
             }
+            it++;
         }
     }
 }

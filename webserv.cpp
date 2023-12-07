@@ -1,6 +1,6 @@
 // #include "webserv.hpp"
 #include<iostream>
-
+#include"webserv.hpp"
 
 
 // void parsingTest(){
@@ -45,5 +45,13 @@
 // }
 
 int main() {
-    // parsingTest();
-} 
+    initServer a;
+
+    a.startServer(8080);
+
+    connectionsManager b;
+    b.setListeningSocket(a.getListenSocket(), a.getPort());
+    b.monitoreSocketsState();
+
+    return(0);
+}

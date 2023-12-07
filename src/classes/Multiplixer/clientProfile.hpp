@@ -4,7 +4,6 @@
 #include"libs.hpp"
 
 struct clientProfile {
-    std::string SocketType;
     int SocketFD;
     std::string ipAdress;
     socklen_t address_length;
@@ -12,10 +11,11 @@ struct clientProfile {
     int port;
     bool isConnected;
     time_t connectionsTime;
-    time_t lastRequestTime;
     int requestCount;
-
+    char read_bits[1024];
+    
     clientProfile(int portNumber);
+    void incRequestCount();
 };
 
 

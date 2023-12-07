@@ -17,6 +17,7 @@ class connectionsManager {
         void dropClient(int clientIndex, int clientFd);
         int getFileDescriptor(int fdIndex);
         void changeClientMonitoringState(int clientIndex, int stateToMonitore);
+        int recvRequest(int clinetFd);
     
     private:
        const int backlog;
