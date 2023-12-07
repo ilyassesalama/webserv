@@ -57,7 +57,7 @@ int initServer::getListenSocket() {
 #include <iostream>
 
 void initServer::printBanner() {
-    std::cout << "\033[1;32m"
+    std::cout << "\033[0;32m"
                  "\n"
               << "██╗    ██╗███████╗██████╗ ███████╗███████╗██████╗ ██╗   ██╗███████╗██████╗ \n"
               << "██║    ██║██╔════╝██╔══██╗██╔════╝██╔════╝██╔══██╗██║   ██║██╔════╝██╔══██╗\n"
@@ -68,5 +68,5 @@ void initServer::printBanner() {
               << "                       Welcome to Web Server!\n"
               << "    ===========================================================\n\n"
               << "\033[0m";
-    Log::d("Server is starting...");
+    Log::i("Server is starting...");
 }

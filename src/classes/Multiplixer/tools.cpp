@@ -1,19 +1,19 @@
 #include"tools.hpp"
 
 void Log::d(std::string message) {
-    std::cout << "\033[1;35m" << formatLoggingMessage(message) << "\033[0m" << std::endl;
+    std::cout << "\033[3;34m" << formatLoggingMessage(message) << "\033[0m" << std::endl;
 }
 
 void Log::i(std::string message) {
-    std::cout << "\033[1;34m" << formatLoggingMessage(message) << "\033[0m" << std::endl;
+    std::cout << "\033[3;79m" << formatLoggingMessage(message) << "\033[0m" << std::endl; 
 }
 
 void Log::w(std::string message) {
-    std::cout << "\033[1;33m" << formatLoggingMessage(message) << "\033[0m" << std::endl;
+    std::cout << "\033[3;33m" << formatLoggingMessage(message) << "\033[0m" << std::endl;
 }
 
 void Log::e(std::string message) {
-    std::cout << "\033[1;31m" << formatLoggingMessage(message) << "\033[0m" << std::endl;
+    std::cerr << "\033[3;31m" << formatLoggingMessage(message) << "\033[0m" << std::endl;
 }
 
 std::string Log::formatLoggingMessage(std::string message){
@@ -22,6 +22,7 @@ std::string Log::formatLoggingMessage(std::string message){
     std::string finalMessage = "";
 
     char timeString[100];
+    // WARNINGL: `strftime` is part of C++11 not C++98
     std::strftime(timeString, sizeof(timeString), "%Y-%m-%d %H:%M:%S", localTime);
 
     std::ofstream logFile ("webserverLogs.txt" , std::ios::app);
@@ -31,7 +32,7 @@ std::string Log::formatLoggingMessage(std::string message){
         logFile.close();
         return(finalMessage);
     } else {
-        std::cerr << "Log file not opened" << std::endl;
+        std::cerr << "\033[1;31mLog file failed to open\n\033[0m" << std::endl;
         std::exit(1);
     }
 }
