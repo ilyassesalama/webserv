@@ -11,14 +11,15 @@
 #include <cstring>
 #include <sstream>
 #include <map>
+#include <stdexcept>
 
 
-#include"src/headers/requestParser.hpp"
-#include"src/classes/Multiplixer/clientProfile.hpp"
-#include"src/classes/Multiplixer/connectionsManager.hpp"
-#include"src/classes/Multiplixer/initServer.hpp"
-#include"src/classes/Multiplixer/libs.hpp"
-#include"src/classes/Multiplixer/tools.hpp"
+#include "src/headers/requestParser.hpp"
+#include "src/classes/Multiplixer/clientProfile.hpp"
+#include "src/classes/Multiplixer/connectionsManager.hpp"
+#include "src/classes/Multiplixer/initServer.hpp"
+#include "src/classes/Multiplixer/libs.hpp"
+#include "src/classes/Multiplixer/tools.hpp"
 
 
 
