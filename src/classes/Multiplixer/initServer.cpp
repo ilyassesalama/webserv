@@ -34,16 +34,22 @@ int initServer::getPort() {
 }
 
 void initServer::setListenSocket() {
+    int opt = 1;
     std::string log_msg = "Created a listening socket on port " + std::to_string((*this).port);
     Log::i(log_msg);
     (*this).listenSocket = socket((*this).bind_address->ai_family, (*this).bind_address->ai_socktype, (*this).bind_address->ai_protocol);
+    // reuse the same socket for the next connection
+    if (setsockopt((*this).listenSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
+        Log::e("Failed to set socket options: " + std::string(strerror(errno)));
+        exit(1);
+    }
     if((*this).listenSocket < 0) {
-        Log::e("Failed Creating a listening socket");
+        Log::e("Failed to create a listening socket due to: " + std::string(strerror(errno)));
         exit(1);
     }
     Log::i("Binding socket to local address...");
     if (bind((*this).listenSocket, (*this).bind_address->ai_addr, (*this).bind_address->ai_addrlen)){
-        Log::e("Failed Binding socket to local address...");
+        Log::e("Failed to bind socket to local address due to: " + std::string(strerror(errno)));
         exit(1);
     }
     freeaddrinfo((*this).bind_address);
@@ -54,7 +60,7 @@ int initServer::getListenSocket() {
 }
 
 
-#include <iostream>
+#include <iostream> 
 
 void initServer::printBanner() {
     std::cout << "\033[0;32m"
