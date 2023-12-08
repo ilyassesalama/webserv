@@ -1,5 +1,9 @@
 #include"tools.hpp"
 
+void Log::v(std::string message) {
+    std::cout << "\033[1;35m" << formatLoggingMessage(message) << "\033[0m" << std::endl; // Bright Yellow (closest to orange)
+}
+
 void Log::d(std::string message) {
     std::cout << "\033[3;34m" << formatLoggingMessage(message) << "\033[0m" << std::endl;
 }
@@ -22,7 +26,7 @@ std::string Log::formatLoggingMessage(std::string message){
     std::string finalMessage = "";
 
     char timeString[100];
-    // WARNINGL: `strftime` is part of C++11 not C++98
+    // WARNING: `strftime` is part of C++11 not C++98
     std::strftime(timeString, sizeof(timeString), "%Y-%m-%d %H:%M:%S", localTime);
 
     std::ofstream logFile ("webserverLogs.txt" , std::ios::app);

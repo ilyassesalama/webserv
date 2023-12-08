@@ -92,8 +92,9 @@ int connectionsManager::recvRequest(int clinetFD) {
         close(clinetFD);
         return(-1);
     }
-    //handle the request 
-    // printf("%s\n",read);
+    if(FULL_LOGGING_ENABLED){
+        Log::v(read);
+    }
     return(1);
 }
 

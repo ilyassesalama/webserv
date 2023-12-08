@@ -19,3 +19,9 @@
 #include"src/classes/Multiplixer/initServer.hpp"
 #include"src/classes/Multiplixer/libs.hpp"
 #include"src/classes/Multiplixer/tools.hpp"
+
+
+
+// -------- start global variables -------
+#define LOGGING_ENABLED true
+#define FULL_LOGGING_ENABLED true

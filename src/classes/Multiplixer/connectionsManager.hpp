@@ -2,8 +2,9 @@
 #define CONNECTIONSMANAGER_HPP
 
 
-#include"libs.hpp"
-#include"clientProfile.hpp"
+#include "libs.hpp"
+#include "clientProfile.hpp"
+#include "../../../webserv.hpp"
 
 class connectionsManager {
     public:
