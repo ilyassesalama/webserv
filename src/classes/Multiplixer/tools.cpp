@@ -1,7 +1,7 @@
 #include"tools.hpp"
 
 void Log::v(std::string message) {
-    std::cout << "\033[1;35m" << formatLoggingMessage(message) << "\033[0m" << std::endl; // Bright Yellow (closest to orange)
+    std::cout << "\033[1;35m" << formatLoggingMessage(message) << "\033[0m" << std::endl;
 }
 
 void Log::d(std::string message) {
