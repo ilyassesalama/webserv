@@ -1,7 +1,16 @@
 #include "../../../webserv.hpp"
 
 RequestParser::RequestParser(){
-    // null out the request line, headers and body to avoid segfaults >:(
+    nullOutVars();
+}
+
+RequestParser::RequestParser(const std::string &requestData){
+    nullOutVars();
+    initRequestParser(const_cast<std::string &>(requestData));
+}
+
+void RequestParser::nullOutVars(){
+     // null out the request line, headers and body to avoid segfaults >:(
     this->requestLine = std::map<std::string, std::string>();
     this->headers = std::map<std::string, std::string>();
     this->body = "";
@@ -13,6 +22,10 @@ void RequestParser::initRequestParser(std::string &requestData){
         parseRequestLine(requestData); // this will also parse the url params
         parseRequestHeaders(requestData); // this will also parse the body
         setParsingState(REQ_PARSER_OK);
+        if(FULL_LOGGING_ENABLED){
+            Log::d("RequestParser: Request parsing completed successfully");
+            logParsedRequest();
+        }
     } catch (const RequestParser::RequestParserException &e) {
         Log::e(e.what());
         setParsingState(REQ_PARSER_FAILED);
@@ -127,4 +140,28 @@ void RequestParser::setParsingState(PrasingState state){
 
 const char *RequestParser::RequestParserException::what() const throw() {
 	return this->message;
+}
+
+
+
+
+
+// helper functions
+
+void RequestParser::logParsedRequest(){
+    std::map<std::string, std::string>::iterator it;
+    Log::d("RequestParser: Parsed request:");
+    for(it = this->requestLine.begin(); it != this->requestLine.end(); it++){
+        std::cout << it->first << ": " << it->second << std::endl;
+    }
+    Log::d("RequestParser: Parsed headers:");
+    for(it = this->headers.begin(); it != this->headers.end(); it++){
+        std::cout << it->first << ": " << it->second << std::endl;
+    }
+    Log::d("RequestParser: Parsed params:");
+    for(it = this->params.begin(); it != this->params.end(); it++){
+        std::cout << it->first << ": " << it->second << std::endl;
+    }
+    Log::d("RequestParser: Parsed body:");
+    std::cout << this->body << std::endl;
 }

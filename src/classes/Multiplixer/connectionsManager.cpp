@@ -92,9 +92,11 @@ int connectionsManager::recvRequest(int clinetFD) {
         close(clinetFD);
         return(-1);
     }
+    std::string requestData(read);
     if(FULL_LOGGING_ENABLED){
-        Log::v(read);
+        Log::v(requestData);
     }
+    RequestParser parser(requestData);
     return(1);
 }
 

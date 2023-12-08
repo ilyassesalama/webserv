@@ -24,6 +24,11 @@ class RequestParser {
         std::string body;
     public:
         RequestParser();
+        RequestParser(const std::string &requestData);
+
+        void nullOutVars();
+        void logParsedRequest();
+
         void initRequestParser(std::string &requestData);
         void setParsingState(PrasingState state);
         void parseRequestLine(std::string &requestData);
