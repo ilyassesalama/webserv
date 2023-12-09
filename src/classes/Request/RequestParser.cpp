@@ -22,14 +22,11 @@ void RequestParser::initRequestParser(std::string &requestData){
         parseRequestLine(requestData); // this will also parse the url params
         parseRequestHeaders(requestData); // this will also parse the body
         setParsingState(REQ_PARSER_OK);
-        if(FULL_LOGGING_ENABLED){
-            Log::d("RequestParser: Request parsing completed successfully");
-            logParsedRequest();
-        }
+        Log::d("Request parsing completed successfully");
+        if(FULL_LOGGING_ENABLED) logParsedRequest();
     } catch (const RequestParser::RequestParserException &e) {
-        Log::e(e.what());
+        Log::e("Failed to parse received request due to: " + std::string(e.what()));
         setParsingState(REQ_PARSER_FAILED);
-        exit(1);
     }
 }
 
@@ -142,15 +139,11 @@ const char *RequestParser::RequestParserException::what() const throw() {
 	return this->message;
 }
 
-
-
-
-
 // helper functions
 
 void RequestParser::logParsedRequest(){
     std::map<std::string, std::string>::iterator it;
-    Log::d("RequestParser: Parsed request:");
+    Log::d("RequestParser: Parsed request line:");
     for(it = this->requestLine.begin(); it != this->requestLine.end(); it++){
         std::cout << it->first << ": " << it->second << std::endl;
     }

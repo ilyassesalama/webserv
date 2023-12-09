@@ -20,6 +20,7 @@ class connectionsManager {
         void changeClientMonitoringState(int clientIndex, int stateToMonitore);
         void setSocketNonBlocking(int clinetFd);
         int recvRequest(int clinetFd);
+        void sendResponse(int &clinetFd);
     
     private:
        const int backlog;

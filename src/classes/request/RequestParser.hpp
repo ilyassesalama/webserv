@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../webserv.hpp"
+#include "../../../webserv.hpp"
 
 enum PrasingState {
     REQ_PARSER_STARTED,
@@ -14,7 +14,6 @@ enum PrasingState {
     REQ_PARSER_FAILED
 };
 
-// -------- start request-related code -------
 class RequestParser {
     private:
         PrasingState parsingState;
@@ -42,7 +41,6 @@ class RequestParser {
         const std::string &getBody();
         const PrasingState getParsingState();
 
-
         class RequestParserException : public std::exception {
             private:
                 char *message;
@@ -51,4 +49,3 @@ class RequestParser {
                 virtual const char* what() const throw();
         };
 };
-// -------- end request-related code -------

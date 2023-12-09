@@ -1,6 +1,4 @@
-#include"connectionsManager.hpp"
-
-
+#include "../../../webserv.hpp"
 
 connectionsManager::connectionsManager() : backlog(100), max_fds(5), fds(0) {
 
@@ -56,8 +54,8 @@ void connectionsManager::acceptNewIncommingConnections(int listenSocket) {
     client.address_length = sizeof(client.address);
     client.SocketFD = accept(listenSocket,(struct sockaddr*)&client.address,&client.address_length);
     if(client.SocketFD < 0) {
-        Log::e("accept Failed");
-        exit(1);
+        Log::e("Failed to accept new connection due to " + std::string(strerror(errno)));
+        // exit(1);
     }
     setSocketNonBlocking(client.SocketFD);
     addClientToFdSet(client.SocketFD);
@@ -67,7 +65,7 @@ void connectionsManager::acceptNewIncommingConnections(int listenSocket) {
     client.ipAdress = ipAdress;
     std::string logMsg = "New client connected: " + ipAdress + " on Port 8080 ";
     (*this).cProfile.push_back(client);
-    Log::d(logMsg);
+    Log::i(logMsg);
 }
 
 void connectionsManager::setSocketNonBlocking(int clientFd) {
@@ -93,11 +91,21 @@ int connectionsManager::recvRequest(int clinetFD) {
         return(-1);
     }
     std::string requestData(read);
-    if(FULL_LOGGING_ENABLED){
-        Log::v(requestData);
-    }
     RequestParser parser(requestData);
-    return(1);
+    if(parser.getParsingState() == REQ_PARSER_OK){
+        sendResponse(clinetFD);
+        return(1);
+    }
+    Log::e("Failed to parse request");
+    dropClient(clinetFD,-1);
+    close(clinetFD);
+    return(-1);
+}
+
+void connectionsManager::sendResponse(int &clientFD) {
+    Response response("src/server-side/errorpages/404.html");
+    std::string responseStr = response.getResponse();
+    sendResponse(clientFD);
 }
 
 void connectionsManager::monitoreSocketsState() {
