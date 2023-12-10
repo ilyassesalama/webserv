@@ -9,6 +9,8 @@ FLAGS = #-Wall -Wextra -Werror
 COMPILER = c++ -std=c++98
 
 all: $(NAME)
+	@:
+	@clear
 
 $(NAME): $(OBJ)
 	$(COMPILER) $(FLAGS) $(OBJ) -o $(NAME)
