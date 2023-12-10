@@ -10,7 +10,7 @@
 //     std::string body;
 
 
-//     std::string httpRequest = "GET /index.html HTTP/1.1\r\n"
+//     std::string httpRequest = "GET /example/path/resource?param1=value1&param3=value2&param2=value2&param2=value2 HTTP/1.1\r\n"
 //                               "Host: www.1337.ma\r\n"
 //                               "User-Agent: Mozilla/5.0\r\n"
 //                               "Accept: text/html,*/*\r\n"
@@ -35,6 +35,12 @@
 //     std::cout << "-------------- request headers ----------------" << std::endl;
 //     std::map<std::string, std::string>::iterator it;
 //     for (it = headers.begin(); it != headers.end(); it++){
+//         std::cout << it->first << ": " << it->second << std::endl;
+//     }
+
+//     std::cout << "-------------- request params ----------------" << std::endl;
+//     std::map<std::string, std::string> params = requestParser.getParams();
+//     for (it = params.begin(); it != params.end(); it++){
 //         std::cout << it->first << ": " << it->second << std::endl;
 //     }
 
