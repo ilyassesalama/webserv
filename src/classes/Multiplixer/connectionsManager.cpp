@@ -103,7 +103,7 @@ int connectionsManager::recvRequest(int clientFD) {
 }
 
 void connectionsManager::sendResponse(int &clientFD, RequestParser &parser) {
-    Response response(clientFD, parser.getRequestLine()["path"]);
+    Response response(clientFD, parser);
     response.sendResponse();
 }
 

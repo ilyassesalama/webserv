@@ -1,7 +1,9 @@
 #include "../../../webserv.hpp"
 
-Response::Response(int clientFd, const std::string &path){
+Response::Response(int clientFd, const RequestParser &parser){
     this->clientFD = clientFd;
+    this->requestParser = parser;
+    std::string path = requestParser.getRequestLine()["path"];
     std::string finalPath = "src/client-side/main";
     if(path == "/")
         finalPath += "/index.html";

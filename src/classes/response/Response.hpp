@@ -4,18 +4,20 @@
 
 class Response {
     private:
-        int clientFD;
+        RequestParser requestParser;
         std::string response;
-        int status;
-
         std::string path;
+        int clientFD;
+        int status;
     public:
-        Response(int clientFd, const std::string &path);
+        Response(int clientFd, const RequestParser &parser);
     
         void sendResponse();
-        std::string getErrorPageHTML();
+
         void setPath(const std::string &path);
-        const std::string &getResponse();
+
         const int &getStatus();
+        const std::string &getResponse();
+        std::string getErrorPageHTML();
         std::string getStringStatus();
 };
