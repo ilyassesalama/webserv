@@ -15,6 +15,7 @@
 
 #include "src/classes/request/RequestParser.hpp"
 #include "src/classes/response/Response.hpp"
+#include "src/classes/utils/File.hpp"
 #include "src/classes/multiplixer/clientProfile.hpp"
 #include "src/classes/multiplixer/connectionsManager.hpp"
 #include "src/classes/multiplixer/initServer.hpp"

@@ -82,30 +82,29 @@ void connectionsManager::setSocketNonBlocking(int clientFd) {
     }
 }
 
-int connectionsManager::recvRequest(int clinetFD) {
+int connectionsManager::recvRequest(int clientFD) {
     char read[1024];
-    int bytes_received = recv(clinetFD, read, sizeof(read), 0);
+    int bytes_received = recv(clientFD, read, sizeof(read), 0);
     if (bytes_received < 1) {
-        dropClient(clinetFD,-1);
-        close(clinetFD);
+        dropClient(clientFD,-1);
+        close(clientFD);
         return(-1);
     }
     std::string requestData(read);
     RequestParser parser(requestData);
     if(parser.getParsingState() == REQ_PARSER_OK){
-        sendResponse(clinetFD);
+        sendResponse(clientFD, parser);
         return(1);
     }
     Log::e("Failed to parse request");
-    dropClient(clinetFD,-1);
-    close(clinetFD);
+    dropClient(clientFD,-1);
+    close(clientFD);
     return(-1);
 }
 
-void connectionsManager::sendResponse(int &clientFD) {
-    Response response("src/server-side/errorpages/404.html");
-    std::string responseStr = response.getResponse();
-    sendResponse(clientFD);
+void connectionsManager::sendResponse(int &clientFD, RequestParser &parser) {
+    Response response(clientFD, parser.getRequestLine()["path"]);
+    response.sendResponse();
 }
 
 void connectionsManager::monitoreSocketsState() {

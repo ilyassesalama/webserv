@@ -35,7 +35,7 @@ class RequestParser {
         void parseRequestParams(std::string &requestData);
         void parseRequestBody(std::stringstream &httpStream);
 
-        const std::map<std::string, std::string> &getRequestLine();
+        std::map<std::string, std::string> &getRequestLine(); // this isn't const because i want to call it a bit diffrently
         const std::map<std::string, std::string> &getHeaders();
         const std::map<std::string, std::string> &getParams();
         const std::string &getBody();

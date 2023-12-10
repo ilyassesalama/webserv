@@ -1,33 +1,51 @@
 #include "../../../webserv.hpp"
 
-Response::Response(){
-    this->response = "";
-    this->status = 500;
-}
+Response::Response(int clientFd, const std::string &path){
+    this->clientFD = clientFd;
+    std::string finalPath = "src/client-side/main";
+    if(path == "/")
+        finalPath += "/index.html";
+    else
+        finalPath += path;
 
-Response::Response(const std::string &path){
-    Log::i("Generating response from \"" + path + "\"...");
-    std::ifstream file(path);
-    if(!file.is_open()){
+    Log::i("Fetching response from \"" + finalPath + "\"...");
+    std::string content = File::getFileContent(finalPath);
+    if(content == "\r"){
         this->status = 404;
-        Log::e("Failed to open response file, skipping...");
+        Log::e("Response: 404 Not Found");
+        return;
     }
-    std::string line;
-    while(std::getline(file, line)){
-        this->response += line;
-    }
-    if(FULL_LOGGING_ENABLED) Log::d("Response: " + this->response);
-    file.close();
-    this->response += "\r\n";
+    this->response = content;
     this->status = 200;
 }
 
-void Response::sendResponse(int &clientFD) {
-    std::string reponseHTML = this->response;
-    std::string responseLen = std::to_string(reponseHTML.length());
+void Response::sendResponse() {
+    if(this->status != 200){
+        this->getErrorPageHTML();
+    }
+    std::string reponse = this->response;
+    std::string responseSize = std::to_string(reponse.length());
+    std::string status = getStringStatus();
+    Log::d("Sending response: " + response);
 
-    std::string response = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: " + responseLen + "\n\n" + reponseHTML;
+    response = "HTTP/1.1 " + status + " \nContent-Type: text/html\nContent-Length: " + responseSize + "\n\n" + reponse;
     send(clientFD, response.c_str(), response.length(), 0);
+    Log::i("Response sent");
+}
+
+std::string Response::getErrorPageHTML(){
+    switch(status){
+        case 404:
+            this->response = File::getFileContent("src/client-side/error_pages/404.html");
+            break;
+        case 500:
+            this->response = File::getFileContent("src/client-side/error_pages/500.html");
+            break;
+        default:
+            this->response = File::getFileContent("src/client-side/error_pages/501.html");
+            break;
+    }
+    return this->response;
 }
 
 void Response::setPath(const std::string &path){
@@ -40,4 +58,17 @@ const std::string &Response::getResponse(){
 
 const int &Response::getStatus(){
     return this->status;
+}
+
+std::string Response::getStringStatus(){
+    switch(this->status){
+        case 200:
+            return "200 OK";
+        case 404:
+            return "404 Not Found";
+        case 500:
+            return "500 Internal Server Error";
+        default:
+            return "501 Unknown";
+    }
 }

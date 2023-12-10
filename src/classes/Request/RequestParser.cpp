@@ -111,8 +111,8 @@ void RequestParser::parseRequestBody(std::stringstream &httpStream) {
     this->body = body;
 }
 
-std::map<std::string, std::string> const &RequestParser::getRequestLine(){
-    return(this->requestLine);
+std::map<std::string, std::string>& RequestParser::getRequestLine() {
+    return this->requestLine;
 }
 
 std::map<std::string, std::string> const &RequestParser::getHeaders(){
