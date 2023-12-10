@@ -7,6 +7,8 @@ class Response {
         RequestParser requestParser;
         std::string response;
         std::string path;
+        std::string contentType;
+        std::string contentSize;
         int clientFD;
         int status;
     public:

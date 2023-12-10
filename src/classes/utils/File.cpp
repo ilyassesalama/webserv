@@ -16,14 +16,27 @@ std::string File::getFileContent(const std::string &path){
     return content;
 }
 
-std::string File::getExtension(const std::string &path){
-    std::string extension = path.substr(path.find_last_of(".") + 1);
-    return extension;
-}
-
-bool File::isStaticResource(const std::string &file){
-    std::string extension = getExtension(file);
-    if(extension != "html")
-        return true;
-    return false;
+std::string File::getContentType(std::string path) {
+    if (String::endsWith(path, ".css")) {
+        return "text/css";
+    } else if (String::endsWith(path, ".js")) {
+        return "application/javascript";
+    } else if (String::endsWith(path, ".html") || String::endsWith(path, ".htm")) {
+        return "text/html";
+    } else if (String::endsWith(path, ".jpg") || String::endsWith(path, ".jpeg")) {
+        return "image/jpeg";
+    } else if (String::endsWith(path, ".png")) {
+        return "image/png";
+    } else if (String::endsWith(path, ".gif")) {
+        return "image/gif";
+    } else if (String::endsWith(path, ".svg")) {
+        return "image/svg+xml";
+    } else if (String::endsWith(path, ".ico")) {
+        return "image/x-icon";
+    } else if (String::endsWith(path, ".ttf")) {
+        return "font/ttf";
+    } else {
+        // default content type
+        return "text/plain";
+    }
 }
