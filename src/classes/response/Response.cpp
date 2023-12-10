@@ -4,9 +4,9 @@ Response::Response(int clientFd, const RequestParser &parser){
     this->clientFD = clientFd;
     this->requestParser = parser;
     std::string path = requestParser.getRequestLine()["path"];
-    std::string finalPath = "src/client-side/main";
+    std::string finalPath = "src/client-side/";
     if(path == "/")
-        finalPath += "/index.html";
+        finalPath += "main/index.html";
     else
         finalPath += path;
 
