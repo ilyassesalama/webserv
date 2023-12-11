@@ -23,7 +23,7 @@ Response::Response(int clientFd, const RequestParser &parser){
 }
 
 void Response::sendResponse() {
-    if(this->status != 200){
+    if(this->status != 200){ // TOFIX: THIS WILL MAKE OTHER FILES SUCH AS CSS AND JS TO BE SENT AS HTML. FIX THIS!
         this->getErrorPageHTML();
     }
     this->contentType = File::getContentType(path);
