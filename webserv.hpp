@@ -26,7 +26,7 @@
 #include "src/headers/ConfigurationFile.hpp"
 #include "src/headers/ConnectionsManager.hpp"
 #include "src/headers/File.hpp"
-#include "src/headers/logger.hpp"
+#include "src/headers/Logger.hpp"
 #include "src/headers/RequestParser.hpp"
 #include "src/headers/Response.hpp"
 #include "src/headers/ServerInstance.hpp"
