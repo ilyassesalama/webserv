@@ -12,11 +12,11 @@ void getServerCoords(std::string file, size_t *startIndex, size_t *endIndex) {
 	if (*endIndex == std::string::npos) *endIndex = file.size();
 
 	for (*startIndex = 0; *startIndex < *endIndex; (*startIndex)++) {
-		if (file[*startIndex] != '{' && !isspace(file[*startIndex])) throw("Error, there is a syntax error");
+		if (file[*startIndex] != '{' && !isspace(file[*startIndex])) throw(Utils::WebservException("Error, there is a syntax error"));
 		else if (file[*startIndex] == '{') break ;
 	}
 
-	if (*startIndex == *endIndex || file[*startIndex] != '{') throw("Error, there is a syntax error");
+	if (*startIndex == *endIndex || file[*startIndex] != '{') throw(Utils::WebservException("Error, there is a syntax error"));
 }
 
 size_t findOpeningBrace( std::string file, size_t endIndex ) {
@@ -24,11 +24,11 @@ size_t findOpeningBrace( std::string file, size_t endIndex ) {
 	size_t startIndex;
 	
 	for (startIndex = 0; startIndex < endIndex; startIndex++) {
-		if (file[startIndex] != '{' && !isspace(file[startIndex])) throw("Error, there is a syntax error");
+		if (file[startIndex] != '{' && !isspace(file[startIndex])) throw(Utils::WebservException("Error, there is a syntax error"));
 		else if (file[startIndex] == '{') break ;
 	}
 
-	if (startIndex == endIndex || file[startIndex] != '{') throw("Error, there is a syntax error");
+	if (startIndex == endIndex || file[startIndex] != '{') throw(Utils::WebservException("Error, there is a syntax error"));
 
 	return startIndex;
 }

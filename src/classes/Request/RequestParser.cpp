@@ -43,15 +43,15 @@ void RequestParser::parseRequestLine(std::string &requestData) {
     }
     std::string method = line.substr(0, line.find(" "));
     if(method != "GET" && method != "POST" && method != "DELETE"){
-        throw("Error: Invalid HTTP method\n");
+        throw(Utils::WebservException("Error: Invalid HTTP method\n"));
     }
     std::string path = line.substr(line.find(" ") + 1, line.rfind(" ") - line.find(" ") - 1);
     if(path[0] != '/'){
-        throw("Error: Invalid HTTP path\n");
+        throw(Utils::WebservException("Error: Invalid HTTP path\n"));
     }
     std::string httpVersion = line.substr(line.rfind(" ") + 1);
     if (httpVersion.find("HTTP/") == std::string::npos){
-        throw("Error: Invalid HTTP version\n");
+        throw(Utils::WebservException("Error: Invalid HTTP version\n"));
     }
     keyValuePairs["method"] = method;
     keyValuePairs["path"] = path;

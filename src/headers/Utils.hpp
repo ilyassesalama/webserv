@@ -2,15 +2,18 @@
 
 #include "../../webserv.hpp"
 
-class Utils {
 
+
+
+class Utils {
+public:
+    class WebservException : public std::exception {
+    private:
+        std::string message;
 
     public:
-        class WebservException : public std::exception {
-            private:
-                char * message;
-            public:
-                WebservException(std::string message);
-                virtual const char* what() const throw();
-        };
+        WebservException(const std::string& message);
+
+        const char* what() const throw();
+    };
 };

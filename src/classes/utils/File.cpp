@@ -1,7 +1,7 @@
 #include "../../../webserv.hpp"
 
 std::string File::getFileContent(const std::string &path){
-    std::ifstream file(path);
+    std::ifstream file(path.c_str());
     if(!file.is_open()){
         Log::e("getFileContent: Can't open \"" + path + "\" due to " + std::string(strerror(errno)));
         return "\0";

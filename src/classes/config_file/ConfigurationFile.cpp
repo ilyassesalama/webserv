@@ -31,7 +31,7 @@ void ConfigurationFile::parseValue( std::string key, std::string value, t_server
 
 	}
 	else if (key != "listen" && key != "server_name" && key != "client_body_size" && key != "error_page") {
-		throw ("Error, directive not allowed");
+		throw (Utils::WebservException("Error, directive not allowed"));
 	}
 }
 
@@ -42,7 +42,7 @@ void ConfigurationFile::parseRouteValue( std::string key, std::string value, t_r
 		route->is_root = true;
 	} else if (key == "directory_listing" && !route->is_directory_listing) {
 		std::string boolean = singleValueParser(value);
-		if (boolean != "true" && boolean != "false") throw ("Error, directory_listing can only be true or false");
+		if (boolean != "true" && boolean != "false") throw (Utils::WebservException("Error, directory_listing can only be true or false"));
 		else if (boolean == "true") route->directory_listing = true;
 		else if (boolean == "false") route->directory_listing = false;
 		route->is_directory_listing = true;
@@ -65,7 +65,7 @@ void ConfigurationFile::parseRouteValue( std::string key, std::string value, t_r
 		route->is_redirection = true;
 	}
 	else if (key != "root" && key != "directory_listing" && key != "is_directory" && key != "cgi_extension" && key != "allowed_methods" && key != "cgi_methods") {
-		throw ("Error, directive not allowed");
+		throw (Utils::WebservException ("Error, directive not allowed"));
 	}
 }
 
@@ -144,7 +144,7 @@ void ConfigurationFile::parseDirectives( std::string file, t_server server ) {
 			} else {
 				skipSpaces(file, &i);
 
-				if (file[i] != '{') throw ("Error, there is a syntax error");
+				if (file[i] != '{') throw (Utils::WebservException ("Error, there is a syntax error"));
 
 				i++;
 
@@ -191,7 +191,7 @@ ConfigurationFile::ConfigurationFile( std::string file ) {
 
 		this->configFileParsing();
 	}
-	catch (const std::exception &e) {
+	catch (std::exception &e) {
 		Log::e("Caught exception due to: " + std::string(e.what()));
 		exit(1);
 	}

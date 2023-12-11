@@ -1,13 +1,15 @@
 #include "../../../webserv.hpp"
 
-size_t findKeyEnd( std::string file, size_t start,  bool isEnd )
+size_t findKeyEnd(std::string file, size_t start, bool isEnd)
 {
 	for (size_t i = start; i < file.size(); i++)
-		if ( (!isEnd && isspace(file[i])) || (isEnd && (file[i] == ';' || file[i] == '\n')) ) return i;
+		if ((!isEnd && isspace(file[i])) || (isEnd && (file[i] == ';' || file[i] == '\n')))
+			return i;
 	return file.size();
 }
 
-std::string getDirectiveKey( std::string file, size_t *startIndex ) {
+std::string getDirectiveKey(std::string file, size_t *startIndex)
+{
 
 	skipSpaces(file, startIndex);
 
@@ -20,9 +22,10 @@ std::string getDirectiveKey( std::string file, size_t *startIndex ) {
 	return directiveKey;
 }
 
-std::string getSingleValue( std::string value, size_t *startPos ) {
+std::string getSingleValue(std::string value, size_t *startPos)
+{
 
-	if (value.empty()) throw("Error, there is a syntax error");
+	if (value.empty()) throw (Utils::WebservException(Utils::WebservException("Error, there is a syntax error")));
 
 	// size_t i = 0;
 
@@ -39,18 +42,19 @@ std::string getSingleValue( std::string value, size_t *startPos ) {
 	skipSpaces(value, &end);
 
 	if (value[end] == ';') end++;
-	else throw("Error, there is a syntax error");
+	else throw(Utils::WebservException("Error, there is a syntax error"));
 
-	if (end + 1 != value.size() && value[end + 1] == ';') throw("Error, there is a syntax error");
+	if (end + 1 != value.size() && value[end + 1] == ';') throw(Utils::WebservException("Error, there is a syntax error"));
 
 	*startPos += end;
 
 	return directiveValue;
 }
 
-std::string getMultipleValues( std::string value, size_t *startPos ) {
+std::string getMultipleValues(std::string value, size_t *startPos)
+{
 
-	if (value.empty()) throw("Error, there is a syntax error");
+	if (value.empty()) throw(Utils::WebservException("Error, there is a syntax error"));
 
 	size_t end;
 
@@ -62,23 +66,24 @@ std::string getMultipleValues( std::string value, size_t *startPos ) {
 	skipSpaces(value, &end);
 
 	if (value[end] == ';') end++;
-	else throw("Error, there is a syntax error");
+	else throw(Utils::WebservException("Error, there is a syntax error"));
 
-	if (end + 1 != value.size() && value[end + 1] == ';') throw("Error, there is a syntax error");
+	if (end + 1 != value.size() && value[end + 1] == ';') throw(Utils::WebservException("Error, there is a syntax error"));
 
 	*startPos += end;
 
 	return directiveValue;
 }
 
-t_listen parseListen( std::string value ) {
+t_listen parseListen(std::string value)
+{
 
-	if (valueCounter(value, ':') != 1) throw("Error, listen syntax error");
+	if (valueCounter(value, ':') != 1) throw(Utils::WebservException("Error, listen syntax error"));
 
 	size_t pos = value.find(":");
 
 
-	if (pos == 0 || value.size() == pos || !isDigits(&value[pos + 1])) throw("Error, listen syntax error");
+	if (pos == 0 || value.size() == pos || !isDigits(&value[pos + 1])) throw(Utils::WebservException("Error, listen syntax error"));
 	
 	t_listen listen;
 
@@ -87,14 +92,15 @@ t_listen parseListen( std::string value ) {
 	std::stringstream buffer(value.substr(pos + 1, value.size() - pos));
 
 	buffer >> listen.port;
-	if (buffer.fail()) throw("Error, stringstream");
+	if (buffer.fail()) throw(Utils::WebservException("Error, stringstream"));
 
 	return listen;
 }
 
-std::string singleValueParser( std::string value ) {
+std::string singleValueParser(std::string value)
+{
 
-	if (onlySpaces(value) || value.empty()) throw("Error, directive key syntax error");
+	if (onlySpaces(value) || value.empty()) throw(Utils::WebservException("Error, directive key syntax error"));
 
 	std::string directiveValue;
 
@@ -111,58 +117,64 @@ std::string singleValueParser( std::string value ) {
 
 	skipSpaces(value, &end);
 
-	if (end != value.size()) throw("Error, directive key syntax error");
+	if (end != value.size()) throw(Utils::WebservException("Error, directive key syntax error"));
 
 	return directiveValue;
 }
 
-std::vector<std::string> multipleValuesParser( std::string value ) {
+std::vector<std::string> multipleValuesParser(std::string value)
+{
 
 	std::vector<std::string> values;
 
-	if (onlySpaces(value) || value.empty()) throw("Error, directive key syntax error");
+	if (onlySpaces(value) || value.empty()) throw(Utils::WebservException("Error, directive key syntax error"));
 
 	size_t pos = value.find(" ");
 
 	if (pos == std::string::npos) {
-		values.push_back(value);
-		return values;
+			values.push_back(value);
+			return values;
 	}
 
 	while (pos != std::string::npos) {
-		values.push_back(value.substr(0, pos));
+			values.push_back(value.substr(0, pos));
 
-		for (; pos < value.size(); pos++)
-			if (value[pos] != ' ') break ;
-		value = value.substr(pos);
+			for (; pos < value.size(); pos++)
+				if (value[pos] != ' ')
+					break;
+			value = value.substr(pos);
 
-		if (onlySpaces(value) || value.empty()) break ;
+			if (onlySpaces(value) || value.empty())
+				break;
 
-		pos = value.find(" ");
-		if (pos == std::string::npos) {
-			values.push_back(value);
-			break ;
-		}
+			pos = value.find(" ");
+			if (pos == std::string::npos)
+			{
+				values.push_back(value);
+				break;
+			}
 	}
 
 	return values;
 }
 
-bool checkUnit(int unit) {
+bool checkUnit(int unit)
+{
 	if (unit != 'K' && unit != 'M' && unit != 'G')
 		return false;
 	return true;
 }
 
-void parseClientBodySize( int *body_size, std::string &body_size_unit, std::string value ) {
+void parseClientBodySize(int *body_size, std::string &body_size_unit, std::string value)
+{
 
-	if (onlySpaces(value) || value.empty()) throw("Error, client_body_size syntax error");
+	if (onlySpaces(value) || value.empty()) throw(Utils::WebservException("Error, client_body_size syntax error"));
 
 	size_t pos = value.find(" ");
 	if (pos != std::string::npos && pos == 0)
 		skipSpaces(value, &pos);
 	else if (pos != std::string::npos && pos != 0) {
-		if (!onlySpaces(&value[pos])) throw("Error, client_body_size syntax error");
+			if (!onlySpaces(&value[pos])) throw(Utils::WebservException("Error, client_body_size syntax error"));
 		else pos = 0;
 	}
 	else if (pos == std::string::npos)
@@ -171,25 +183,26 @@ void parseClientBodySize( int *body_size, std::string &body_size_unit, std::stri
 	size_t i;
 	for (i = pos; i < value.size(); i++)
 		if (!isdigit(value[i])) break ;
-	if (i == pos || i == value.size()) throw("Error, client_body_size syntax error");
+	if (i == pos || i == value.size()) throw(Utils::WebservException("Error, client_body_size syntax error"));
 
 	std::stringstream buffer(value.substr(pos, i - pos));
 	int client_body_size;
 	buffer >> client_body_size;
-	if (buffer.fail()) throw("Error, stringstream");
+	if (buffer.fail()) throw(Utils::WebservException("Error, stringstream"));
 
 	*body_size = client_body_size;
 	if (!isspace(value[i]) && checkUnit(value[i]) && onlySpaces(&value[i + 1]))
 		body_size_unit = value[i];
-	else throw("Error, client_body_size syntax error");
+	else throw(Utils::WebservException("Error, client_body_size syntax error"));
 }
 
-std::vector<t_error_page> parseErrorPage( std::string value ) {
+std::vector<t_error_page> parseErrorPage(std::string value)
+{
 
-	if (onlySpaces(value) || value.empty()) throw("Error, error_page syntax error");
+	if (onlySpaces(value) || value.empty()) throw(Utils::WebservException("Error, error_page syntax error"));
 	size_t pos = value.find(" ");
 
-	if (pos == std::string::npos) throw("Error, error_page syntax error");
+	if (pos == std::string::npos) throw(Utils::WebservException("Error, error_page syntax error"));
 
 	std::vector<t_error_page>errors;
 	t_error_page err;
@@ -199,18 +212,18 @@ std::vector<t_error_page> parseErrorPage( std::string value ) {
 	std::string error_page;
 
 	while (pos != std::string::npos) {
-		if (!isDigits(value.substr(0, pos))) throw("Error, error_page syntax error");
+			if (!isDigits(value.substr(0, pos))) throw(Utils::WebservException("Error, error_page syntax error"));
 		std::stringstream buffer(value.substr(0, pos));
 		int errorCode;
 		buffer >> errorCode;
-		if (buffer.fail()) throw("Error, stringstream");
+		if (buffer.fail()) throw(Utils::WebservException("Error, stringstream"));
 		err.error_code = errorCode;
 
 		for (; pos < value.size(); pos++)
 			if (value[pos] != ' ') break ;
 		value = value.substr(pos);
 
-		if ((onlySpaces(value) || value.empty()) && err.error_page.empty()) throw("Error, error_page syntax error");
+		if ((onlySpaces(value) || value.empty()) && err.error_page.empty()) throw(Utils::WebservException("Error, error_page syntax error"));
 		else if ((onlySpaces(value) || value.empty()) && !err.error_page.empty()) break ;
 
 		pos = value.find(" ");
@@ -218,8 +231,8 @@ std::vector<t_error_page> parseErrorPage( std::string value ) {
 		errors.push_back(err);
 
 		if (pos == std::string::npos) {
-			error_page = value;
-			break ;
+					error_page = value;
+					break;
 		}
 	}
 
@@ -231,6 +244,7 @@ std::vector<t_error_page> parseErrorPage( std::string value ) {
 	return errors;
 }
 
-std::string getDirectiveValue(std::string key, std::string file, size_t *startIndex) {
+std::string getDirectiveValue(std::string key, std::string file, size_t *startIndex)
+{
 	return key != "error_page" && key != "server_name" ? getSingleValue(file, startIndex) : getMultipleValues(file, startIndex);
 }
