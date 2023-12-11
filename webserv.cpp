@@ -1,9 +1,4 @@
-#include<iostream>
-#include "src/headers/ConfigurationFile.hpp"
-#include"src/headers/ClientProfile.hpp"
-#include"src/headers/MyServer.hpp"
-#include"src/headers/ConnectionsManager.hpp"
-// #include"src/headers/RequestParser.hpp
+#include "webserv.hpp"
 
 void printBanner() {
     std::cout << "\033[0;32m"
@@ -121,7 +116,7 @@ void startTheParty(ConfigurationFile &obj) {
 	ConnectionsManager master;
 
     for (std::list<t_server>::iterator it = obj.getConfigFileServers().begin(); it != obj.getConfigFileServers().end(); ++it) {
-        MyServer s((*it));
+        ServerInstance s((*it));
 		s.setupServerConfiguration();
 		master.addServerToTheSet(s);
     }

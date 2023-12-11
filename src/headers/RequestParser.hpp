@@ -1,11 +1,6 @@
 #pragma once
 
-// #include "../../../webserv.hpp"
-#include"libs.hpp"
-#include"logger.hpp"
-#define LOGGING_ENABLED true
-#define FULL_LOGGING_ENABLED true
-
+#include "../../webserv.hpp"
 
 enum PrasingState {
     REQ_PARSER_STARTED,

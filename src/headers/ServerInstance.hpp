@@ -1,19 +1,11 @@
-#ifndef INITSERVER_HPP
-#define INITSERVER_HPP
+#pragma once
 
+#include "../../webserv.hpp"
 
-#include"libs.hpp"
-#include"ConfigurationFile.hpp"
-#include"ClientProfile.hpp"
-#include"logger.hpp"
-
-
-
-
-class MyServer {
+class ServerInstance {
     public:
-        MyServer(s_server &serverInfos);
-        ~MyServer();
+        ServerInstance(s_server &serverInfos);
+        ~ServerInstance();
         
         //SETTERS
         void setListenAdressPort(t_server &serverInfo);
@@ -50,8 +42,3 @@ class MyServer {
         const int backLog;
         std::vector<t_listen> listenDirectives;
 };
-
-
-
-
-#endif

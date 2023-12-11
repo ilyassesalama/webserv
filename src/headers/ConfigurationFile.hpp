@@ -1,11 +1,6 @@
-#ifndef __CONFIGURATION_FILE_HPP_
-#define __CONFIGURATION_FILE_HPP_
+#pragma once
 
-#include <iostream>
-#include <fstream>
-#include <vector>
-#include <list>
-#include <sstream>
+#include "../../webserv.hpp"
 
 typedef struct s_listen {
 	std::string host;
@@ -122,5 +117,3 @@ bool isRouteAlreadyExist(t_server server, std::string path);
 void skipRoute(std::string file, size_t *startIndex);
 void checkCGIMethod( std::vector<std::string> values );
 void checkAllowedMethods(std::vector<std::string>allowed_methods);
-
-#endif

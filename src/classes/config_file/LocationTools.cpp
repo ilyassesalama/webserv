@@ -1,4 +1,4 @@
-#include "../../headers/ConfigurationFile.hpp"
+#include "../../../webserv.hpp"
 
 std::string getLocationPath( std::string file, size_t *startIndex ) {
 	

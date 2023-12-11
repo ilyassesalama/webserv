@@ -71,5 +71,6 @@
     "fstream": "cpp",
     "iomanip": "cpp",
     "stack": "cpp"
-  }
+  },
+  "C_Cpp.intelliSenseEngineFallback": "enabled"
 }

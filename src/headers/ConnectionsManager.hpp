@@ -1,9 +1,8 @@
-#ifndef CONNECTIONSMANAGER_HPP
-#define CONNECTIONSMANAGER_HPP
+#pragma once
 
-#include"libs.hpp"
-#include"MyServer.hpp"
+#include "../../webserv.hpp"
 
+class ServerInstance;
 
 class ConnectionsManager {
     public:
@@ -11,24 +10,15 @@ class ConnectionsManager {
         ~ConnectionsManager();
         
         void socketMonitore();
-        void acceptNewIncommingConnections(MyServer *serverId);
-        // int recvRequest(int clientFd,MyServer* serverId);
+        void acceptNewIncommingConnections(ServerInstance *serverId);
+        // int recvRequest(int clientFd,Server* serverId);
         void addFdToTheSet(int clientFd);
         void changeClinetMonitoringEvent(std::string event, int clientFd);
-        void addServerToTheSet(MyServer &serverInstance);
-        MyServer* getFdServer(int clientFd);
+        void addServerToTheSet(ServerInstance &serverInstance);
+        ServerInstance* getFdServer(int clientFd);
         void deleteFromFdSet(int clientFd);
     private:
-        std::vector<MyServer> serversSet;
+        std::vector<ServerInstance> serversSet;
         std::vector<struct pollfd> masterFdSet;
         size_t serverCount;
 };
-
-
-
-
-
-
-
-
-#endif

@@ -1,6 +1,4 @@
-#include"../../headers/ConnectionsManager.hpp"
-
-
+#include "../../../webserv.hpp"
 
 ConnectionsManager::ConnectionsManager() {
     (*this).serverCount = 0;
@@ -10,7 +8,7 @@ ConnectionsManager::~ConnectionsManager() {
 
 }
 
-void ConnectionsManager::addServerToTheSet(MyServer &serverInstance) {
+void ConnectionsManager::addServerToTheSet(ServerInstance &serverInstance) {
     (*this).serversSet.push_back(serverInstance);
     (*this).serverCount++;
 
@@ -43,7 +41,7 @@ void ConnectionsManager::addFdToTheSet(int clientFd) {
     (*this).masterFdSet.push_back(client);
 }
 
-void ConnectionsManager::acceptNewIncommingConnections(MyServer *serverId) {
+void ConnectionsManager::acceptNewIncommingConnections(ServerInstance *serverId) {
     ClientProfile client;
 
     client.address_length = sizeof(client.address);
@@ -64,8 +62,8 @@ void ConnectionsManager::acceptNewIncommingConnections(MyServer *serverId) {
 }
 
 
-MyServer* ConnectionsManager::getFdServer(int clientFd) {
-    for (std::vector<MyServer>::iterator it = serversSet.begin(); it != serversSet.end(); it++) {
+ServerInstance* ConnectionsManager::getFdServer(int clientFd) {
+    for (std::vector<ServerInstance>::iterator it = serversSet.begin(); it != serversSet.end(); it++) {
         if (it->isClientFdInPollFd(clientFd, it->getClientFdSet())) {
             return &(*it);
         }

@@ -1,5 +1,4 @@
-#include "../../headers/ConfigurationFile.hpp"
-#include <cstring>
+#include "../../../webserv.hpp"
 
 void ConfigurationFile::openFile( std::string file ) {
 

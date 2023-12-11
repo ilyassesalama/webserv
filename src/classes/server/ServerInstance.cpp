@@ -1,7 +1,6 @@
-#include"../../headers/MyServer.hpp"
-#include"../../headers/RequestParser.hpp"
-#include"../../headers/Response.hpp"
-MyServer::MyServer(s_server &serverInfos): backLog(100) {
+#include "../../../webserv.hpp"
+
+ServerInstance::ServerInstance(s_server &serverInfos): backLog(100) {
 
         setListenAdressPort(serverInfos); //check if the array is empty !!!!
         (*this).serverInformations = &serverInfos;
@@ -14,18 +13,18 @@ MyServer::MyServer(s_server &serverInfos): backLog(100) {
 
 }
 
-std::vector<struct pollfd>& MyServer::getClientFdSet() {
+std::vector<struct pollfd>& ServerInstance::getClientFdSet() {
     return((*this).serverPollFd);
 }
 
-std::vector<struct ClientProfile>& MyServer::getClientProfilesSet() {
+std::vector<struct ClientProfile>& ServerInstance::getClientProfilesSet() {
     return((*this).clientProfiles);
 }
 
 
 
 
-void MyServer::setListenAdressPort(t_server &serverInfos) {
+void ServerInstance::setListenAdressPort(t_server &serverInfos) {
     // for(std::vector<t_listen>::iterator it = serverInfos.listen.begin(); it != serverInfos.listen.end(); it++) { 
     //     (*this).listenDirectives.push_back(*it);
     // }
@@ -33,11 +32,11 @@ void MyServer::setListenAdressPort(t_server &serverInfos) {
     (*this).listenAdress = serverInfos.listen[0].host;
 }
 
-void MyServer::setListenSocket(int SocketFd) {
+void ServerInstance::setListenSocket(int SocketFd) {
     (*this).listenSocket = SocketFd;
 }
 
-std::string MyServer::getServerPort() {
+std::string ServerInstance::getServerPort() {
     std::stringstream ss;
 
     ss << (*this).serverPort;
@@ -45,15 +44,15 @@ std::string MyServer::getServerPort() {
     return(port);
 }
 
-std::string MyServer::getListenAdress() {
+std::string ServerInstance::getListenAdress() {
     return((*this).listenAdress);
 }
 
-int MyServer::getListenSocketFd() {
+int ServerInstance::getListenSocketFd() {
     return((*this).listenSocket);
 }
 
-void MyServer::AddFdToPollFds(int clientFd) {
+void ServerInstance::AddFdToPollFds(int clientFd) {
     if (clientFd < 0) {
         Log::e("Invalid Client FD ...");
         return;
@@ -65,11 +64,11 @@ void MyServer::AddFdToPollFds(int clientFd) {
     (*this).serverPollFd.push_back(client);
 }
 
-void MyServer::AddToClientProfiles(ClientProfile &client) {
+void ServerInstance::AddToClientProfiles(ClientProfile &client) {
     (*this).clientProfiles.push_back(client);
 }
 
-void MyServer::setupServerConfiguration() {
+void ServerInstance::setupServerConfiguration() {
     int opt = 1;
     
     Log::i("Configuring local network...");
@@ -100,7 +99,7 @@ void MyServer::setupServerConfiguration() {
 }
 
 
-void MyServer::recvRequest(int clientFd) {
+void ServerInstance::recvRequest(int clientFd) {
     int bytesRead;
     std::string receivedRequest;
     char buffer[200000];
@@ -129,7 +128,7 @@ void MyServer::recvRequest(int clientFd) {
     
 }
 
-void MyServer::dropClient(int clientFd) {
+void ServerInstance::dropClient(int clientFd) {
     for(std::vector<struct pollfd>::iterator it = (*this).serverPollFd.begin(); it != (*this).serverPollFd.end(); it++) {
         if(it->fd == clientFd) {
             (*this).serverPollFd.erase(it);
@@ -145,7 +144,7 @@ void MyServer::dropClient(int clientFd) {
     }   
 }
 
-bool MyServer::isClientFdInPollFd(int clientFd, const std::vector<struct pollfd>& serverPollFd) {
+bool ServerInstance::isClientFdInPollFd(int clientFd, const std::vector<struct pollfd>& serverPollFd) {
     for (std::vector<struct pollfd>::iterator it = (*this).serverPollFd.begin(); it != (*this).serverPollFd.end(); it++) {
         if (it->fd == clientFd) {
             return true; 
@@ -154,7 +153,7 @@ bool MyServer::isClientFdInPollFd(int clientFd, const std::vector<struct pollfd>
     return false; 
 }
 
-ClientProfile *MyServer::getClientProfile(int clientFd) {
+ClientProfile *ServerInstance::getClientProfile(int clientFd) {
     for (std::vector<struct ClientProfile>::iterator it = (*this).clientProfiles.begin(); it != (*this).clientProfiles.end(); it++)  {
         if(it->SocketFD == clientFd) {
             return(&(*it));
@@ -163,17 +162,17 @@ ClientProfile *MyServer::getClientProfile(int clientFd) {
     return(NULL);
 }
 
-void MyServer::sendResponse(int clientFd) {
+void ServerInstance::sendResponse(int clientFd) {
     // int bytesSent = send();
     Log::i("Serving Client " + getClientProfile(clientFd)->ipAdress + " ...");
 }
 
-// std::string MyServer::getIpType(std::string ipAdress) {
+// std::string ServerInstance::getIpType(std::string ipAdress) {
 
 // }
 
 
-MyServer::~MyServer () {
+ServerInstance::~ServerInstance () {
 
 }
 

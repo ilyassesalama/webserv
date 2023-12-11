@@ -1,4 +1,4 @@
-#include "../../headers/ConfigurationFile.hpp"
+#include "../../../webserv.hpp"
 
 void curlyBracesChecker( std::string file, size_t startIndex, size_t endIndex ) {
 

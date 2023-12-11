@@ -1,4 +1,4 @@
-#include "../../headers/Response.hpp"
+#include "../../../webserv.hpp"
 
 Response::Response(int clientFd, const RequestParser &parser){
     this->clientFD = clientFd;

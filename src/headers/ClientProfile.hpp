@@ -1,7 +1,6 @@
-#ifndef CLIENTPROFILE_HPP
-#define CLIENTPROFILE_HPP
+#pragma once
 
-#include"libs.hpp"
+#include "../../webserv.hpp"
 
 struct ClientProfile {
     int SocketFD;
@@ -15,9 +14,3 @@ struct ClientProfile {
     std::string request;
     std::string response;
 };
-
-
-
-
-
-#endif

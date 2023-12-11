@@ -1,10 +1,6 @@
-#ifndef LOGGER_HPP
-#define LOGGER_HPP
+#pragma once
 
-
-
-#include"libs.hpp"
-
+#include "../../webserv.hpp"
 
 class Log {
     public:
@@ -17,5 +13,3 @@ class Log {
 };
 
 void setSocketNonBlocking(int socketFd);
-
-#endif

@@ -1,9 +1,6 @@
 #pragma once
 
-#include "libs.hpp"
-#include "RequestParser.hpp"
-#include "logger.hpp"
-#include "File.hpp"
+#include "../../webserv.hpp"
 
 class Response {
     private:

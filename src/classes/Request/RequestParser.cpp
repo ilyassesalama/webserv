@@ -1,4 +1,4 @@
-#include "../../headers/RequestParser.hpp"
+#include "../../../webserv.hpp"
 
 RequestParser::RequestParser(){
     nullOutVars();

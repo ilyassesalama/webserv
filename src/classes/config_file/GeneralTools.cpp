@@ -1,4 +1,4 @@
-#include "../../headers/ConfigurationFile.hpp"
+#include "../../../webserv.hpp"
 
 size_t serverStartPosition( std::string file ) {
 	size_t pos = file.find("server ");
