@@ -134,6 +134,5 @@ int main(int argc, char *argv[]) {
 	startTheParty(cFile);
 	// printServers(cFile);
 
-
     return(0);
 }

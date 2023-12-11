@@ -64,7 +64,7 @@ void ConnectionsManager::acceptNewIncommingConnections(ServerInstance *serverId)
 
 ServerInstance* ConnectionsManager::getFdServer(int clientFd) {
     for (std::vector<ServerInstance>::iterator it = serversSet.begin(); it != serversSet.end(); it++) {
-        if (it->isClientFdInPollFd(clientFd, it->getClientFdSet())) {
+        if (it->isClientFdInPollFd(clientFd)) {
             return &(*it);
         }
     }

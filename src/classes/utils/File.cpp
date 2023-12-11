@@ -4,7 +4,7 @@ std::string File::getFileContent(const std::string &path){
     std::ifstream file(path);
     if(!file.is_open()){
         Log::e("getFileContent: Can't open \"" + path + "\" due to " + std::string(strerror(errno)));
-        return "\r";
+        return "\0";
     }
     std::string line, content;
     while(std::getline(file, line)) {

@@ -39,13 +39,5 @@ class RequestParser {
         const std::map<std::string, std::string> &getHeaders();
         const std::map<std::string, std::string> &getParams();
         const std::string &getBody();
-        const PrasingState getParsingState();
-
-        class RequestParserException : public std::exception {
-            private:
-                char *message;
-            public:
-                RequestParserException(std::string message);
-                virtual const char* what() const throw();
-        };
+        const PrasingState &getParsingState();
 };

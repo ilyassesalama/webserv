@@ -144,7 +144,7 @@ void ServerInstance::dropClient(int clientFd) {
     }   
 }
 
-bool ServerInstance::isClientFdInPollFd(int clientFd, const std::vector<struct pollfd>& serverPollFd) {
+bool ServerInstance::isClientFdInPollFd(int clientFd) {
     for (std::vector<struct pollfd>::iterator it = (*this).serverPollFd.begin(); it != (*this).serverPollFd.end(); it++) {
         if (it->fd == clientFd) {
             return true; 

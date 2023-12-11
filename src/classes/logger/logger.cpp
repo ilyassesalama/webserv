@@ -45,7 +45,7 @@ std::string Log::formatLoggingMessage(std::string message){
 }
 
 void setSocketNonBlocking(int socketFd) {
-    int flag = fcntl(socketFd,F_GETFL,0);
+    int flag = fcntl(socketFd, F_GETFL, 0);
 
     if(flag == -1) {
         Log::e("fcntl eroor");

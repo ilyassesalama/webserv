@@ -7,11 +7,11 @@ void curlyBracesChecker( std::string file, size_t startIndex, size_t endIndex ) 
 	bool serverClosed = false;
 
 
-	if (file[i] != '{') throw ConfigurationFile::customException((char *)"Error, there is a syntax error");
+	if (file[i] != '{') throw("Error, there is a syntax error");
 
 	for (; i < endIndex; i++) {
 		if (file[i] == '{') {
-			if (serverClosed) throw ConfigurationFile::customException((char *)"Error, there is a syntax error");
+			if (serverClosed) throw("Error, there is a syntax error");
 			countOpeners++;
 		}
 		else if (file[i] == '}' && countOpeners == 1) {
@@ -19,11 +19,11 @@ void curlyBracesChecker( std::string file, size_t startIndex, size_t endIndex ) 
 			countOpeners--;
 		}
 		else if (file[i] == '}' && countOpeners > 1) countOpeners--;
-		else if (file[i] == '}' && countOpeners == 0) throw ConfigurationFile::customException((char *)"Error, there is a syntax error");
-		if ((file[i] == '{' || file[i] == '}') && i + 1 < endIndex && file[i + 1] == ';') throw ConfigurationFile::customException((char *)"Error, there is a syntax error");
+		else if (file[i] == '}' && countOpeners == 0) throw("Error, there is a syntax error");
+		if ((file[i] == '{' || file[i] == '}') && i + 1 < endIndex && file[i + 1] == ';') throw("Error, there is a syntax error");
 	}
 
-	if (countOpeners != 0 || !serverClosed) throw ConfigurationFile::customException((char *)"Error, there is a syntax error");
+	if (countOpeners != 0 || !serverClosed) throw("Error, there is a syntax error");
 }
 
 void checkBetweenServers( std::string file, int endIndex ) {
@@ -32,7 +32,7 @@ void checkBetweenServers( std::string file, int endIndex ) {
 	// and I looked if anything other than space exist if anything other than space exist obviously that is an error
 
 	for (size_t i = --endIndex; file[i] != '}'; i--) {
-		if (!isspace(file[i])) throw ConfigurationFile::customException((char *)"Error, there is a syntax error");
+		if (!isspace(file[i])) throw("Error, there is a syntax error");
 	}
 
 }

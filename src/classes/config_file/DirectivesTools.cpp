@@ -22,7 +22,7 @@ std::string getDirectiveKey( std::string file, size_t *startIndex ) {
 
 std::string getSingleValue( std::string value, size_t *startPos ) {
 
-	if (value.empty()) throw ConfigurationFile::customException((char *)"Error, there is a syntax error");
+	if (value.empty()) throw("Error, there is a syntax error");
 
 	// size_t i = 0;
 
@@ -39,9 +39,9 @@ std::string getSingleValue( std::string value, size_t *startPos ) {
 	skipSpaces(value, &end);
 
 	if (value[end] == ';') end++;
-	else throw ConfigurationFile::customException((char *)"Error, there is a syntax error");
+	else throw("Error, there is a syntax error");
 
-	if (end + 1 != value.size() && value[end + 1] == ';') throw ConfigurationFile::customException((char *)"Error, there is a syntax error");
+	if (end + 1 != value.size() && value[end + 1] == ';') throw("Error, there is a syntax error");
 
 	*startPos += end;
 
@@ -50,7 +50,7 @@ std::string getSingleValue( std::string value, size_t *startPos ) {
 
 std::string getMultipleValues( std::string value, size_t *startPos ) {
 
-	if (value.empty()) throw ConfigurationFile::customException((char *)"Error, there is a syntax error");
+	if (value.empty()) throw("Error, there is a syntax error");
 
 	size_t end;
 
@@ -62,9 +62,9 @@ std::string getMultipleValues( std::string value, size_t *startPos ) {
 	skipSpaces(value, &end);
 
 	if (value[end] == ';') end++;
-	else throw ConfigurationFile::customException((char *)"Error, there is a syntax error");
+	else throw("Error, there is a syntax error");
 
-	if (end + 1 != value.size() && value[end + 1] == ';') throw ConfigurationFile::customException((char *)"Error, there is a syntax error");
+	if (end + 1 != value.size() && value[end + 1] == ';') throw("Error, there is a syntax error");
 
 	*startPos += end;
 
@@ -73,12 +73,12 @@ std::string getMultipleValues( std::string value, size_t *startPos ) {
 
 t_listen parseListen( std::string value ) {
 
-	if (valueCounter(value, ':') != 1) throw ConfigurationFile::customException((char *)"Error, listen syntax error");
+	if (valueCounter(value, ':') != 1) throw("Error, listen syntax error");
 
 	size_t pos = value.find(":");
 
 
-	if (pos == 0 || value.size() == pos || !isDigits(&value[pos + 1])) throw ConfigurationFile::customException((char *)"Error, listen syntax error");
+	if (pos == 0 || value.size() == pos || !isDigits(&value[pos + 1])) throw("Error, listen syntax error");
 	
 	t_listen listen;
 
@@ -87,14 +87,14 @@ t_listen parseListen( std::string value ) {
 	std::stringstream buffer(value.substr(pos + 1, value.size() - pos));
 
 	buffer >> listen.port;
-	if (buffer.fail()) throw ConfigurationFile::customException((char *)"Error, stringstream");
+	if (buffer.fail()) throw("Error, stringstream");
 
 	return listen;
 }
 
 std::string singleValueParser( std::string value ) {
 
-	if (onlySpaces(value) || value.empty()) throw ConfigurationFile::customException((char *)"Error, directive key syntax error");
+	if (onlySpaces(value) || value.empty()) throw("Error, directive key syntax error");
 
 	std::string directiveValue;
 
@@ -111,7 +111,7 @@ std::string singleValueParser( std::string value ) {
 
 	skipSpaces(value, &end);
 
-	if (end != value.size()) throw ConfigurationFile::customException((char *)"Error, directive key syntax error");
+	if (end != value.size()) throw("Error, directive key syntax error");
 
 	return directiveValue;
 }
@@ -120,7 +120,7 @@ std::vector<std::string> multipleValuesParser( std::string value ) {
 
 	std::vector<std::string> values;
 
-	if (onlySpaces(value) || value.empty()) throw ConfigurationFile::customException((char *)"Error, directive key syntax error");
+	if (onlySpaces(value) || value.empty()) throw("Error, directive key syntax error");
 
 	size_t pos = value.find(" ");
 
@@ -156,13 +156,13 @@ bool checkUnit(int unit) {
 
 void parseClientBodySize( int *body_size, std::string &body_size_unit, std::string value ) {
 
-	if (onlySpaces(value) || value.empty()) throw ConfigurationFile::customException((char *)"Error, client_body_size syntax error");
+	if (onlySpaces(value) || value.empty()) throw("Error, client_body_size syntax error");
 
 	size_t pos = value.find(" ");
 	if (pos != std::string::npos && pos == 0)
 		skipSpaces(value, &pos);
 	else if (pos != std::string::npos && pos != 0) {
-		if (!onlySpaces(&value[pos])) throw ConfigurationFile::customException((char *)"Error, client_body_size syntax error");
+		if (!onlySpaces(&value[pos])) throw("Error, client_body_size syntax error");
 		else pos = 0;
 	}
 	else if (pos == std::string::npos)
@@ -171,25 +171,25 @@ void parseClientBodySize( int *body_size, std::string &body_size_unit, std::stri
 	size_t i;
 	for (i = pos; i < value.size(); i++)
 		if (!isdigit(value[i])) break ;
-	if (i == pos || i == value.size()) throw ConfigurationFile::customException((char *)"Error, client_body_size syntax error");
+	if (i == pos || i == value.size()) throw("Error, client_body_size syntax error");
 
 	std::stringstream buffer(value.substr(pos, i - pos));
 	int client_body_size;
 	buffer >> client_body_size;
-	if (buffer.fail()) throw ConfigurationFile::customException((char *)"Error, stringstream");
+	if (buffer.fail()) throw("Error, stringstream");
 
 	*body_size = client_body_size;
 	if (!isspace(value[i]) && checkUnit(value[i]) && onlySpaces(&value[i + 1]))
 		body_size_unit = value[i];
-	else throw ConfigurationFile::customException((char *)"Error, client_body_size syntax error");
+	else throw("Error, client_body_size syntax error");
 }
 
 std::vector<t_error_page> parseErrorPage( std::string value ) {
 
-	if (onlySpaces(value) || value.empty()) throw ConfigurationFile::customException((char *)"Error, error_page syntax error");
+	if (onlySpaces(value) || value.empty()) throw("Error, error_page syntax error");
 	size_t pos = value.find(" ");
 
-	if (pos == std::string::npos) throw ConfigurationFile::customException((char *)"Error, error_page syntax error");
+	if (pos == std::string::npos) throw("Error, error_page syntax error");
 
 	std::vector<t_error_page>errors;
 	t_error_page err;
@@ -199,18 +199,18 @@ std::vector<t_error_page> parseErrorPage( std::string value ) {
 	std::string error_page;
 
 	while (pos != std::string::npos) {
-		if (!isDigits(value.substr(0, pos))) throw ConfigurationFile::customException((char *)"Error, error_page syntax error");
+		if (!isDigits(value.substr(0, pos))) throw("Error, error_page syntax error");
 		std::stringstream buffer(value.substr(0, pos));
 		int errorCode;
 		buffer >> errorCode;
-		if (buffer.fail()) throw ConfigurationFile::customException((char *)"Error, stringstream");
+		if (buffer.fail()) throw("Error, stringstream");
 		err.error_code = errorCode;
 
 		for (; pos < value.size(); pos++)
 			if (value[pos] != ' ') break ;
 		value = value.substr(pos);
 
-		if ((onlySpaces(value) || value.empty()) && err.error_page.empty()) throw ConfigurationFile::customException((char *)"Error, error_page syntax error");
+		if ((onlySpaces(value) || value.empty()) && err.error_page.empty()) throw("Error, error_page syntax error");
 		else if ((onlySpaces(value) || value.empty()) && !err.error_page.empty()) break ;
 
 		pos = value.find(" ");

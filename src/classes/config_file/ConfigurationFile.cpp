@@ -1,29 +1,5 @@
 #include "../../../webserv.hpp"
 
-void ConfigurationFile::openFile( std::string file ) {
-
-	this->myFile.open(file.c_str());
-
-	if (!this->myFile.is_open()) throw ConfigurationFile::customException((char *)"Error, cannot open configuration file");
-}
-
-void ConfigurationFile::readFile( std::string file ) {
-
-	this->openFile(file);
-
-	std::string line;
-	std::string lines;
-
-	while (std::getline(this->myFile, line)) {
-		lines += line;
-		lines += '\n';
-	}
-
-	this->file = lines;
-
-	if (this->file.empty()) throw ConfigurationFile::customException((char *)"Error, configuration file is empty");
-}
-
 bool findVal( std::vector<t_error_page>error_pages, int val ) {
 	
 	std::vector<t_error_page>::iterator it;
@@ -55,7 +31,7 @@ void ConfigurationFile::parseValue( std::string key, std::string value, t_server
 
 	}
 	else if (key != "listen" && key != "server_name" && key != "client_body_size" && key != "error_page") {
-		throw ConfigurationFile::customException((char *)"Error, directive not allowed");
+		throw ("Error, directive not allowed");
 	}
 }
 
@@ -66,7 +42,7 @@ void ConfigurationFile::parseRouteValue( std::string key, std::string value, t_r
 		route->is_root = true;
 	} else if (key == "directory_listing" && !route->is_directory_listing) {
 		std::string boolean = singleValueParser(value);
-		if (boolean != "true" && boolean != "false") throw ConfigurationFile::customException((char *)"Error, directory_listing can only be true or false");
+		if (boolean != "true" && boolean != "false") throw ("Error, directory_listing can only be true or false");
 		else if (boolean == "true") route->directory_listing = true;
 		else if (boolean == "false") route->directory_listing = false;
 		route->is_directory_listing = true;
@@ -89,7 +65,7 @@ void ConfigurationFile::parseRouteValue( std::string key, std::string value, t_r
 		route->is_redirection = true;
 	}
 	else if (key != "root" && key != "directory_listing" && key != "is_directory" && key != "cgi_extension" && key != "allowed_methods" && key != "cgi_methods") {
-		throw ConfigurationFile::customException((char *)"Error, directive not allowed");
+		throw ("Error, directive not allowed");
 	}
 }
 
@@ -168,7 +144,7 @@ void ConfigurationFile::parseDirectives( std::string file, t_server server ) {
 			} else {
 				skipSpaces(file, &i);
 
-				if (file[i] != '{') throw ConfigurationFile::customException((char *)"Error, there is a syntax error");
+				if (file[i] != '{') throw ("Error, there is a syntax error");
 
 				i++;
 
@@ -211,21 +187,14 @@ void ConfigurationFile::configFileParsing( void ) {
 
 ConfigurationFile::ConfigurationFile( std::string file ) {
 	try {
-		this->readFile(file);
+		this->file = File::getFileContent(file);
 
 		this->configFileParsing();
 	}
-	catch ( std::exception &e ) {
-		std::cerr << e.what() << std::endl;
+	catch (const std::exception &e) {
+		Log::e("Caught exception due to: " + std::string(e.what()));
+		exit(1);
 	}
-}
-
-ConfigurationFile::customException::customException( char *msg ) {
-	this->msg = msg;
-}
-
-char const *ConfigurationFile::customException::what() const throw() {
-	return msg;
 }
 
 std::list<t_server>& ConfigurationFile::getConfigFileServers() {

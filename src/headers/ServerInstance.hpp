@@ -23,7 +23,7 @@ class ServerInstance {
         //OTHER MEMBERS FUNCTIONS
         void setupServerConfiguration();
         void dropClient(int clientFd);
-        bool isClientFdInPollFd(int clientFd, const std::vector<struct pollfd>& serverPollFd);
+        bool isClientFdInPollFd(int clientFd);
         void recvRequest(int clientFd);
         void sendResponse(int clientFd);
         ClientProfile *getClientProfile(int clientFd);

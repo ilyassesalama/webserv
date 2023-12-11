@@ -55,9 +55,6 @@ class ConfigurationFile {
 	public:
 		ConfigurationFile( std::string file );
 
-		void openFile( std::string file );
-		void readFile( std::string file );
-
 		void parseDirectives( std::string file, t_server server );
 		void parseValue( std::string key, std::string value, t_server *server );
 		void parseRouteValue( std::string key, std::string value, t_route *route );
@@ -67,17 +64,8 @@ class ConfigurationFile {
 
 		void configFileParsing( void );
 
-		class customException : public std::exception {
-				char *msg;
-			public:
-				customException( char * msg );
-				char const *what() const throw();
-		};
-
 		std::list<t_server>ConfigFileServers;
 	private:
-
-		std::ifstream myFile;
 		std::string file;
 };
 

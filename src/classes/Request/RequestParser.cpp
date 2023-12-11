@@ -24,7 +24,7 @@ void RequestParser::initRequestParser(std::string &requestData){
         setParsingState(REQ_PARSER_OK);
         Log::d("Request parsing completed successfully");
         if(FULL_LOGGING_ENABLED) logParsedRequest();
-    } catch (const RequestParser::RequestParserException &e) {
+    } catch (const std::exception &e) {
         Log::e("Failed to parse received request due to: " + std::string(e.what()));
         setParsingState(REQ_PARSER_FAILED);
     }
@@ -127,16 +127,12 @@ std::string const &RequestParser::getBody(){
     return(this->body);
 }
 
-PrasingState const RequestParser::getParsingState(){
+PrasingState const &RequestParser::getParsingState(){
     return(this->parsingState);
 }
 
 void RequestParser::setParsingState(PrasingState state){
     this->parsingState = state;
-}
-
-const char *RequestParser::RequestParserException::what() const throw() {
-	return this->message;
 }
 
 // helper functions

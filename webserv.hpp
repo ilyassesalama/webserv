@@ -32,6 +32,7 @@
 #include "src/headers/Response.hpp"
 #include "src/headers/ServerInstance.hpp"
 #include "src/headers/String.hpp"
+#include "src/headers/Utils.hpp"
 
 
 // -------- start global variables -------

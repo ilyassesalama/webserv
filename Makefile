@@ -5,23 +5,23 @@ SRC = $(shell find . -name '*.cpp')
 
 HEADERS = $(shell find . -name '*.hpp')
 OBJ = $(SRC:.cpp=.o)
-FLAGS = #-Wall -Wextra -Werror #-fsanitize=address
+FLAGS = -Wall -Wextra -Werror #-fsanitize=address
 COMPILER = c++ -std=c++98
 
 all: $(NAME)
 	@:
-	@clear
+#@clear
 
 $(NAME): $(OBJ)
 	$(COMPILER) $(FLAGS) $(OBJ) -o $(NAME)
-	@clear
+#@clear
 %.o: %.cpp $(HEADERS)
 	$(COMPILER) $(FLAGS) -c $< -o $@
-	@clear
+#@clear
 clean:
 	rm -rf $(OBJ)
-	@clear
+#@clear
 fclean: clean
 	rm -rf $(NAME)
-	@clear
+#@clear
 re: fclean all

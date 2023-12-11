@@ -13,7 +13,7 @@ Response::Response(int clientFd, const RequestParser &parser){
     Log::i("Fetching response from \"" + finalPath + "\"...");
     std::string content = File::getFileContent(finalPath);
     this->path = finalPath;
-    if(content == "\r"){
+    if(content == "\0"){
         this->status = 404;
         Log::e("Response: 404 Not Found");
         return;
