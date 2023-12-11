@@ -1,0 +1,126 @@
+#ifndef __CONFIGURATION_FILE_HPP_
+#define __CONFIGURATION_FILE_HPP_
+
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <list>
+#include <sstream>
+
+typedef struct s_listen {
+	std::string host;
+	int port;
+	std::string bindStatus;
+	int listenSocket;
+} t_listen;
+
+typedef struct s_error_page {
+	int error_code;
+	std::string error_page;
+} t_error_page;
+
+typedef struct s_route {
+	std::string path;
+
+	std::string root;
+	std::string redirection;
+	std::vector<std::string>allowed_methods;
+	std::string is_directory;
+	bool directory_listing;
+
+	// cgi specific
+	std::string cgi_extension;
+	std::vector<std::string>cgi_methods;
+
+	bool is_allowed_methods;
+	bool is_redirection;
+	bool is_root;
+	bool is_directory_listing;
+	bool is_is_directory;
+	bool is_cgi_extension;
+	bool is_cgi_methods;
+
+} t_route;
+
+typedef struct s_server {
+	std::vector<t_listen>listen;
+	std::vector<std::string>server_names;
+	std::vector<t_error_page>error_pages;
+	int client_body_size;
+	std::string body_size_unit;
+
+	bool is_client_body_size;
+
+	// Location specific directives
+
+	std::vector<t_route>routes;
+} t_server;
+
+class ConfigurationFile {
+	public:
+		ConfigurationFile( std::string file );
+
+		void openFile( std::string file );
+		void readFile( std::string file );
+
+		void parseDirectives( std::string file, t_server server );
+		void parseValue( std::string key, std::string value, t_server *server );
+		void parseRouteValue( std::string key, std::string value, t_route *route );
+		void handleLocation( std::string file, size_t *startIndex, std::string path, t_server *server );
+
+		std::list<t_server>& getConfigFileServers();
+
+		void configFileParsing( void );
+
+		class customException : public std::exception {
+				char *msg;
+			public:
+				customException( char * msg );
+				char const *what() const throw();
+		};
+
+		std::list<t_server>ConfigFileServers;
+	private:
+
+		std::ifstream myFile;
+		std::string file;
+};
+
+/* syntax checkers */
+
+void curlyBracesChecker( std::string file, size_t startIndex, size_t endIndex );
+void checkBetweenServers( std::string file, int startIndex );
+
+/* general tools */
+
+size_t serverStartPosition( std::string file );
+void getServerCoords(std::string file, size_t *startIndex, size_t *endIndex);
+size_t findOpeningBrace( std::string file, size_t endIndex );
+void skipSpaces( std::string str, size_t *idx );
+int valueCounter( std::string str, int value );
+bool isDigits( std::string value );
+bool onlySpaces( std::string str );
+
+/* directives tools */
+
+std::string getDirectiveValue(std::string key, std::string file, size_t *startIndex);
+std::string getDirectiveKey( std::string file, size_t *startIndex );
+std::string getSingleValue( std::string value, size_t *startPos );
+std::string getMultipleValues( std::string value, size_t *startPos );
+t_listen parseListen( std::string value );
+std::vector<std::string> multipleValuesParser( std::string value );
+void parseClientBodySize( int *body_size, std::string &body_size_unit, std::string value );
+std::vector<t_error_page> parseErrorPage( std::string value );
+std::string singleValueParser( std::string value );
+
+/* location tools */
+
+std::string getLocationPath( std::string file, size_t *startIndex );
+size_t getLocationEnd( std::string file );
+void initRouteBooleans(t_route *route);
+bool isRouteAlreadyExist(t_server server, std::string path);
+void skipRoute(std::string file, size_t *startIndex);
+void checkCGIMethod( std::vector<std::string> values );
+void checkAllowedMethods(std::vector<std::string>allowed_methods);
+
+#endif

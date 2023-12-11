@@ -1,6 +1,8 @@
 #pragma once
 
-#include "../../../webserv.hpp"
+#include "libs.hpp"
+#include "String.hpp"
+#include "logger.hpp"
 
 class File {
     public:

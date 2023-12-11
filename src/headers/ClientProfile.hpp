@@ -3,7 +3,7 @@
 
 #include"libs.hpp"
 
-struct clientProfile {
+struct ClientProfile {
     int SocketFD;
     std::string ipAdress;
     socklen_t address_length;
@@ -12,10 +12,8 @@ struct clientProfile {
     bool isConnected;
     time_t connectionsTime;
     int requestCount;
-    char read_bits[1024];
-    
-    clientProfile(int portNumber);
-    void incRequestCount();
+    std::string request;
+    std::string response;
 };
 
 

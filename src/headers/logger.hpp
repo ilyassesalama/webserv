@@ -1,7 +1,10 @@
-#ifndef TOOLS_HPP
-#define TOOLS_HPP
+#ifndef LOGGER_HPP
+#define LOGGER_HPP
+
+
 
 #include"libs.hpp"
+
 
 class Log {
     public:
@@ -13,5 +16,6 @@ class Log {
         static void e(std::string message); // error
 };
 
+void setSocketNonBlocking(int socketFd);
 
 #endif

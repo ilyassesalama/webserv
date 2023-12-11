@@ -1,4 +1,4 @@
-#include "../../../webserv.hpp"
+#include"../../headers/File.hpp"
 
 std::string File::getFileContent(const std::string &path){
     std::ifstream file(path);
