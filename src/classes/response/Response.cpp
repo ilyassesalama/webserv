@@ -16,8 +16,10 @@ Response::Response(int clientFd, const RequestParser &parser){
 
     if(path == "/" || pointPos == std::string::npos || slashPos > pointPos) { // If path is not a file enter here
 
-        finalPath += path + "index.html";
+        finalPath += "/main" + path + "index.html";
 		
+		Log::d("finalPath: " + finalPath);
+
 		if (slashPos != path.size() - 1) { // If URI does not have "/" at end enter here
 			this->status = 404;
 			Log::e("Response: 301 Moved Permanently");
@@ -38,7 +40,7 @@ Response::Response(int clientFd, const RequestParser &parser){
 		}
 
 	} else { // If path is a file enter here
-        finalPath += path;
+        finalPath += "/main" + path;
 	}
 
 
