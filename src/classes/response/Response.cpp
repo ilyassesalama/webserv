@@ -14,10 +14,33 @@ Response::Response(int clientFd, const RequestParser &parser){
         return;
 	}
 
-    if(path == "/" || pointPos == std::string::npos || slashPos > pointPos)
-        finalPath += "/main/index.html";
-    else
+    if(path == "/" || pointPos == std::string::npos || slashPos > pointPos) { // If path is not a file enter here
+
+        finalPath += path + "index.html";
+		
+		if (slashPos != path.size() - 1) { // If URI does not have "/" at end enter here
+			this->status = 404;
+			Log::e("Response: 301 Moved Permanently");
+			return;
+		}
+		
+		if (access(finalPath.c_str(), F_OK) == -1) { // If index.html not found enter here
+
+			bool directory_listing = false; // This is a temporary variable, we should use value form config file
+			if (directory_listing) {
+				// autoindex here
+			} else {
+				this->status = 403;
+				Log::e("Response: 403 Forbidden");
+				return;
+			}
+
+		}
+
+	} else { // If path is a file enter here
         finalPath += path;
+	}
+
 
     Log::i("Fetching response from \"" + finalPath + "\"...");
     std::string content = File::getFileContent(finalPath);
