@@ -3,6 +3,7 @@
 ServerInstance::ServerInstance(s_server &serverInfos): backLog(100) {
 
         setListenAdressPort(serverInfos); //check if the array is empty !!!!
+        (*this).serverName = serverInfos.server_names[0];
         (*this).serverInformations = &serverInfos;
         (*this).listenSocket = -1;
         (*this).bindAddress = NULL;
@@ -22,12 +23,11 @@ std::vector<struct ClientProfile>& ServerInstance::getClientProfilesSet() {
 }
 
 
-
+std::string ServerInstance::getServerName() {
+    return((*this).serverName);
+}
 
 void ServerInstance::setListenAdressPort(t_server &serverInfos) {
-    // for(std::vector<t_listen>::iterator it = serverInfos.listen.begin(); it != serverInfos.listen.end(); it++) { 
-    //     (*this).listenDirectives.push_back(*it);
-    // }
     (*this).serverPort =  serverInfos.listen[0].port;
     (*this).listenAdress = serverInfos.listen[0].host;
 }
@@ -98,34 +98,31 @@ void ServerInstance::setupServerConfiguration() {
     AddFdToPollFds(getListenSocketFd());
 }
 
+std::string bufferRequest = "";
 
-void ServerInstance::recvRequest(int clientFd) {
+int ServerInstance::recvRequest(int clientFd) {
     int bytesRead;
     std::string receivedRequest;
-    char buffer[200000];
+    char buffer[1024];
 
-    while(true) {
-        memset(buffer, 0, sizeof(buffer));
-        bytesRead = recv(clientFd, buffer, sizeof(buffer),0);
-        if(bytesRead > 0) {
-            receivedRequest.append(buffer,bytesRead);
-            size_t pos = receivedRequest.find("\r\n\r\n"); 
-            if(pos != std::string::npos) break;
-        }
-        else if(bytesRead == 0) {
-            break;
-        }
-        else if(bytesRead == -1) {
-            Log::i("Error on Recv Function");
-        }
+    memset(buffer, 0, sizeof(buffer));
+    bytesRead = recv(clientFd, buffer, sizeof(buffer), 0);
+    if(bytesRead > 0) receivedRequest.append(buffer, bytesRead);
+    if(bytesRead == 0) {
+        //connection closed need to be handled
+        return(10);
     }
-    RequestParser parser(receivedRequest);
-    if(parser.getParsingState() == REQ_PARSER_OK){
-        Response response(clientFd, parser);
-        response.sendResponse();
+    getClientProfile(clientFd)->parser.parserInput(receivedRequest);
+    if(getClientProfile(clientFd)->parser.getParsingState() == REQ_PARSER_OK) {
+        //return somethig to change the state 
+        //too much getClientProfile calls : !!!!!!!!!
+        getClientProfile(clientFd)->request = getClientProfile(clientFd)->parser.getRequestData();
     }
-    Log::i("Request Received from client " + getClientProfile(clientFd)->ipAdress + " ...");
-    
+    else if(getClientProfile(clientFd)->parser.getParsingState() ==  REQ_PARSER_FAILED) {
+        //invalid request 
+        //serve invalid request response
+    }
+    return(0);
 }
 
 void ServerInstance::dropClient(int clientFd) {
@@ -164,7 +161,7 @@ ClientProfile *ServerInstance::getClientProfile(int clientFd) {
 
 void ServerInstance::sendResponse(int clientFd) {
     // int bytesSent = send();
-    Log::i("Serving Client " + getClientProfile(clientFd)->ipAdress + " ...");
+    Log::d("Serving Client " + getClientProfile(clientFd)->ipAdress + " ...");
 }
 
 // std::string ServerInstance::getIpType(std::string ipAdress) {

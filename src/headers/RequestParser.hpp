@@ -16,6 +16,7 @@ enum PrasingState {
 
 class RequestParser {
     private:
+        std::string requestData;
         PrasingState parsingState;
         std::map<std::string, std::string> requestLine;
         std::map<std::string, std::string> headers;
@@ -25,6 +26,7 @@ class RequestParser {
         RequestParser();
         RequestParser(const std::string &requestData);
 
+        void parserInput(std::string &receivedData);
         void nullOutVars();
         void logParsedRequest();
 
@@ -36,8 +38,9 @@ class RequestParser {
         void parseRequestBody(std::stringstream &httpStream);
 
         std::map<std::string, std::string> &getRequestLine(); // this isn't const because i want to call it a bit diffrently
-        const std::map<std::string, std::string> &getHeaders();
+        std::map<std::string, std::string> &getHeaders();
         const std::map<std::string, std::string> &getParams();
         const std::string &getBody();
         const PrasingState &getParsingState();
+        std::string getRequestData();
 };

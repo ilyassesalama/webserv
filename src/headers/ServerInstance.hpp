@@ -14,6 +14,7 @@ class ServerInstance {
         void AddToClientProfiles(ClientProfile &client);
 
         //GETTERS
+        std::string getServerName(); 
         int getListenSocketFd();
         std::string getServerPort();
         std::string getListenAdress();
@@ -24,7 +25,7 @@ class ServerInstance {
         void setupServerConfiguration();
         void dropClient(int clientFd);
         bool isClientFdInPollFd(int clientFd);
-        void recvRequest(int clientFd);
+        int recvRequest(int clientFd);
         void sendResponse(int clientFd);
         ClientProfile *getClientProfile(int clientFd);
         // bool checkListeningInfos();

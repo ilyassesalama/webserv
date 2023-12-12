@@ -1,6 +1,14 @@
 #pragma once
 
-#include "../../webserv.hpp"
+// #include "../../webserv.hpp"
+// class RequestParser;
+
+
+//prob in the header files UNKOWN TYPE
+
+#include"ClientProfile.hpp"
+#include"RequestParser.hpp"
+
 
 struct ClientProfile {
     int SocketFD;
@@ -11,6 +19,9 @@ struct ClientProfile {
     bool isConnected;
     time_t connectionsTime;
     int requestCount;
+    
     std::string request;
     std::string response;
+
+    RequestParser parser;
 };

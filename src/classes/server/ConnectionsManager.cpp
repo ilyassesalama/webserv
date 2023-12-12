@@ -99,13 +99,13 @@ void ConnectionsManager::socketMonitore() {
                 if (i < (*this).serverCount) {
                     acceptNewIncommingConnections(getFdServer(it->fd));
                 } else {
-                    getFdServer(it->fd)->recvRequest(it->fd);
-                    changeClinetMonitoringEvent("write", it->fd);
+                    if(getFdServer(it->fd)->recvRequest(it->fd) == 1)
+                        changeClinetMonitoringEvent("write", it->fd);
                 }
             }
             if(it->revents & POLLOUT) {
-                getFdServer(it->fd)->sendResponse(it->fd);
-                changeClinetMonitoringEvent("read", it->fd);
+                // getFdServer(it->fd)->sendResponse(it->fd);
+                // changeClinetMonitoringEvent("read", it->fd);
             }
             it++;
         }

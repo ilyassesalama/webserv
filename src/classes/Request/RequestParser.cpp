@@ -1,6 +1,7 @@
 #include "../../../webserv.hpp"
 
 RequestParser::RequestParser(){
+    setParsingState(REQ_PARSER_STARTED);
     nullOutVars();
 }
 
@@ -16,13 +17,38 @@ void RequestParser::nullOutVars(){
     this->body = "";
 }
 
+void RequestParser::parserInput(std::string &requestInput) {
+    (*this).requestData.append(requestInput);
+    // std::cout << requestInput;
+    if(parsingState == REQ_PARSER_STARTED) {
+        if(requestData.find("\r\n") != std::string::npos) {
+            // std::cout << requestData << std::endl;
+            initRequestParser(requestData);
+        }
+    }
+    if(parsingState == REQ_PARSER_HEAD_LINE_OK) {
+        if(requestData.find("\r\n\r\n") != std::string::npos || requestData.find("\n\n") != std::string::npos) {
+            initRequestParser(requestData);
+        } 
+    }
+    if(parsingState == REQ_PARSER_OK && getRequestLine()["method"] == "GET") {
+        //no need to read the request Body //
+    }
+}
+
 void RequestParser::initRequestParser(std::string &requestData){
-    setParsingState(REQ_PARSER_STARTED);
+    // setParsingState(REQ_PARSER_STARTED);
     try {
-        parseRequestLine(requestData); // this will also parse the url params
-        parseRequestHeaders(requestData); // this will also parse the body
-        setParsingState(REQ_PARSER_OK);
-        Log::d("Request parsing completed successfully");
+        // if(parsingState == REQ_PARSER_STARTED)
+        if(parsingState != REQ_PARSER_HEAD_LINE_OK){
+            parseRequestLine(requestData); // this will also parse the url params
+            return;
+        } else if(parsingState != REQ_PARSER_HEADS_OK){
+            parseRequestHeaders(requestData); // this will also parse the body
+            setParsingState(REQ_PARSER_OK);
+        }
+        if(parsingState == REQ_PARSER_OK)
+            Log::d("Request parsing completed successfully");
         if(FULL_LOGGING_ENABLED) logParsedRequest();
     } catch (const std::exception &e) {
         Log::e("Failed to parse received request due to: " + std::string(e.what()));
@@ -78,7 +104,7 @@ void RequestParser::parseRequestHeaders(std::string &requestData) {
     }
     this->headers = keyValuePairs;
     setParsingState(REQ_PARSER_HEADS_OK);
-    parseRequestBody(httpStream);
+    // parseRequestBody(httpStream);
 }
 
 void RequestParser::parseRequestParams(std::string &requestData){
@@ -115,7 +141,7 @@ std::map<std::string, std::string>& RequestParser::getRequestLine() {
     return this->requestLine;
 }
 
-std::map<std::string, std::string> const &RequestParser::getHeaders(){
+std::map<std::string, std::string> &RequestParser::getHeaders(){
     return(this->headers);
 }
 
@@ -153,4 +179,8 @@ void RequestParser::logParsedRequest(){
     }
     Log::d("RequestParser: Parsed body:");
     std::cout << this->body << std::endl;
+}
+
+std::string RequestParser::getRequestData() {
+    return(requestData);
 }
