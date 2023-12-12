@@ -1,9 +1,10 @@
 #include "../../../webserv.hpp"
 
-Utils::WebservException::WebservException(const std::string &message) {
-    this->message = (char*)message.c_str();
-}
+
+Utils::WebservException::WebservException(const std::string& message) throw() : message(message) {}
+
+Utils::WebservException::~WebservException() throw() {}
 
 const char* Utils::WebservException::what() const throw() {
-    return message;
+    return message.c_str();
 }
