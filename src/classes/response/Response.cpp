@@ -6,28 +6,14 @@ Response::Response(int clientFd, const RequestParser &parser){
     std::string path = requestParser.getRequestLine()["path"];
     std::string finalPath = "src/client-side";
 
-	size_t slashPos = path.find_last_of("/");
-	size_t pointPos = path.find_last_of(".");
-	if (slashPos == std::string::npos) {
-		this->status = 404;
-        Log::e("Response: 404 Not Found");
-        return;
-	}
 
-    if(path == "/" || pointPos == std::string::npos || slashPos > pointPos) { // If path is not a file enter here
+	if (File::isDirectory(finalPath + "/main" + path)) {
 
-        finalPath += "/main" + path + "index.html";
-		
-		Log::d("finalPath: " + finalPath);
+		std::string indexHTML = path.find_last_of("/") != std::string::npos && path.find_last_of("/") == path.size() -1 ? "index.html" : "/index.html";
 
-		if (slashPos != path.size() - 1) { // If URI does not have "/" at end enter here
-			this->status = 404;
-			Log::e("Response: 301 Moved Permanently");
-			return;
-		}
-		
-		if (access(finalPath.c_str(), F_OK) == -1) { // If index.html not found enter here
-
+		if (File::isFile(finalPath + "/main" + path + indexHTML)) {
+			finalPath += "/main" + path + indexHTML;
+		} else {
 			bool directory_listing = false; // This is a temporary variable, we should use value form config file
 			if (directory_listing) {
 				// autoindex here
@@ -36,13 +22,16 @@ Response::Response(int clientFd, const RequestParser &parser){
 				Log::e("Response: 403 Forbidden");
 				return;
 			}
-
 		}
 
-	} else { // If path is a file enter here
-        finalPath += "/main" + path;
+	} else if (File::isFile(finalPath + "/main" + path)) {
+		finalPath += "/main" + path;
+	} else {
+		this->status = 403;
+		Log::e("Response: 403 Forbidden");
+		Log::e("path: " + finalPath + "/main" + path);
+		return;
 	}
-
 
     Log::i("Fetching response from \"" + finalPath + "\"...");
     try {
