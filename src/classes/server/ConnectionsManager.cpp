@@ -99,8 +99,13 @@ void ConnectionsManager::socketMonitore() {
                 if (i < (*this).serverCount) {
                     acceptNewIncommingConnections(getFdServer(it->fd));
                 } else {
-                    if(getFdServer(it->fd)->recvRequest(it->fd) == 1)
+                    int requestState = getFdServer(it->fd)->recvRequest(it->fd);
+                    if(requestState == FULL_REQUEST_RECEIVED) {
                         changeClinetMonitoringEvent("write", it->fd);
+                    }
+                    else if(requestState == DROP_CLIENT) {
+                        (*this).deleteFromFdSet(it->fd);
+                    }
                 }
             }
             if(it->revents & POLLOUT) {

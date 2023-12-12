@@ -37,7 +37,6 @@ void RequestParser::parserInput(std::string &requestInput) {
 }
 
 void RequestParser::initRequestParser(std::string &requestData){
-    // setParsingState(REQ_PARSER_STARTED);
     try {
         // if(parsingState == REQ_PARSER_STARTED)
         if(parsingState != REQ_PARSER_HEAD_LINE_OK){

@@ -8,7 +8,7 @@
 
 #include"ClientProfile.hpp"
 #include"RequestParser.hpp"
-
+#include"Response.hpp"
 
 struct ClientProfile {
     int SocketFD;
@@ -24,4 +24,5 @@ struct ClientProfile {
     std::string response;
 
     RequestParser parser;
+    // Response responser;
 };

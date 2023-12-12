@@ -12,6 +12,7 @@ class Response {
         int clientFD;
         int status;
     public:
+        
         Response(int clientFd, const RequestParser &parser);
     
         void sendResponse();

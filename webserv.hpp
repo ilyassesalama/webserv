@@ -38,3 +38,8 @@
 // -------- start global variables -------
 #define LOGGING_ENABLED true
 #define FULL_LOGGING_ENABLED false
+
+#define FULL_REQUEST_RECEIVED 153
+#define INCOMPLETE_REQUEST 154
+#define INVALIDE_REQUEST 155
+#define DROP_CLIENT 156

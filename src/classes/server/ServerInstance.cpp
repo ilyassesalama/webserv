@@ -110,17 +110,22 @@ int ServerInstance::recvRequest(int clientFd) {
     if(bytesRead > 0) receivedRequest.append(buffer, bytesRead);
     if(bytesRead == 0) {
         //connection closed need to be handled
-        return(10);
+        (*this).dropClient(clientFd);
+        return(DROP_CLIENT);
     }
     getClientProfile(clientFd)->parser.parserInput(receivedRequest);
     if(getClientProfile(clientFd)->parser.getParsingState() == REQ_PARSER_OK) {
         //return somethig to change the state 
         //too much getClientProfile calls : !!!!!!!!!
         getClientProfile(clientFd)->request = getClientProfile(clientFd)->parser.getRequestData();
+        Response response(clientFd, getClientProfile(clientFd)->parser);
+        response.sendResponse();
+        return(FULL_REQUEST_RECEIVED);
     }
     else if(getClientProfile(clientFd)->parser.getParsingState() ==  REQ_PARSER_FAILED) {
         //invalid request 
         //serve invalid request response
+        return(INVALIDE_REQUEST);
     }
     return(0);
 }
