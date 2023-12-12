@@ -55,7 +55,7 @@ class ConfigurationFile {
 	public:
 		ConfigurationFile( std::string file );
 
-		void parseDirectives( std::string file, t_server server );
+		void handleDirectives( std::string file, t_server server );
 		void parseValue( std::string key, std::string value, t_server *server );
 		void parseRouteValue( std::string key, std::string value, t_route *route );
 		void handleLocation( std::string file, size_t *startIndex, std::string path, t_server *server );
@@ -105,3 +105,4 @@ bool isRouteAlreadyExist(t_server server, std::string path);
 void skipRoute(std::string file, size_t *startIndex);
 void checkCGIMethod( std::vector<std::string> values );
 void checkAllowedMethods(std::vector<std::string>allowed_methods);
+std::string getRouteDirectiveValue(std::string key, std::string file, size_t *startIndex);

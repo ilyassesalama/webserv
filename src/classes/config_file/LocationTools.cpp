@@ -82,3 +82,8 @@ void checkAllowedMethods(std::vector<std::string>allowed_methods) {
 		else throw(Utils::WebservException("Error, (allowed_methods): method either not allowed or duplicated"));
 	}
 }
+
+std::string getRouteDirectiveValue(std::string key, std::string file, size_t *startIndex)
+{
+	return key != "allowed_methods" && key != "cgi_methods" ? getSingleValue(file, startIndex) : getMultipleValues(file, startIndex);
+}

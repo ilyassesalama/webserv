@@ -93,10 +93,7 @@ void ConfigurationFile::handleLocation( std::string file, size_t *startIndex, st
 
 		skipSpaces(file, &i);
 
-		if (directiveKey != "allowed_methods" && directiveKey != "cgi_methods")
-			directiveValue = getSingleValue(&file[i], &i);
-		else
-			directiveValue = getMultipleValues(&file[i], &i);
+		directiveValue = getDirectiveValue(directiveKey, &file[i], &i);
 
 		parseRouteValue(directiveKey, directiveValue, &route);
 	}
@@ -108,7 +105,7 @@ void ConfigurationFile::handleLocation( std::string file, size_t *startIndex, st
 	*startIndex += i;
 }
 
-void ConfigurationFile::parseDirectives( std::string file, t_server server ) {
+void ConfigurationFile::handleDirectives( std::string file, t_server server ) {
 
 	size_t endIndex = serverStartPosition( file );
 	if (endIndex == std::string::npos) endIndex = file.size();
@@ -175,7 +172,7 @@ void ConfigurationFile::configFileParsing( void ) {
 
 		curlyBracesChecker(&tmpFile[serverPos + strlen("server")], startIndex, endIndex);
 
-		parseDirectives(&tmpFile[serverPos + strlen("server")], server);
+		handleDirectives(&tmpFile[serverPos + strlen("server")], server);
 
 		checkBetweenServers(&tmpFile[serverPos + strlen("server")], endIndex);
 
