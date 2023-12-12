@@ -5,8 +5,8 @@ SRC = $(shell find . -name '*.cpp')
 
 HEADERS = $(shell find . -name '*.hpp')
 OBJ = $(SRC:.cpp=.o)
-FLAGS = -Wall -Wextra -Werror #-fsanitize=address
-COMPILER = c++# -std=c++98
+FLAGS = -std=c++98 -Wall -Wextra -Werror #-fsanitize=address
+COMPILER = c++
 
 all: $(NAME)
 	@:
