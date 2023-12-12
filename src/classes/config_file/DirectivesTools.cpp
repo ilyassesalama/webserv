@@ -25,7 +25,7 @@ std::string getDirectiveKey(std::string file, size_t *startIndex)
 std::string getSingleValue(std::string value, size_t *startPos)
 {
 
-	if (value.empty()) throw (Utils::WebservException(Utils::WebservException("Error, there is a syntax error")));
+	if (value.empty()) throw (Utils::WebservException(Utils::WebservException("Error, there is a syntax error1")));
 
 	// size_t i = 0;
 

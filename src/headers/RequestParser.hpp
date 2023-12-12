@@ -42,5 +42,5 @@ class RequestParser {
         const std::map<std::string, std::string> &getParams();
         const std::string &getBody();
         const PrasingState &getParsingState();
-        std::string getRequestData();
+        std::string& getRequestData();
 };

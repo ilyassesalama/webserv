@@ -29,7 +29,7 @@ void RequestParser::parserInput(std::string &requestInput) {
     if(parsingState == REQ_PARSER_HEAD_LINE_OK) {
         if(requestData.find("\r\n\r\n") != std::string::npos || requestData.find("\n\n") != std::string::npos) {
             initRequestParser(requestData);
-        } 
+        }
     }
     if(parsingState == REQ_PARSER_OK && getRequestLine()["method"] == "GET") {
         //no need to read the request Body //
@@ -180,6 +180,6 @@ void RequestParser::logParsedRequest(){
     std::cout << this->body << std::endl;
 }
 
-std::string RequestParser::getRequestData() {
+std::string& RequestParser::getRequestData() {
     return(requestData);
 }

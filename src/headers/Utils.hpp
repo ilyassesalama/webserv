@@ -14,3 +14,6 @@ public:
         const char* what() const throw();
     };
 };
+
+
+std::string generateHtmlResponse(const std::string& filePath);
