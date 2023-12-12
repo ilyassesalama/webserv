@@ -20,15 +20,15 @@ Response::Response(int clientFd, const RequestParser &parser){
         finalPath += path;
 
     Log::i("Fetching response from \"" + finalPath + "\"...");
-    std::string content = File::getFileContent(finalPath);
-    this->path = finalPath;
-    if(content == "\0"){
+    try {
+        std::string content = File::getFileContent(finalPath);
+        this->response = content;
+        this->status = 200;
+    } catch (std::exception &e) {
         this->status = 404;
         Log::e("Response: 404 Not Found");
-        return;
     }
-    this->response = content;
-    this->status = 200;
+    this->path = finalPath;
 }
 
 void Response::sendResponse() {
