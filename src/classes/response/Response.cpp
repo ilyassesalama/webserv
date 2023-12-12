@@ -5,7 +5,16 @@ Response::Response(int clientFd, const RequestParser &parser){
     this->requestParser = parser;
     std::string path = requestParser.getRequestLine()["path"];
     std::string finalPath = "src/client-side";
-    if(path == "/")
+
+	size_t slashPos = path.find_last_of("/");
+	size_t pointPos = path.find_last_of(".");
+	if (slashPos == std::string::npos) {
+		this->status = 404;
+        Log::e("Response: 404 Not Found");
+        return;
+	}
+
+    if(path == "/" || pointPos == std::string::npos || slashPos > pointPos)
         finalPath += "/main/index.html";
     else
         finalPath += path;
