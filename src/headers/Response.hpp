@@ -15,7 +15,7 @@ class Response {
         
         Response(int clientFd, const RequestParser &parser);
     
-        void sendResponse();
+        std::string sendResponse();
 
         void setPath(const std::string &path);
 

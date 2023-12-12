@@ -50,7 +50,7 @@ Response::Response(int clientFd, const RequestParser &parser){
     this->path = finalPath;
 }
 
-void Response::sendResponse() {
+std::string Response::sendResponse() {
     if(this->status != 200){ // TOFIX: THIS WILL MAKE OTHER FILES SUCH AS CSS AND JS TO BE SENT AS HTML. FIX THIS!
         this->getErrorPageHTML();
     }
@@ -59,9 +59,10 @@ void Response::sendResponse() {
     std::string status = getStringStatus();
 
     response = "HTTP/1.1 " + status + " \nContent-Type: " + contentType + " \nContent-Length: " + contentSize + "\n\n" + response;
-    send(clientFD, response.c_str(), response.length(), 0);
-    Log::i("Response sent");
-    Log::d("Response information:\n- Content-Type: " + contentType + "\n- Content-Length: " + contentSize + "\n- Status: " + status + "\n- Path: " + path);
+    // send(clientFD, response.c_str(), response.length(), 0);
+    return(response);
+    // Log::i("Response sent");
+    // Log::d("Response information:\n- Content-Type: " + contentType + "\n- Content-Length: " + contentSize + "\n- Status: " + status + "\n- Path: " + path);
 }
 
 std::string Response::getErrorPageHTML(){

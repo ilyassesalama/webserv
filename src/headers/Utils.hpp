@@ -15,5 +15,3 @@ public:
     };
 };
 
-
-std::string generateHtmlResponse(const std::string& filePath);
