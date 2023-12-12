@@ -39,3 +39,19 @@ std::string File::getContentType(std::string path) {
         return "text/plain";
     }
 }
+
+bool File::isFile(const std::string& path) {
+    struct stat statbuf;
+    if (stat(path.c_str(), &statbuf) != 0) {
+        return false;
+    }
+    return S_ISREG(statbuf.st_mode);
+}
+
+bool File::isDirectory(const std::string& path) {
+    struct stat statbuf;
+    if (stat(path.c_str(), &statbuf) != 0) {
+        return false;
+    }
+    return S_ISDIR(statbuf.st_mode);
+}

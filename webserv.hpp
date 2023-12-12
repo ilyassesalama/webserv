@@ -1,26 +1,27 @@
 #pragma once
 
 // keep these here, so we can avoid repeating them in every file
-#include <arpa/inet.h>
 #include <errno.h>
 #include <stdio.h>
-#include <sys/socket.h>
 #include <unistd.h>
+#include <fcntl.h>
+#include <poll.h>
 #include <iostream>
 #include <cstdlib>
 #include <cstring>
 #include <sstream>
 #include <map>
-#include <sys/types.h>
 #include <stdexcept>
 #include <iomanip>
 #include <fstream>
 #include <netdb.h>
 #include <ctime>
 #include <vector>
-#include <fcntl.h>
-#include <poll.h>
 #include <list>
+#include <sys/socket.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <arpa/inet.h>
 
 #include "src/headers/ClientProfile.hpp"
 #include "src/headers/ConfigurationFile.hpp"
