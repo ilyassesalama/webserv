@@ -83,7 +83,6 @@ void ConfigurationFile::handleLocation( std::string file, size_t *startIndex, st
 	route.path = path;
 
 	initRouteBooleans(&route);
-
 	for (i = 0; i < endIndex && file[i] != '}'; i++) {
 		skipSpaces(file, &i);
 
@@ -93,7 +92,7 @@ void ConfigurationFile::handleLocation( std::string file, size_t *startIndex, st
 
 		skipSpaces(file, &i);
 
-		directiveValue = getDirectiveValue(directiveKey, &file[i], &i);
+		directiveValue = getRouteDirectiveValue(directiveKey, &file[i], &i);
 
 		parseRouteValue(directiveKey, directiveValue, &route);
 	}
@@ -111,6 +110,7 @@ void ConfigurationFile::handleDirectives( std::string file, t_server server ) {
 	if (endIndex == std::string::npos) endIndex = file.size();
 
 	size_t startIndex = findOpeningBrace( file, endIndex );
+
 
 	std::string directiveKey;
 	std::string directiveValue;
@@ -146,6 +146,7 @@ void ConfigurationFile::handleDirectives( std::string file, t_server server ) {
 				i++;
 
 				handleLocation( &file[i], &i, directiveValue, &server );
+	
 			}
 		}
 
