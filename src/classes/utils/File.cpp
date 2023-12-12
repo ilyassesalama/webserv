@@ -3,8 +3,7 @@
 std::string File::getFileContent(const std::string &path){
     std::ifstream file(path.c_str());
     if(!file.is_open()){
-        Log::e("getFileContent: Can't open \"" + path + "\" due to " + std::string(strerror(errno)));
-        return "\0";
+        throw Utils::WebservException("Can't open \"" + path + "\" due to " + std::string(strerror(errno)));
     }
     std::string line, content;
     while(std::getline(file, line)) {
