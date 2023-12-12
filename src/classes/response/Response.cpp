@@ -6,17 +6,22 @@ Response::Response(int clientFd, const RequestParser &parser){
     std::string path = requestParser.getRequestLine()["path"];
     std::string finalPath = "src/client-side";
 
+	std::cout << path << std::endl;
 
-	if (File::isDirectory(finalPath + "/main" + path)) {
+	if (File::isDirectory(finalPath + path)) {
 
 		std::string indexHTML = path.find_last_of("/") != std::string::npos && path.find_last_of("/") == path.size() -1 ? "index.html" : "/index.html";
 
-		if (File::isFile(finalPath + "/main" + path + indexHTML)) {
-			finalPath += "/main" + path + indexHTML;
+		if (File::isFile(finalPath + path + indexHTML)) {
+			finalPath += path + indexHTML;
 		} else {
-			bool directory_listing = false; // This is a temporary variable, we should use value form config file
+			bool directory_listing = true; // This is a temporary variable, we should use value form config file
 			if (directory_listing) {
+				Log::i("heyyyyyyy");
 				// autoindex here
+				finalPath += "/auto_index_template.html";
+
+				// handleAutoIndex(finalPath + path);
 			} else {
 				this->status = 403;
 				Log::e("Response: 403 Forbidden");
@@ -24,12 +29,12 @@ Response::Response(int clientFd, const RequestParser &parser){
 			}
 		}
 
-	} else if (File::isFile(finalPath + "/main" + path)) {
-		finalPath += "/main" + path;
+	} else if (File::isFile(finalPath + path)) {
+		finalPath += path;
 	} else {
 		this->status = 403;
 		Log::e("Response: 403 Forbidden");
-		Log::e("path: " + finalPath + "/main" + path);
+		Log::e("path: " + finalPath + path);
 		return;
 	}
 
