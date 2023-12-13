@@ -1,6 +1,7 @@
 #include "../../../webserv.hpp"
 
 Response::Response() {
+    (*this).clientSidePath = "/Users/bel-kala/Desktop/webserv/src/client-side";
     (*this).path = "";
     (*this).server = NULL;
     (*this).request = NULL;
@@ -99,16 +100,49 @@ void Response::setResponseBody() {
     }
 }
 
+void Response::setTroute() {
+    (*this).routes = server->routes;
+}
+
+std::string getPathLocation(std::string path) {
+    std::string locationPath;
+    locationPath.append("/");
+    size_t found = path.substr(1).find_first_of("/");
+    if(found != std::string::npos) {
+        for(int i = 1; i < path.length(); i++) {
+            if(path[i] == '/')
+                break;
+            locationPath += path[i];
+        }
+    }
+    return(locationPath);
+}
+
 void Response::setPath(std::string path) {
-    Log::w("hello");
+    std::string locationPath = getPathLocation(path);
+
+    //check if that location ex in the config file
+    for(std::vector<t_route>::iterator it = (*this).routes.begin(); it != (*this).routes.end(); ++it) {
+        if(locationPath == it->path) {
+            //check if the methode is allowed on that location
+            if(std::find(it->allowed_methods.begin(),it->allowed_methods.end(),"GET") != it->allowed_methods.end()) {
+                std::string requestPath = it->root;
+                requestPath.append(path);
+                (*this).path =  clientSidePath.append(requestPath);  
+                return;
+            }
+            (*this).statusCode = 405;
+        }
+    }
+    (*this).statusCode = 404;
 }
 
 
 void Response::GETResponseBuilder() {
 
-    this->setResponseBody();
-    this->setHeaders();
-    this->setResponseLine();
+    // this->setResponseBody();
+    // this->setHeaders();
+    // this->setResponseLine();
 
     this->response = this->responseLine + this->responseHeaders + this->responseBody;
 }
@@ -129,6 +163,7 @@ void Response::setRequest(RequestParser &request) {
 
 void Response::setServer(t_server &server) {
     (*this).server = &server;
+    setTroute();
 }
 
 std::string Response::getStringStatus(){

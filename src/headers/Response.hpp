@@ -36,8 +36,9 @@ class Response {
         void setRequest(RequestParser &request);
         void setServer(t_server &server);
         void setPath(std::string path);
+        void setTroute();
         void setResponseLine();
-        void setHeaders();
+        // void setHeaders();
         void setResponseBody();
 
         std::string getStringStatus();
@@ -61,7 +62,9 @@ class Response {
         std::string responseLine;
         std::string responseHeaders;
         std::string responseBody; 
+        std::vector<t_route>routes;
         int contentLength;
+        std::string clientSidePath;
 };
 
 
