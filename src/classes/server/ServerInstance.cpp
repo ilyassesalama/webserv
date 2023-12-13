@@ -127,6 +127,8 @@ int ServerInstance::recvRequest(int clientFd) {
         std::cout << getClientProfile(clientFd)->request;
         std::cout << "THIS IS THE END OF THE FULL FUCKING BLODY REQUEST" << std::endl;
         getClientProfile(clientFd)->request = getClientProfile(clientFd)->parser.getRequestData();
+        // getClientProfile(clientFd)->parser.getErrorResponse() = getClientProfile(clientFd)->responseStr;
+        // getClientProfile(clientFd)->response.setRequest();
         // Response response(clientFd, getClientProfile(clientFd)->parser);
         // response.sendResponse();
         // getClientProfile(clientFd)->response = response.sendResponse();
@@ -179,8 +181,8 @@ ClientProfile *ServerInstance::getClientProfile(int clientFd) {
 }
 
 void ServerInstance::sendResponse(int clientFd) {
-    int bytesSent = send(clientFd, getClientProfile(clientFd)->response.c_str(),getClientProfile(clientFd)->response.length(),0);;
-    getClientProfile(clientFd)->response.clear();
+    int bytesSent = send(clientFd, getClientProfile(clientFd)->responseStr.c_str(),getClientProfile(clientFd)->responseStr.length(),0);;
+    getClientProfile(clientFd)->responseStr.clear();
     Log::d("Serving Client " + getClientProfile(clientFd)->ipAdress + " ...");
 }
 

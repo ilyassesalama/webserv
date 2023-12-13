@@ -115,7 +115,7 @@ void ConnectionsManager::socketMonitore() {
                 }
             }
             if(it->revents & POLLOUT) {
-                // getFdServer(it->fd)->sendResponse(it->fd);
+                getFdServer(it->fd)->sendResponse(it->fd);
                 changeClinetMonitoringEvent("read", it->fd);
             }
         }

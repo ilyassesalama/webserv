@@ -26,9 +26,9 @@ void Response::setResponseBody() {
 
 void Response::GETResponseBuilder() {
 
-    this->setResponseBody();
-    this->setHeaders();
-    this->setResponseLine();
+    // this->setResponseBody();
+    // this->setHeaders();
+    // this->setResponseLine();
 
     this->response = this->responseLine + this->responseHeaders + this->responseBody;
 }
@@ -68,7 +68,7 @@ void Response::responseBuilder() {
 
     if (this->request->getRequestLine()["method"] == "GET") {
 
-        this->setPath(request->getRequestLine()["path"]);
+        // this->setPath(request->getRequestLine()["path"]);
 
         this->GETResponseBuilder();
         

@@ -1,7 +1,7 @@
 #pragma once
 
-// #include "../../webserv.hpp"
-// class RequestParser;
+#include "../../webserv.hpp"
+class RequestParser;
 
 
 //prob in the header files UNKOWN TYPE
@@ -21,8 +21,8 @@ struct ClientProfile {
     int requestCount;
     
     std::string request;
-    std::string response;
+    std::string responseStr;
 
     RequestParser parser;
-    // Response responser;
+    Response response;
 };
