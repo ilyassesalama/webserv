@@ -8,3 +8,10 @@ std::string String::getExtension(const std::string &path){
 bool String::endsWith(const std::string &str, const std::string &suffix){
     return getExtension(str) == suffix;
 }
+
+int String::to_int(const std::string &str){
+    std::stringstream ss(str);
+    int num;
+    ss >> num;
+    return num;
+}
