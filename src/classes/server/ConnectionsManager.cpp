@@ -39,7 +39,6 @@ void ConnectionsManager::addFdToTheSet(int clientFd) {
     client.events = POLLIN;
     client.revents = 0;
     (*this).masterFdSet.push_back(client);
-    std::cout << "size: " << (*this).masterFdSet.size() << std::endl;
 }
 
 void ConnectionsManager::acceptNewIncommingConnections(ServerInstance *serverId) {
@@ -51,7 +50,6 @@ void ConnectionsManager::acceptNewIncommingConnections(ServerInstance *serverId)
         Log::e("accept Failed ...");
         exit(1);
     }
-    std::cout << "client.SocketFD : " << client.SocketFD << std::endl;
     setSocketNonBlocking(client.SocketFD);
     addFdToTheSet(client.SocketFD);
     serverId->AddFdToPollFds(client.SocketFD);
@@ -92,7 +90,6 @@ void ConnectionsManager::changeClinetMonitoringEvent(std::string event, int clie
 
 void ConnectionsManager::socketMonitore() {
     while(true) {
-        std::cout << "yay: " << masterFdSet.size() << std::endl; 
         if(poll(&masterFdSet[0], masterFdSet.size(), -1) < 0) {
             Log::e("Poll Failed ...");
             exit(1);

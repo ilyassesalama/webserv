@@ -22,6 +22,9 @@ void Response::setResponseBody() {
 }
 
 
+void Response::setPath(std::string path) {
+    Log::w("hello");
+}
 
 
 void Response::GETResponseBuilder() {
@@ -65,10 +68,10 @@ std::string Response::getStringStatus(){
 }
 
 void Response::responseBuilder() {
-
+    
     if (this->request->getRequestLine()["method"] == "GET") {
 
-        // this->setPath(request->getRequestLine()["path"]);
+        this->setPath(request->getRequestLine()["path"]);
 
         this->GETResponseBuilder();
         

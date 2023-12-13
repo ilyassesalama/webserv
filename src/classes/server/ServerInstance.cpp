@@ -109,38 +109,34 @@ int ServerInstance::recvRequest(int clientFd) {
     bytesRead = recv(clientFd, buffer, sizeof(buffer), 0);
     if(bytesRead > 0) receivedRequest.append(buffer, bytesRead);
     if(bytesRead == 0) {
-        std::cout << "====================================================" << std::endl;
-        std::cout << "====================================================" << std::endl;
-        std::cout << "====================================================" << std::endl;
-        std::cout << "====================================================" << std::endl;
-        std::cout << "====================================================" << std::endl;
-        std::cout << "====================================================" << std::endl;
-        std::cout << "====================================================" << std::endl;
         (*this).dropClient(clientFd);
         return(DROP_CLIENT);
     }
-    getClientProfile(clientFd)->parser.parserInput(receivedRequest);
-    if(getClientProfile(clientFd)->parser.getParsingState() == REQ_PARSER_OK) {
-        getClientProfile(clientFd)->request = getClientProfile(clientFd)->parser.getRequestData();
-        getClientProfile(clientFd)->parser.setParsingState(REQ_PARSER_STARTED);
-        std::cout << "THIS IS A FULL FUCKING BLODY REQUEST" << std::endl;
-        std::cout << getClientProfile(clientFd)->request;
-        std::cout << "THIS IS THE END OF THE FULL FUCKING BLODY REQUEST" << std::endl;
-        getClientProfile(clientFd)->request = getClientProfile(clientFd)->parser.getRequestData();
-        // getClientProfile(clientFd)->parser.getErrorResponse() = getClientProfile(clientFd)->responseStr;
-        // getClientProfile(clientFd)->response.setRequest();
-        // Response response(clientFd, getClientProfile(clientFd)->parser);
+    ClientProfile *client = getClientProfile(clientFd);
+
+    client->parser.parserInput(receivedRequest);
+    if(client->parser.getParsingState() == REQ_PARSER_OK) {
+        client->request = client->parser.getRequestData();
+        client->parser.setParsingState(REQ_PARSER_STARTED);
+        std::cout << client->request;
+        client->request = client->parser.getRequestData();
+        client->response.setServer(*((*this).serverInformations));
+        client->response.setRequest(client->parser);
+        client->response.responseBuilder();
+        // client->parser.getErrorResponse() = client->responseStr;
+        // client->response.setRequest();
+        // Response response(clientFd, client->parser);
         // response.sendResponse();
-        // getClientProfile(clientFd)->response = response.sendResponse();
-        getClientProfile(clientFd)->request.clear();
-        getClientProfile(clientFd)->parser.getRequestData().clear();
+        // client->response = response.sendResponse();
+        client->request.clear();
+        client->parser.getRequestData().clear();
         // std::cout << "THIS IS A RESPONSE FOR THE FULL FUCKING REQUEST" << std::endl;
-        // std::cout << getClientProfile(clientFd)->response << std::endl;
+        // std::cout << client->response << std::endl;
         // std::cout << "====================================================" << std::endl;
 
         return(FULL_REQUEST_RECEIVED);
     }
-    else if(getClientProfile(clientFd)->parser.getParsingState() ==  REQ_PARSER_FAILED) {
+    else if(client->parser.getParsingState() ==  REQ_PARSER_FAILED) {
         return(INVALIDE_REQUEST);
     }
     return(0);
