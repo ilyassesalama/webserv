@@ -43,7 +43,7 @@ class Response {
         void setErrorResponse(int statusCode);
         size_t getContentLength();
         std::string getErrorPageHTML();
-        void getResponseBuilder();
+        void GETResponseBuilder();
         void responseBuilder();
         void clearResponse();
     private:

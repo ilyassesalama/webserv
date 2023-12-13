@@ -8,20 +8,33 @@ Response::~Response() {
 
 }
 
+void Response::setResponseBody() {
+
+
+
+}
+
+void Response::GETResponseBuilder() {
+
+    this->setResponseBody();
+    this->setHeaders();
+    this->setResponseLine();
+
+    this->response = this->responseLine + this->responseHeaders + this->responseBody;
+}
+
 
 void Response::responseBuilder() {
 
-    if (request->getRequestLine()["method"] == "GET") {
+    if (this->request->getRequestLine()["method"] == "GET") {
 
-        setPath(request->getRequestLine()["path"]);
+        this->setPath(request->getRequestLine()["path"]);
 
-        if (this->statusCode != 200) {
-            setErrorResponse(statusCode);
-        }
+        this->GETResponseBuilder();
         
-    } else if (request->getRequestLine()["method"] == "POST") {
+    } else if (this->request->getRequestLine()["method"] == "POST") {
 
-    } else if (request->getRequestLine()["method"] == "DELETE") {
+    } else if (this->request->getRequestLine()["method"] == "DELETE") {
 
     }
 
