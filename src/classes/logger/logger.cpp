@@ -30,8 +30,7 @@ std::string Log::formatLoggingMessage(std::string message){
             logFile.close();
             isInitialized = true;
         } else {
-            std::cerr << "\033[1;31mLog file failed to open\n\033[0m" << std::endl;
-            std::exit(1);
+            std::cerr << "\033[1;31mCan't open log file, logging in file will be disabled!\n\033[0m" << std::endl;
         }
     }
     // start logging activity
@@ -47,15 +46,12 @@ std::string Log::formatLoggingMessage(std::string message){
                << std::setw(2) << std::setfill('0') << localTime->tm_sec;
     std::string timeString = timeStream.str();
     std::ofstream logFile("webserverLogs.txt", std::ios::app);
+    finalMessage = "[" + timeString + "] " + message;
     if (logFile.is_open()) {
-        logFile << "[" << timeString << "] " << message << std::endl;
-        finalMessage = "[" + timeString + "] " + message;
+        logFile << finalMessage << std::endl;
         logFile.close();
-        return finalMessage;
-    } else {
-        std::cerr << "\033[1;31mLog file failed to open\n\033[0m" << std::endl;
-        std::exit(1);
     }
+    return finalMessage;
 }
 
 void setSocketNonBlocking(int socketFd) {
