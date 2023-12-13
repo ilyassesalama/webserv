@@ -1,7 +1,9 @@
 #pragma once
 
 #include "../../webserv.hpp"
+#include"ConfigurationFile.hpp"
 
+// #include"ServerInstance.hpp"
 // class Response {
 //     private:
 //         RequestParser requestParser;
@@ -30,9 +32,9 @@ class Response {
     public:
         Response();
         ~Response();
-
+        
         void setRequest(RequestParser &request);
-        // void setServer(ServerInstance &server);
+        void setServer(t_server &server);
         void setPath(std::string path);
         void setResponseLine();
         void setHeaders();
@@ -50,13 +52,13 @@ class Response {
         std::string path;
 
         RequestParser *request;
-        // ServerInstance &server;
+        t_server *server;
         int statusCode;
         std::string response;
         std::string responseLine;
         std::string responseHeaders;
         std::string responseBody; 
-        
+        int contentLength;
 };
 
 

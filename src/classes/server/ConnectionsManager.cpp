@@ -90,7 +90,6 @@ void ConnectionsManager::changeClinetMonitoringEvent(std::string event, int clie
 }
 
 
-
 void ConnectionsManager::socketMonitore() {
     while(true) {
         std::cout << "yay: " << masterFdSet.size() << std::endl; 

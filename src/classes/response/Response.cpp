@@ -1,7 +1,14 @@
 #include "../../../webserv.hpp"
 
 Response::Response() {
-
+    (*this).path = "";
+    (*this).server = NULL;
+    (*this).request = NULL;
+    (*this).response = "";
+    (*this).responseLine = "";
+    (*this).responseHeaders = "";
+    (*this).responseBody = "";
+    (*this).statusCode = 0;
 }
 
 Response::~Response() {
@@ -14,6 +21,9 @@ void Response::setResponseBody() {
 
 }
 
+
+
+
 void Response::GETResponseBuilder() {
 
     this->setResponseBody();
@@ -23,6 +33,36 @@ void Response::GETResponseBuilder() {
     this->response = this->responseLine + this->responseHeaders + this->responseBody;
 }
 
+void Response::clearResponse() {
+    (*this).path = "";
+    (*this).response = "";
+    (*this).responseLine = "";
+    (*this).responseHeaders = "";
+    (*this).responseBody = "";
+    (*this).statusCode = 0;
+
+}
+
+void Response::setRequest(RequestParser &request) {
+    (*this).request = &request;
+}
+
+void Response::setServer(t_server &server) {
+    (*this).server = &server;
+}
+
+std::string Response::getStringStatus(){
+    switch(this->statusCode){
+        case 200:
+            return "200 OK";
+        case 404:
+            return "404 Not Found";
+        case 500:
+            return "500 Internal Server Error";
+        default:
+            return "501 Unknown";
+    }
+}
 
 void Response::responseBuilder() {
 
@@ -39,6 +79,7 @@ void Response::responseBuilder() {
     }
 
 }
+
 
 
 // Response::Response(int clientFd, const RequestParser &parser){
