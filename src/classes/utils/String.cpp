@@ -15,3 +15,10 @@ int String::to_int(const std::string &str){
     ss >> num;
     return num;
 }
+
+size_t String::to_size_t(const std::string &str){
+    std::stringstream ss(str);
+    size_t num;
+    ss >> num;
+    return num;
+}

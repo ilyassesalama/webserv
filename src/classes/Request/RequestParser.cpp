@@ -31,8 +31,12 @@ void RequestParser::parserInput(std::string &requestInput) {
             initRequestParser(requestData);
         }
     }
-    if(parsingState == REQ_PARSER_OK && getRequestLine()["method"] == "GET") {
-        //no need to read the request Body //
+    if(parsingState == REQ_PARSER_HEADS_OK) {
+        size_t found = requestData.rfind("\r\n\r\n");
+        if(requestData.length() - found - 4 == String::to_size_t(getHeaders()["Content-Length"])) {
+            std::cout << "end" << std::endl;
+            std::cout << requestData << std::endl;
+        }
     }
 }
 
@@ -44,7 +48,8 @@ void RequestParser::initRequestParser(std::string &requestData){
             return;
         } else if(parsingState != REQ_PARSER_HEADS_OK){
             parseRequestHeaders(requestData); // this will also parse the body
-            setParsingState(REQ_PARSER_OK);
+            // setParsingState(REQ_PARSER_OK);
+            
         }
         if(parsingState == REQ_PARSER_OK)
             Log::d("Request parsing completed successfully");

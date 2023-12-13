@@ -103,7 +103,7 @@ std::string bufferRequest = "";
 int ServerInstance::recvRequest(int clientFd) {
     int bytesRead;
     std::string receivedRequest;
-    char buffer[1024];
+    char buffer[2500];
 
     memset(buffer, 0, sizeof(buffer));
     bytesRead = recv(clientFd, buffer, sizeof(buffer), 0);
@@ -120,9 +120,9 @@ int ServerInstance::recvRequest(int clientFd) {
         client->parser.setParsingState(REQ_PARSER_STARTED);
         std::cout << client->request;
         client->request = client->parser.getRequestData();
-        client->response.setServer(*((*this).serverInformations));
-        client->response.setRequest(client->parser);
-        client->response.responseBuilder();
+        // client->response.setServer(*((*this).serverInformations));
+        // client->response.setRequest(client->parser);
+        // client->response.responseBuilder();
         // client->parser.getErrorResponse() = client->responseStr;
         // client->response.setRequest();
         // Response response(clientFd, client->parser);
