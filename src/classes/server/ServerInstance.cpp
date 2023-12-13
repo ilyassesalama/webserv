@@ -127,8 +127,8 @@ int ServerInstance::recvRequest(int clientFd) {
         std::cout << getClientProfile(clientFd)->request;
         std::cout << "THIS IS THE END OF THE FULL FUCKING BLODY REQUEST" << std::endl;
         getClientProfile(clientFd)->request = getClientProfile(clientFd)->parser.getRequestData();
-        Response response(clientFd, getClientProfile(clientFd)->parser);
-        response.sendResponse();
+        // Response response(clientFd, getClientProfile(clientFd)->parser);
+        // response.sendResponse();
         // getClientProfile(clientFd)->response = response.sendResponse();
         getClientProfile(clientFd)->request.clear();
         getClientProfile(clientFd)->parser.getRequestData().clear();

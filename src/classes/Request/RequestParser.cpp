@@ -103,6 +103,7 @@ void RequestParser::parseRequestHeaders(std::string &requestData) {
     }
     this->headers = keyValuePairs;
     setParsingState(REQ_PARSER_HEADS_OK);
+    Log::d("parsing body...");
     // parseRequestBody(httpStream);
 }
 
@@ -131,6 +132,14 @@ void RequestParser::parseRequestBody(std::stringstream &httpStream) {
     std::string body = "";
     while(std::getline(httpStream, line)){
         body += line;
+        if(!httpStream.eof())
+            body += '\n';
+    }
+    Log::w(body);
+    if(body.find("\r") != std::string::npos){
+        Log::w("found");
+    } else {
+        Log::w("not found");
     }
     setParsingState(REQ_PARSER_BODY_OK);
     this->body = body;
