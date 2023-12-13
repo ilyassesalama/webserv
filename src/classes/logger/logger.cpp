@@ -1,5 +1,7 @@
 #include "../../../webserv.hpp"
 
+bool Log::isInitialized = false;
+
 void Log::v(std::string message) {
     std::cout << "\033[1;35m" << formatLoggingMessage(message) << "\033[0m" << std::endl;
 }
@@ -21,6 +23,18 @@ void Log::e(std::string message) {
 }
 
 std::string Log::formatLoggingMessage(std::string message){
+    // clear log file
+    if (!isInitialized) {
+        std::ofstream logFile("webserverLogs.txt", std::ios::trunc);
+        if (logFile.is_open()) {
+            logFile.close();
+            isInitialized = true;
+        } else {
+            std::cerr << "\033[1;31mLog file failed to open\n\033[0m" << std::endl;
+            std::exit(1);
+        }
+    }
+    // start logging activity
     std::time_t currentTime = std::time(0);
     std::tm* localTime = std::localtime(&currentTime);
     std::string finalMessage = "";

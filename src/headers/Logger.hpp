@@ -10,6 +10,8 @@ class Log {
         static void i(std::string message); // info
         static void w(std::string message); // warning
         static void e(std::string message); // error
+    private:
+        static bool isInitialized;
 };
 
 void setSocketNonBlocking(int socketFd);
