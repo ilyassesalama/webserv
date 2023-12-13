@@ -48,6 +48,9 @@ class Response {
         void GETResponseBuilder();
         void responseBuilder();
         void clearResponse();
+
+		void handleDirectoryRequest();
+        void handleFileRequest();
     private:
         std::string path;
 

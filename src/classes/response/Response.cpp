@@ -15,12 +15,89 @@ Response::~Response() {
 
 }
 
-void Response::setResponseBody() {
+std::string Response::getErrorPageHTML(){
 
+    std::string responseBody;
 
+    switch(this->statusCode){
+        case 404:
+            this->path = "src/client-side/error_pages/404.html";
+            responseBody = File::getFileContent(this->path);
+            break;
+        case 500:
+            this->path = "src/client-side/error_pages/500.html";
+            responseBody = File::getFileContent(this->path);
+            break;
+        default:
+            this->path = "src/client-side/error_pages/501.html";
+            responseBody = File::getFileContent(this->path);
+            break;
+    }
+    return responseBody;
+}
+
+void Response::handleDirectoryRequest() {
+
+    std::string rootPath = "src/client-side"; // temporary
+
+    size_t slashPos = rootPath.find_last_of("/");
+
+    std::string indexHTML = slashPos != rootPath.size() - 1 ? "/index.html" : "index.html";
+
+    if (File::isFile(rootPath + indexHTML)) {
+        this->responseBody = File::getFileContent(rootPath + indexHTML);
+    } else {
+        bool directory_listing = false; // temporary
+
+        if (directory_listing) {
+            // response should be list of files in the directory
+        } else {
+            this->statusCode = 403;
+            this->responseBody = this->getErrorPageHTML();
+        }
+    }
+}
+
+void Response::handleFileRequest() {
+
+    std::string rootPath = "src/client-side/index.html"; // temporary
+
+    std::vector<std::string>cgi_methods; // temporary
+    cgi_methods.push_back("GET"); // temporary
+    std::string cgi_extension = "php"; // temporary
+
+    if (cgi_methods.size() != 0) {
+        
+        if (!cgi_extension.empty() && std::find(cgi_methods.begin(), cgi_methods.end(), "GET") != cgi_methods.end()) {
+
+        }
+
+    } else {
+        this->responseBody = File::getFileContent(rootPath);
+    }
 
 }
 
+void Response::setResponseLine() {
+
+    std::string status = getStringStatus();
+
+    this->responseLine = "HTTP/1.1 " + status;
+}
+
+void Response::setResponseBody() {
+
+    std::string rootPath = "src/client-side"; // temporary
+
+    if (File::isDirectory(rootPath)) {
+        this->handleDirectoryRequest();
+    } else if (File::isFile(rootPath)) {
+        this->handleFileRequest();
+    } else {
+        this->statusCode = 301;
+        this->responseBody = this->getErrorPageHTML();
+    }
+}
 
 void Response::setPath(std::string path) {
     Log::w("hello");
@@ -29,9 +106,9 @@ void Response::setPath(std::string path) {
 
 void Response::GETResponseBuilder() {
 
-    // this->setResponseBody();
-    // this->setHeaders();
-    // this->setResponseLine();
+    this->setResponseBody();
+    this->setHeaders();
+    this->setResponseLine();
 
     this->response = this->responseLine + this->responseHeaders + this->responseBody;
 }
