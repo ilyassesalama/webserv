@@ -39,6 +39,7 @@ void ConnectionsManager::addFdToTheSet(int clientFd) {
     client.events = POLLIN;
     client.revents = 0;
     (*this).masterFdSet.push_back(client);
+    std::cout << "size: " << (*this).masterFdSet.size() << std::endl;
 }
 
 void ConnectionsManager::acceptNewIncommingConnections(ServerInstance *serverId) {
@@ -50,6 +51,7 @@ void ConnectionsManager::acceptNewIncommingConnections(ServerInstance *serverId)
         Log::e("accept Failed ...");
         exit(1);
     }
+    std::cout << "client.SocketFD : " << client.SocketFD << std::endl;
     setSocketNonBlocking(client.SocketFD);
     addFdToTheSet(client.SocketFD);
     serverId->AddFdToPollFds(client.SocketFD);
@@ -87,35 +89,43 @@ void ConnectionsManager::changeClinetMonitoringEvent(std::string event, int clie
     }
 }
 
+
+
 void ConnectionsManager::socketMonitore() {
-    while (true) {
-        if (poll(&masterFdSet[0], masterFdSet.size(), 0) < 0) {
-            Log::e("POLL FAILED ...");
+    while(true) {
+        std::cout << "yay: " << masterFdSet.size() << std::endl; 
+        if(poll(&masterFdSet[0], masterFdSet.size(), -1) < 0) {
+            Log::e("Poll Failed ...");
             exit(1);
         }
-        std::vector<struct pollfd>::iterator it = masterFdSet.begin();
-        for (size_t i = 0; i < (*this).masterFdSet.size(); i++) {
-            if (it->revents & POLLIN) {
-                if (i < (*this).serverCount) {
+        for (std::vector<struct pollfd>::iterator it = masterFdSet.begin(); it != masterFdSet.end(); ++it) {
+            if(it->revents & POLLIN) {
+                if(it == masterFdSet.begin()) {
                     acceptNewIncommingConnections(getFdServer(it->fd));
-                } else {
+                    break;
+                }
+                else {
                     int requestState = getFdServer(it->fd)->recvRequest(it->fd);
                     if(requestState == FULL_REQUEST_RECEIVED) {
                         changeClinetMonitoringEvent("write", it->fd);
                     }
                     else if(requestState == DROP_CLIENT) {
                         (*this).deleteFromFdSet(it->fd);
+                        break;
                     }
                 }
             }
             if(it->revents & POLLOUT) {
-                getFdServer(it->fd)->sendResponse(it->fd);
+                // getFdServer(it->fd)->sendResponse(it->fd);
                 changeClinetMonitoringEvent("read", it->fd);
             }
-            it++;
         }
     }
 }
+
+
+
+
 
 
 

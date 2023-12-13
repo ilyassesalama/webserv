@@ -59,10 +59,15 @@ std::string Response::sendResponse() {
     std::string status = getStringStatus();
 
     response = "HTTP/1.1 " + status + " \nContent-Type: " + contentType + " \nContent-Length: " + contentSize + "\n\n" + response;
-    // send(clientFD, response.c_str(), response.length(), 0);
+    if(send(clientFD, response.c_str(), response.length(), 0) == -1)
+        std::cout << "awiliiii" << std::endl;
+    // this->contentType.clear();
+    // this->contentSize.clear();
+    // response.clear();
+    // path.clear();
+    Log::i("Response sent");
+    Log::d("Response information:\n- Content-Type: " + contentType + "\n- Content-Length: " + contentSize + "\n- Status: " + status + "\n- Path: " + path);
     return(response);
-    // Log::i("Response sent");
-    // Log::d("Response information:\n- Content-Type: " + contentType + "\n- Content-Length: " + contentSize + "\n- Status: " + status + "\n- Path: " + path);
 }
 
 std::string Response::getErrorPageHTML(){

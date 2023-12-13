@@ -109,6 +109,13 @@ int ServerInstance::recvRequest(int clientFd) {
     bytesRead = recv(clientFd, buffer, sizeof(buffer), 0);
     if(bytesRead > 0) receivedRequest.append(buffer, bytesRead);
     if(bytesRead == 0) {
+        std::cout << "====================================================" << std::endl;
+        std::cout << "====================================================" << std::endl;
+        std::cout << "====================================================" << std::endl;
+        std::cout << "====================================================" << std::endl;
+        std::cout << "====================================================" << std::endl;
+        std::cout << "====================================================" << std::endl;
+        std::cout << "====================================================" << std::endl;
         (*this).dropClient(clientFd);
         return(DROP_CLIENT);
     }
@@ -121,8 +128,8 @@ int ServerInstance::recvRequest(int clientFd) {
         std::cout << "THIS IS THE END OF THE FULL FUCKING BLODY REQUEST" << std::endl;
         getClientProfile(clientFd)->request = getClientProfile(clientFd)->parser.getRequestData();
         Response response(clientFd, getClientProfile(clientFd)->parser);
-        // response.sendResponse();
-        getClientProfile(clientFd)->response = response.sendResponse();
+        response.sendResponse();
+        // getClientProfile(clientFd)->response = response.sendResponse();
         getClientProfile(clientFd)->request.clear();
         getClientProfile(clientFd)->parser.getRequestData().clear();
         // std::cout << "THIS IS A RESPONSE FOR THE FULL FUCKING REQUEST" << std::endl;
