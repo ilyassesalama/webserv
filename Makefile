@@ -1,27 +1,25 @@
 NAME = webserv
 
-# Find all .cpp files in the current directory and subdirectories
 SRC = $(shell find . -name '*.cpp')
-
 HEADERS = $(shell find . -name '*.hpp')
 OBJ = $(SRC:.cpp=.o)
-FLAGS = #-std=c++98 -Wall -Wextra -Werror #-fsanitize=address
+FLAGS = -std=c++98 -Wall -Wextra -Werror #-fsanitize=address
 COMPILER = c++
 
 all: $(NAME)
 	@:
-#@clear
+	@clear
 
 $(NAME): $(OBJ)
 	$(COMPILER) $(FLAGS) $(OBJ) -o $(NAME)
-#@clear
+	@clear
 %.o: %.cpp $(HEADERS)
 	$(COMPILER) $(FLAGS) -c $< -o $@
-#@clear
+	@clear
 clean:
 	rm -rf $(OBJ)
-#@clear
+	@clear
 fclean: clean
 	rm -rf $(NAME)
-#@clear
+	@clear
 re: fclean all
