@@ -139,18 +139,34 @@ std::string &RequestParser::getRequestData() {
 
 void RequestParser::logParsedRequest(){
     std::map<std::string, std::string>::iterator it;
-    Log::d("RequestParser: Parsed request line:");
-    for(it = this->requestLine.begin(); it != this->requestLine.end(); it++){
-        std::cout << it->first << ": " << it->second << std::endl;
+    if (this->requestLine.empty()){
+        Log::v("RequestParser: No request line found");
+    } else {
+        Log::v("RequestParser: Parsed request line:");
+        for(it = this->requestLine.begin(); it != this->requestLine.end(); it++){
+            std::cout << "- " << it->first << ": " << it->second << std::endl;
+        }
     }
-    Log::d("RequestParser: Parsed headers:");
-    for(it = this->headers.begin(); it != this->headers.end(); it++){
-        std::cout << it->first << ": " << it->second << std::endl;
+    if (this->headers.empty()){
+        Log::v("RequestParser: No headers found");
+    } else {
+        Log::v("RequestParser: Parsed headers:");
+        for(it = this->headers.begin(); it != this->headers.end(); it++){
+            std::cout << "- " << it->first << ": " << it->second << std::endl;
+        }
     }
-    Log::d("RequestParser: Parsed params:");
-    for(it = this->params.begin(); it != this->params.end(); it++){
-        std::cout << it->first << ": " << it->second << std::endl;
+    if (this->params.empty()){
+        Log::v("RequestParser: No params found");
+    } else {
+        Log::v("RequestParser: Parsed params:");
+        for(it = this->params.begin(); it != this->params.end(); it++){
+            std::cout << "- " << it->first << ": " << it->second << std::endl;
+        }
     }
-    Log::d("RequestParser: Parsed body:");
-    std::cout << this->body << "\n";
+    if (this->body.empty()){
+        Log::v("RequestParser: No body found");
+    } else {
+        Log::v("RequestParser: Parsed body:");
+        std::cout << this->body << "\n";
+    }
 }
