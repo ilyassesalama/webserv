@@ -36,13 +36,14 @@ class Response {
         void setRequest(RequestParser &request);
         void setServer(t_server &server);
         void setPath(std::string path);
-        void setTroute();
+        void setRoute();
         void setResponseLine();
         void setHeaders();
         void setResponseBody();
 
 		std::string getResponse();
         std::string getStringStatus();
+        t_route* getSpecificRoute(std::string location);
 
         void setErrorResponse(int statusCode);
         size_t getContentLength();
@@ -53,6 +54,7 @@ class Response {
 
 		void handleDirectoryRequest();
         void handleFileRequest();
+        void buildResourcePath(t_route *route);
     private:
         std::string path;
 

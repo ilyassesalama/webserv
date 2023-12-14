@@ -122,7 +122,6 @@ int ServerInstance::recvRequest(int clientFd) {
     }
     if(client->parser.getParsingState().ok) {
         client->request = client->parser.getRequestData();
-		
 		client->response.setRequest(client->parser);
 		client->response.setServer(*((*this).serverInformations));
 		client->response.responseBuilder();

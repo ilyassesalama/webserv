@@ -1,7 +1,7 @@
 #include "../../../webserv.hpp"
 
 Response::Response() {
-    (*this).clientSidePath = "/Users/abahsine/Documents/1337-projects/webserv/src/client-side/";
+    (*this).clientSidePath = "/Users/bel-kala/Documents/1337-projects/webserv/src/client-side";
     (*this).path = "";
     (*this).server = NULL;
     (*this).request = NULL;
@@ -112,43 +112,56 @@ void Response::setResponseBody() {
     }
 }
 
-void Response::setTroute() {
+void Response::setRoute() {
     (*this).routes = server->routes;
 }
 
 std::string getPathLocation(std::string path) {
-    std::string locationPath;
-    locationPath.append("/");
-    size_t found = path.substr(1).find_first_of("/");
-    if(found != std::string::npos) {
-        for(size_t i = 1; i < path.length(); i++) {
-            if(path[i] == '/')
-                break;
-            locationPath += path[i];
+    std::string location;
+
+    size_t firstSlash = path.find("/");
+
+    if(firstSlash != std::string::npos) {
+        size_t secondSlash = path.find("/", firstSlash + 1);
+        if(secondSlash != std::string::npos) {
+             return path.substr(0, secondSlash); 
         }
     }
-    return(locationPath);
+    return("/");
+}
+
+t_route *Response::getSpecificRoute(std::string location) {
+    for(std::vector<t_route>::iterator it = (*this).routes.begin(); it != (*this).routes.end(); ++it) {
+        if(location == it->path) {
+            return(&(*it));
+        }
+    }
+    return(NULL);
+}
+
+void Response::buildResourcePath(t_route *route) {
+    std::string requestedResource;
+    requestedResource.append(this->clientSidePath);
+    requestedResource.append(route->root);
+    requestedResource.append(this->path);
+    (*this).path = requestedResource;
 }
 
 void Response::setPath(std::string path) {
+    (*this).path = path;
     std::string locationPath = getPathLocation(path);
 
-    //check if that location ex in the config file
-    for(std::vector<t_route>::iterator it = (*this).routes.begin(); it != (*this).routes.end(); ++it) {
-        if(locationPath == it->path) {
-            //check if the methode is allowed on that location
-            if(std::find(it->allowed_methods.begin(),it->allowed_methods.end(),"GET") != it->allowed_methods.end()) {
-                std::string requestPath = it->root;
-                requestPath.append(path);
-                (*this).path =  clientSidePath.append(requestPath);  
-                return;
-            }
-            (*this).statusCode = 405;
+    t_route *route = getSpecificRoute(locationPath);
+    if(route == NULL) {
+        if(locationPath == "/") {
+            //resource not found set error code 
+            std::cout << "NO LOCATION FOUND" << std::endl;
         }
+        else  buildResourcePath(getSpecificRoute("/")); 
     }
-    (*this).statusCode = 404;
-}
+    else buildResourcePath(route);
 
+}
 
 void Response::GETResponseBuilder() {
 
@@ -169,7 +182,7 @@ void Response::clearResponse() {
     (*this).responseHeaders = "";
     (*this).responseBody = "";
     (*this).statusCode = 0;
-	(*this).clientSidePath = "/Users/abahsine/Documents/1337-projects/webserv/src/client-side/";
+	(*this).clientSidePath = "/Users/bel-kala/Documents/1337-projects/webserv/src/client-side";
 }
 
 void Response::setRequest(RequestParser &request) {
@@ -178,7 +191,7 @@ void Response::setRequest(RequestParser &request) {
 
 void Response::setServer(t_server &server) {
     (*this).server = &server;
-    setTroute();
+    setRoute();
 }
 
 std::string Response::getStringStatus(){
@@ -199,7 +212,6 @@ void Response::responseBuilder() {
     if (this->request->getRequestLine()["method"] == "GET") {
 
         this->setPath(request->getRequestLine()["path"]);
-		Log::w(path);
         this->GETResponseBuilder();
         
     } else if (this->request->getRequestLine()["method"] == "POST") {
