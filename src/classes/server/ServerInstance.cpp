@@ -114,11 +114,13 @@ int ServerInstance::recvRequest(int clientFd) {
     }
     ClientProfile *client = getClientProfile(clientFd);
 
-    client->parser.parserInput(receivedRequest);
-    if(client->parser.getParsingState() == REQ_PARSER_OK) {
-        client->request = client->parser.getRequestData();
-        client->parser.setParsingState(REQ_PARSER_STARTED);
-        std::cout << client->request;
+    try {
+        client->parser.mergeRequestChunks(receivedRequest);
+    } catch (Utils::WebservException &e) {
+        Log::e(e.what());
+        return(INVALIDE_REQUEST);
+    }
+    if(client->parser.getParsingState().ok) {
         client->request = client->parser.getRequestData();
         // client->response.setServer(*((*this).serverInformations));
         // client->response.setRequest(client->parser);
@@ -136,10 +138,7 @@ int ServerInstance::recvRequest(int clientFd) {
 
         return(FULL_REQUEST_RECEIVED);
     }
-    else if(client->parser.getParsingState() ==  REQ_PARSER_FAILED) {
-        return(INVALIDE_REQUEST);
-    }
-    return(0);
+    return(INVALIDE_REQUEST);
 }
 
 void ServerInstance::dropClient(int clientFd) {
@@ -177,7 +176,7 @@ ClientProfile *ServerInstance::getClientProfile(int clientFd) {
 }
 
 void ServerInstance::sendResponse(int clientFd) {
-    int bytesSent = send(clientFd, getClientProfile(clientFd)->responseStr.c_str(),getClientProfile(clientFd)->responseStr.length(),0);;
+    send(clientFd, getClientProfile(clientFd)->responseStr.c_str(),getClientProfile(clientFd)->responseStr.length(),0);;
     getClientProfile(clientFd)->responseStr.clear();
     Log::d("Serving Client " + getClientProfile(clientFd)->ipAdress + " ...");
 }

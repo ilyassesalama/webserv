@@ -22,3 +22,9 @@ size_t String::to_size_t(const std::string &str){
     ss >> num;
     return num;
 }
+
+std::string String::to_string(int num){
+    std::stringstream ss;
+    ss << num;
+    return ss.str();
+}
