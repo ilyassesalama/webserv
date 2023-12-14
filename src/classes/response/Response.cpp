@@ -109,7 +109,7 @@ std::string getPathLocation(std::string path) {
     locationPath.append("/");
     size_t found = path.substr(1).find_first_of("/");
     if(found != std::string::npos) {
-        for(int i = 1; i < path.length(); i++) {
+        for(size_t i = 1; i < path.length(); i++) {
             if(path[i] == '/')
                 break;
             locationPath += path[i];
