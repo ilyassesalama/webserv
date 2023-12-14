@@ -40,7 +40,9 @@ class Response {
         void setResponseLine();
         void setHeaders();
         void setResponseBody();
+		void setServedBytes(int bytes);
 
+		int getServerdBytes();
 		std::string getResponse();
         std::string getStringStatus();
 		t_route * getSpecificRoute(std::string location);
@@ -50,12 +52,14 @@ class Response {
         size_t getContentLength();
         std::string getErrorPageHTML();
         void GETResponseBuilder();
+		void POSTResponseBuilder();
         void responseBuilder();
         void clearResponse();
 
 		void handleDirectoryRequest();
         void handleFileRequest();
 		void autoIndexHTMLBuilder(std::string indexHTML);
+		bool getServingStatus();
     private:
         std::string path;
 
@@ -68,6 +72,9 @@ class Response {
         std::string responseBody; 
         std::vector<t_route>routes;
         int contentLength;
+		int servedBytes;
+		bool isServed;
+
         std::string clientSidePath;
 };
 

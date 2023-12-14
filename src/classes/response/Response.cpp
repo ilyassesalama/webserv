@@ -10,10 +10,26 @@ Response::Response() {
     (*this).responseHeaders = "";
     (*this).responseBody = "";
     (*this).statusCode = 0;
+	(*this).isServed = false;
+	(*this).servedBytes = 0;
 }
 
 Response::~Response() {
 
+}
+
+int Response::getServerdBytes() {
+	return((*this).servedBytes);
+}
+
+bool Response::getServingStatus() {
+	return((*this).isServed);
+}
+
+void Response::setServedBytes(int bytes) {
+	(*this).servedBytes +=  bytes;
+	if((*this).servedBytes == (int)(*this).response.length())
+		(*this).isServed = true;
 }
 
 std::string Response::getResponse() {
@@ -145,13 +161,25 @@ void Response::setHeaders() {
 	std::string contentSize;
 
 	contentType = File::getContentType(this->path);
-	contentSize = String::to_string(this->responseBody.length());
+	(*this).contentLength = this->responseBody.size();
+	contentSize = String::to_string((*this).contentLength);
 	this->responseHeaders = "\nContent-Type: " + contentType + " \nContent-Length: " + contentSize + "\n\n";
 }
 
 void Response::setResponseBody() {
 
-    if (File::isDirectory(this->path)) {
+	// Under construction
+	// std::vector<std::string> allowed_methods;
+	// allowed_methods.push_back("POST");
+
+	// if (allowed_methods.size() != 0 && std::find(allowed_methods.begin(), allowed_methods.end(), "POST") != allowed_methods.end()) {
+	// 	this->statusCode = 200;
+	// 	size_t slashPos = this->path.find_last_of("/");
+	// 	std::string indexHTML = slashPos != this->path.size() - 1 ? "/index.html" : "index.html";
+	// 	this->path += indexHTML;
+	// 		this->responseBody = File::getFileContent(this->path + indexHTML);
+	// } else 
+	if (File::isDirectory(this->path)) {
         this->handleDirectoryRequest();
     } else if (File::isFile(this->path)) {
         this->handleFileRequest();
@@ -221,7 +249,7 @@ void Response::GETResponseBuilder() {
 
     this->response = this->responseLine + this->responseHeaders + this->responseBody;
 
-	std::cout << this->response << std::endl;
+	// std::cout << this->response << std::endl;
 }
 
 void Response::clearResponse() {
@@ -262,13 +290,14 @@ void Response::responseBuilder() {
 	std::cout << "path: " << this->request->getRequestLine()["path"] << std::endl;
 
     if (this->request->getRequestLine()["method"] == "GET") {
-
         this->setPath(request->getRequestLine()["path"]);
 		Log::w(path);
         this->GETResponseBuilder();
         
     } else if (this->request->getRequestLine()["method"] == "POST") {
-
+		// this->setPath(request->getRequestLine()["path"]);
+		// Log::w(path);
+		// this->POSTResponseBuilder();
     } else if (this->request->getRequestLine()["method"] == "DELETE") {
 
     }

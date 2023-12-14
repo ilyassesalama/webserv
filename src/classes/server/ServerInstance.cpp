@@ -126,6 +126,7 @@ int ServerInstance::recvRequest(int clientFd) {
 		client->response.setServer(*((*this).serverInformations));
 		client->response.responseBuilder();
         client->request.clear();
+		client->parser.nullOutVars();
         client->parser.getRequestData().clear();
         return(FULL_REQUEST_RECEIVED);
     }
@@ -166,10 +167,11 @@ ClientProfile *ServerInstance::getClientProfile(int clientFd) {
     return(NULL);
 }
 
-void ServerInstance::sendResponse(int clientFd) {
+int ServerInstance::sendResponse(int clientFd) {
     send(clientFd, getClientProfile(clientFd)->response.getResponse().c_str(),getClientProfile(clientFd)->response.getResponse().length(),0);;
     getClientProfile(clientFd)->response.clearResponse();
     Log::d("Serving Client " + getClientProfile(clientFd)->ipAdress + " ...");
+	return 1;
 }
 
 // std::string ServerInstance::getIpType(std::string ipAdress) {

@@ -26,7 +26,7 @@ class ServerInstance {
         void dropClient(int clientFd);
         bool isClientFdInPollFd(int clientFd);
         int recvRequest(int clientFd);
-        void sendResponse(int clientFd);
+        int sendResponse(int clientFd);
         ClientProfile *getClientProfile(int clientFd);
         // bool checkListeningInfos();
 

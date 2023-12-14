@@ -8,8 +8,222 @@
                        Welcome to Web Server!
     ===========================================================
 
-[0m[3;79m[2023-12-14 13:24:40] Server is starting...[0m
-[3;79m[2023-12-14 13:24:40] Configuring local network...[0m
-[3;79m[2023-12-14 13:24:40] Created a listening socket on port 8080[0m
-[3;79m[2023-12-14 13:24:40] Binding socket to local address...[0m
-[3;79m[2023-12-14 13:24:40] Listening for incoming connections on port 8080[0m
+[0m[3;79m[2023-12-14 15:31:39] Server is starting...[0m
+[3;79m[2023-12-14 15:31:39] Configuring local network...[0m
+[3;79m[2023-12-14 15:31:39] Created a listening socket on port 8080[0m
+[3;79m[2023-12-14 15:31:39] Binding socket to local address...[0m
+[3;79m[2023-12-14 15:31:39] Listening for incoming connections on port 8080[0m
+[3;34m[2023-12-14 15:31:41] New client connected: 127.0.0.1 on Port 8080[0m
+[1;35m[2023-12-14 15:31:41] Parsing request line finished with status: 1[0m
+[1;35m[2023-12-14 15:31:41] Parsing request headers finished with status: 1[0m
+[1;35m[2023-12-14 15:31:41] Parsing request body finished with status: 0[0m
+[3;34m[2023-12-14 15:31:41] Request parsing finished with status: 1[0m
+[1;35m[2023-12-14 15:31:41] RequestParser: Parsed request line:[0m
+- httpVersion: HTTP/1.1
+- method: GET
+- path: /hallo/index.html
+[1;35m[2023-12-14 15:31:41] RequestParser: Parsed headers:[0m
+- Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+- Accept-Encoding: gzip, deflate
+- Accept-Language: en-US,en;q=0.9
+- Cache-Control: max-age=0
+- Connection: keep-alive
+- Content-Length: 
+- Host: 0.0.0.0:8080
+- Upgrade-Insecure-Requests: 1
+- User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36
+[1;35m[2023-12-14 15:31:41] RequestParser: No params found[0m
+[1;35m[2023-12-14 15:31:41] RequestParser: No body found[0m
+path: /hallo/index.html
+[3;33m[2023-12-14 15:31:41] /Users/abahsine/Documents/1337-projects/webserv/src/client-side//main/hallo/index.html[0m
+[3;34m[2023-12-14 15:31:41] New client connected: 127.0.0.1 on Port 8080[0m
+1024
+[3;34m[2023-12-14 15:31:41] Serving Client 127.0.0.1 ...[0m
+1024
+[3;34m[2023-12-14 15:31:41] Serving Client 127.0.0.1 ...[0m
+1024
+[3;34m[2023-12-14 15:31:41] Serving Client 127.0.0.1 ...[0m
+1024
+[3;34m[2023-12-14 15:31:41] Serving Client 127.0.0.1 ...[0m
+1024
+[3;34m[2023-12-14 15:31:41] Serving Client 127.0.0.1 ...[0m
+1024
+[3;34m[2023-12-14 15:31:41] Serving Client 127.0.0.1 ...[0m
+[3;34m[2023-12-14 15:31:41] New client connected: 127.0.0.1 on Port 8080[0m
+[3;34m[2023-12-14 15:31:41] New client connected: 127.0.0.1 on Port 8080[0m
+[3;34m[2023-12-14 15:31:41] New client connected: 127.0.0.1 on Port 8080[0m
+[3;34m[2023-12-14 15:31:41] New client connected: 127.0.0.1 on Port 8080[0m
+1024
+[3;34m[2023-12-14 15:31:41] Serving Client 127.0.0.1 ...[0m
+[1;35m[2023-12-14 15:31:41] Parsing request line finished with status: 1[0m
+[1;35m[2023-12-14 15:31:41] Parsing request headers finished with status: 1[0m
+[1;35m[2023-12-14 15:31:41] Parsing request body finished with status: 0[0m
+[3;34m[2023-12-14 15:31:41] Request parsing finished with status: 1[0m
+[1;35m[2023-12-14 15:31:41] RequestParser: Parsed request line:[0m
+- httpVersion: HTTP/1.1
+- method: GET
+- path: /hallo/assets/css/swiper-bundle.min.css
+[1;35m[2023-12-14 15:31:41] RequestParser: Parsed headers:[0m
+- Accept: text/css,*/*;q=0.1
+- Accept-Encoding: gzip, deflate
+- Accept-Language: en-US,en;q=0.9
+- Connection: keep-alive
+- Content-Length: 
+- Host: 0.0.0.0:8080
+- Referer: http://0.0.0.0:8080/hallo/index.html
+- User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36
+[1;35m[2023-12-14 15:31:41] RequestParser: No params found[0m
+[1;35m[2023-12-14 15:31:41] RequestParser: No body found[0m
+path: /hallo/assets/css/swiper-bundle.min.css
+[3;33m[2023-12-14 15:31:41] /Users/abahsine/Documents/1337-projects/webserv/src/client-side//main/hallo/assets/css/swiper-bundle.min.css[0m
+[1;35m[2023-12-14 15:31:41] Parsing request line finished with status: 1[0m
+[1;35m[2023-12-14 15:31:41] Parsing request headers finished with status: 1[0m
+[1;35m[2023-12-14 15:31:41] Parsing request body finished with status: 0[0m
+[3;34m[2023-12-14 15:31:41] Request parsing finished with status: 1[0m
+[1;35m[2023-12-14 15:31:41] RequestParser: Parsed request line:[0m
+- httpVersion: HTTP/1.1
+- method: GET
+- path: /hallo/assets/css/styles.css
+[1;35m[2023-12-14 15:31:41] RequestParser: Parsed headers:[0m
+- Accept: text/css,*/*;q=0.1
+- Accept-Encoding: gzip, deflate
+- Accept-Language: en-US,en;q=0.9
+- Connection: keep-alive
+- Content-Length: 
+- Host: 0.0.0.0:8080
+- Referer: http://0.0.0.0:8080/hallo/index.html
+- User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36
+[1;35m[2023-12-14 15:31:42] RequestParser: No params found[0m
+[1;35m[2023-12-14 15:31:42] RequestParser: No body found[0m
+path: /hallo/assets/css/styles.css
+[3;33m[2023-12-14 15:31:42] /Users/abahsine/Documents/1337-projects/webserv/src/client-side//main/hallo/assets/css/styles.css[0m
+[1;35m[2023-12-14 15:31:42] Parsing request line finished with status: 1[0m
+[1;35m[2023-12-14 15:31:42] Parsing request headers finished with status: 1[0m
+[1;35m[2023-12-14 15:31:42] Parsing request body finished with status: 0[0m
+[3;34m[2023-12-14 15:31:42] Request parsing finished with status: 1[0m
+[1;35m[2023-12-14 15:31:42] RequestParser: Parsed request line:[0m
+- httpVersion: HTTP/1.1
+- method: GET
+- path: /hallo/assets/img/logo.png
+[1;35m[2023-12-14 15:31:42] RequestParser: Parsed headers:[0m
+- Accept: image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8
+- Accept-Encoding: gzip, deflate
+- Accept-Language: en-US,en;q=0.9
+- Connection: keep-alive
+- Content-Length: 
+- Host: 0.0.0.0:8080
+- Referer: http://0.0.0.0:8080/hallo/index.html
+- User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36
+[1;35m[2023-12-14 15:31:42] RequestParser: No params found[0m
+[1;35m[2023-12-14 15:31:42] RequestParser: No body found[0m
+path: /hallo/assets/img/logo.png
+[3;33m[2023-12-14 15:31:42] /Users/abahsine/Documents/1337-projects/webserv/src/client-side//main/hallo/assets/img/logo.png[0m
+[1;35m[2023-12-14 15:31:42] Parsing request line finished with status: 1[0m
+[1;35m[2023-12-14 15:31:42] Parsing request headers finished with status: 1[0m
+[1;35m[2023-12-14 15:31:42] Parsing request body finished with status: 0[0m
+[3;34m[2023-12-14 15:31:42] Request parsing finished with status: 1[0m
+[1;35m[2023-12-14 15:31:42] RequestParser: Parsed request line:[0m
+- httpVersion: HTTP/1.1
+- method: GET
+- path: /hallo/assets/img/nav-img.png
+[1;35m[2023-12-14 15:31:42] RequestParser: Parsed headers:[0m
+- Accept: image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8
+- Accept-Encoding: gzip, deflate
+- Accept-Language: en-US,en;q=0.9
+- Connection: keep-alive
+- Content-Length: 
+- Host: 0.0.0.0:8080
+- Referer: http://0.0.0.0:8080/hallo/index.html
+- User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36
+[1;35m[2023-12-14 15:31:42] RequestParser: No params found[0m
+[1;35m[2023-12-14 15:31:42] RequestParser: No body found[0m
+path: /hallo/assets/img/nav-img.png
+[3;33m[2023-12-14 15:31:42] /Users/abahsine/Documents/1337-projects/webserv/src/client-side//main/hallo/assets/img/nav-img.png[0m
+[1;35m[2023-12-14 15:31:42] Parsing request line finished with status: 1[0m
+[1;35m[2023-12-14 15:31:42] Parsing request headers finished with status: 1[0m
+[1;35m[2023-12-14 15:31:42] Parsing request body finished with status: 0[0m
+[3;34m[2023-12-14 15:31:42] Request parsing finished with status: 1[0m
+[1;35m[2023-12-14 15:31:42] RequestParser: Parsed request line:[0m
+- httpVersion: HTTP/1.1
+- method: GET
+- path: /hallo/assets/img/home1-img.png
+[1;35m[2023-12-14 15:31:42] RequestParser: Parsed headers:[0m
+- Accept: image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8
+- Accept-Encoding: gzip, deflate
+- Accept-Language: en-US,en;q=0.9
+- Connection: keep-alive
+- Content-Length: 
+- Host: 0.0.0.0:8080
+- Referer: http://0.0.0.0:8080/hallo/index.html
+- User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36
+[1;35m[2023-12-14 15:31:42] RequestParser: No params found[0m
+[1;35m[2023-12-14 15:31:42] RequestParser: No body found[0m
+path: /hallo/assets/img/home1-img.png
+[3;33m[2023-12-14 15:31:42] /Users/abahsine/Documents/1337-projects/webserv/src/client-side//main/hallo/assets/img/home1-img.png[0m
+1024
+[3;34m[2023-12-14 15:31:42] Serving Client 127.0.0.1 ...[0m
+1024
+[3;34m[2023-12-14 15:31:42] Serving Client 127.0.0.1 ...[0m
+1024
+[3;34m[2023-12-14 15:31:42] Serving Client 127.0.0.1 ...[0m
+1024
+[3;34m[2023-12-14 15:31:42] Serving Client 127.0.0.1 ...[0m
+1024
+[3;34m[2023-12-14 15:31:42] Serving Client 127.0.0.1 ...[0m
+1024
+[3;34m[2023-12-14 15:31:42] Serving Client 127.0.0.1 ...[0m
+1024
+[3;34m[2023-12-14 15:31:42] Serving Client 127.0.0.1 ...[0m
+1024
+[3;34m[2023-12-14 15:31:42] Serving Client 127.0.0.1 ...[0m
+1024
+[3;34m[2023-12-14 15:31:42] Serving Client 127.0.0.1 ...[0m
+1024
+[3;34m[2023-12-14 15:31:42] Serving Client 127.0.0.1 ...[0m
+1024
+[3;34m[2023-12-14 15:31:42] Serving Client 127.0.0.1 ...[0m
+1024
+[3;34m[2023-12-14 15:31:42] Serving Client 127.0.0.1 ...[0m
+1024
+[3;34m[2023-12-14 15:31:42] Serving Client 127.0.0.1 ...[0m
+1024
+[3;34m[2023-12-14 15:31:42] Serving Client 127.0.0.1 ...[0m
+1024
+[3;34m[2023-12-14 15:31:42] Serving Client 127.0.0.1 ...[0m
+1024
+[3;34m[2023-12-14 15:31:42] Serving Client 127.0.0.1 ...[0m
+1024
+[3;34m[2023-12-14 15:31:42] Serving Client 127.0.0.1 ...[0m
+1024
+[3;34m[2023-12-14 15:31:42] Serving Client 127.0.0.1 ...[0m
+1024
+[3;34m[2023-12-14 15:31:42] Serving Client 127.0.0.1 ...[0m
+1024
+[3;34m[2023-12-14 15:31:42] Serving Client 127.0.0.1 ...[0m
+1024
+[3;34m[2023-12-14 15:31:42] Serving Client 127.0.0.1 ...[0m
+1024
+[3;34m[2023-12-14 15:31:42] Serving Client 127.0.0.1 ...[0m
+1024
+[3;34m[2023-12-14 15:31:42] Serving Client 127.0.0.1 ...[0m
+1024
+[3;34m[2023-12-14 15:31:42] Serving Client 127.0.0.1 ...[0m
+1024
+[3;34m[2023-12-14 15:31:42] Serving Client 127.0.0.1 ...[0m
+1024
+[3;34m[2023-12-14 15:31:42] Serving Client 127.0.0.1 ...[0m
+1024
+[3;34m[2023-12-14 15:31:42] Serving Client 127.0.0.1 ...[0m
+1024
+[3;34m[2023-12-14 15:31:42] Serving Client 127.0.0.1 ...[0m
+1024
+[3;34m[2023-12-14 15:31:42] Serving Client 127.0.0.1 ...[0m
+1024
+[3;34m[2023-12-14 15:31:42] Serving Client 127.0.0.1 ...[0m
+[3;34m[2023-12-14 15:31:42] New client connected: 127.0.0.1 on Port 8080[0m
+1024
+[3;34m[2023-12-14 15:31:42] Serving Client 127.0.0.1 ...[0m
+1024
+[3;34m[2023-12-14 15:31:42] Serving Client 127.0.0.1 ...[0m
+1024
+[3;34m[2023-12-14 15:31:42] Serving Client 127.0.0.1 ...[0m
