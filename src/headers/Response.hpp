@@ -36,14 +36,15 @@ class Response {
         void setRequest(RequestParser &request);
         void setServer(t_server &server);
         void setPath(std::string path);
-        void setRoute();
+        void setTroute();
         void setResponseLine();
         void setHeaders();
         void setResponseBody();
 
 		std::string getResponse();
         std::string getStringStatus();
-        t_route* getSpecificRoute(std::string location);
+		t_route * getSpecificRoute(std::string location);
+		void buildResourcePath(t_route *route);
 
         void setErrorResponse(int statusCode);
         size_t getContentLength();
@@ -54,7 +55,7 @@ class Response {
 
 		void handleDirectoryRequest();
         void handleFileRequest();
-        void buildResourcePath(t_route *route);
+		void autoIndexHTMLBuilder(std::string indexHTML);
     private:
         std::string path;
 
@@ -70,6 +71,12 @@ class Response {
         std::string clientSidePath;
 };
 
+std::string generateHTMLStart(std::string path);
+std::string createAnchor(std::string name);
+std::string createParagraph(std::string lastUpdate);
+std::string createSizeParagraph(long long size);
+std::string createBodyHTML(std::string nameHTML, std::string lastUpdateHTML, std::string sizeHTML);
+std::string generateHTMLEnd(std::string bodyHTML);
 
 // headers in response : 
 // content-Type / content-length / Transfer-encoding / connection 

@@ -22,6 +22,8 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <arpa/inet.h>
+#include <dirent.h>
+#include <ctime>
 
 #include "src/headers/ClientProfile.hpp"
 #include "src/headers/ConfigurationFile.hpp"

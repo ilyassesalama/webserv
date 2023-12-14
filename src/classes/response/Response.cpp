@@ -1,7 +1,7 @@
 #include "../../../webserv.hpp"
 
 Response::Response() {
-    (*this).clientSidePath = "/Users/bel-kala/Documents/1337-projects/webserv/src/client-side";
+    (*this).clientSidePath = "/Users/abahsine/Documents/1337-projects/webserv/src/client-side/";
     (*this).path = "";
     (*this).server = NULL;
     (*this).request = NULL;
@@ -41,6 +41,55 @@ std::string Response::getErrorPageHTML(){
     return responseBody;
 }
 
+void Response::autoIndexHTMLBuilder(std::string indexHTML) {
+
+	std::string filePath;
+	std::string bodyHTML;
+	std::string autoIndexHTML;
+	std::time_t lastUpdateTime;
+
+	DIR* directory = opendir(this->path.c_str());
+
+	autoIndexHTML = generateHTMLStart(this->request->getRequestLine()["path"]);
+
+	if (directory) {
+
+		struct dirent* entry;
+
+		while ((entry = readdir(directory)) != NULL) {
+
+			if (entry->d_name[0] == '.')
+				continue ;
+
+			filePath = this->path + entry->d_name;
+
+			struct stat stats;
+
+			if (stat(filePath.c_str(), &stats) == 0) {
+				lastUpdateTime = stats.st_mtime;
+
+			} else {
+				this->statusCode = 404;
+				std::cerr << "ERROR 2: AUTOINDEX" << std::endl;
+				return ;
+			}
+
+			bodyHTML += createBodyHTML(createAnchor(entry->d_name), createParagraph(std::ctime(&lastUpdateTime)), createSizeParagraph(static_cast<long long>(stats.st_size)));
+		}
+
+	} else {
+		this->statusCode = 404;
+		std::cerr << "ERROR AUTOINDEX" << std::endl;
+		return ;
+	}
+
+	autoIndexHTML += generateHTMLEnd(bodyHTML);
+
+	this->responseBody = autoIndexHTML;
+	this->statusCode = 200;
+	this->path += indexHTML;
+}
+
 void Response::handleDirectoryRequest() {
 
     size_t slashPos = this->path.find_last_of("/");
@@ -52,10 +101,11 @@ void Response::handleDirectoryRequest() {
         this->responseBody = File::getFileContent(this->path);
 		this->statusCode = 200;
     } else {
-        bool directory_listing = false; // temporary
+        bool directory_listing = true; // temporary
 
         if (directory_listing) {
             // response should be list of files in the directory
+			this->autoIndexHTMLBuilder(indexHTML);
         } else {
             this->statusCode = 403;
             this->responseBody = this->getErrorPageHTML();
@@ -96,7 +146,6 @@ void Response::setHeaders() {
 
 	contentType = File::getContentType(this->path);
 	contentSize = String::to_string(this->responseBody.length());
-
 	this->responseHeaders = "\nContent-Type: " + contentType + " \nContent-Length: " + contentSize + "\n\n";
 }
 
@@ -112,7 +161,7 @@ void Response::setResponseBody() {
     }
 }
 
-void Response::setRoute() {
+void Response::setTroute() {
     (*this).routes = server->routes;
 }
 
@@ -163,6 +212,7 @@ void Response::setPath(std::string path) {
 
 }
 
+
 void Response::GETResponseBuilder() {
 
     this->setResponseBody();
@@ -182,7 +232,7 @@ void Response::clearResponse() {
     (*this).responseHeaders = "";
     (*this).responseBody = "";
     (*this).statusCode = 0;
-	(*this).clientSidePath = "/Users/bel-kala/Documents/1337-projects/webserv/src/client-side";
+	(*this).clientSidePath = "/Users/abahsine/Documents/1337-projects/webserv/src/client-side";
 }
 
 void Response::setRequest(RequestParser &request) {
@@ -191,7 +241,7 @@ void Response::setRequest(RequestParser &request) {
 
 void Response::setServer(t_server &server) {
     (*this).server = &server;
-    setRoute();
+    setTroute();
 }
 
 std::string Response::getStringStatus(){
@@ -209,9 +259,12 @@ std::string Response::getStringStatus(){
 
 void Response::responseBuilder() {
     
+	std::cout << "path: " << this->request->getRequestLine()["path"] << std::endl;
+
     if (this->request->getRequestLine()["method"] == "GET") {
 
         this->setPath(request->getRequestLine()["path"]);
+		Log::w(path);
         this->GETResponseBuilder();
         
     } else if (this->request->getRequestLine()["method"] == "POST") {

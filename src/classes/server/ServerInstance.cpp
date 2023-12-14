@@ -125,20 +125,8 @@ int ServerInstance::recvRequest(int clientFd) {
 		client->response.setRequest(client->parser);
 		client->response.setServer(*((*this).serverInformations));
 		client->response.responseBuilder();
-        // client->response.setServer(*((*this).serverInformations));
-        // client->response.setRequest(client->parser);
-        // client->response.responseBuilder();
-        // client->parser.getErrorResponse() = client->responseStr;
-        // client->response.setRequest();
-        // Response response(clientFd, client->parser);
-        // response.sendResponse();
-        // client->response = response.sendResponse();
         client->request.clear();
         client->parser.getRequestData().clear();
-        // std::cout << "THIS IS A RESPONSE FOR THE FULL FUCKING REQUEST" << std::endl;
-        // std::cout << client->response << std::endl;
-        // std::cout << "====================================================" << std::endl;
-
         return(FULL_REQUEST_RECEIVED);
     }
     return(INVALIDE_REQUEST);
