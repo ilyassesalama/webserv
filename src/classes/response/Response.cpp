@@ -1,7 +1,7 @@
 #include "../../../webserv.hpp"
 
 Response::Response() {
-    (*this).clientSidePath = "/Users/bel-kala/Desktop/webserv/src/client-side";
+    (*this).clientSidePath = "/Users/abahsine/Documents/1337-projects/webserv/src/client-side/";
     (*this).path = "";
     (*this).server = NULL;
     (*this).request = NULL;
@@ -14,6 +14,10 @@ Response::Response() {
 
 Response::~Response() {
 
+}
+
+std::string Response::getResponse() {
+	return((*this).response);
 }
 
 std::string Response::getErrorPageHTML(){
@@ -39,14 +43,14 @@ std::string Response::getErrorPageHTML(){
 
 void Response::handleDirectoryRequest() {
 
-    std::string rootPath = "src/client-side"; // temporary
+    size_t slashPos = this->path.find_last_of("/");
 
-    size_t slashPos = rootPath.find_last_of("/");
+    std::string indexHTML = slashPos != this->path.size() - 1 ? "/index.html" : "index.html";
 
-    std::string indexHTML = slashPos != rootPath.size() - 1 ? "/index.html" : "index.html";
-
-    if (File::isFile(rootPath + indexHTML)) {
-        this->responseBody = File::getFileContent(rootPath + indexHTML);
+    if (File::isFile(this->path + indexHTML)) {
+		this->path += indexHTML;
+        this->responseBody = File::getFileContent(this->path);
+		this->statusCode = 200;
     } else {
         bool directory_listing = false; // temporary
 
@@ -61,20 +65,19 @@ void Response::handleDirectoryRequest() {
 
 void Response::handleFileRequest() {
 
-    std::string rootPath = "src/client-side/index.html"; // temporary
-
     std::vector<std::string>cgi_methods; // temporary
-    cgi_methods.push_back("GET"); // temporary
+    // cgi_methods.push_back("GET"); // temporary
     std::string cgi_extension = "php"; // temporary
 
     if (cgi_methods.size() != 0) {
-        
+
         if (!cgi_extension.empty() && std::find(cgi_methods.begin(), cgi_methods.end(), "GET") != cgi_methods.end()) {
 
         }
 
     } else {
-        this->responseBody = File::getFileContent(rootPath);
+        this->responseBody = File::getFileContent(this->path);
+		this->statusCode = 200;
     }
 
 }
@@ -86,13 +89,22 @@ void Response::setResponseLine() {
     this->responseLine = "HTTP/1.1 " + status;
 }
 
+void Response::setHeaders() {
+
+	std::string contentType;
+	std::string contentSize;
+
+	contentType = File::getContentType(this->path);
+	contentSize = String::to_string(this->responseBody.length());
+
+	this->responseHeaders = "\nContent-Type: " + contentType + " \nContent-Length: " + contentSize + "\n\n";
+}
+
 void Response::setResponseBody() {
 
-    std::string rootPath = "src/client-side"; // temporary
-
-    if (File::isDirectory(rootPath)) {
+    if (File::isDirectory(this->path)) {
         this->handleDirectoryRequest();
-    } else if (File::isFile(rootPath)) {
+    } else if (File::isFile(this->path)) {
         this->handleFileRequest();
     } else {
         this->statusCode = 301;
@@ -140,21 +152,24 @@ void Response::setPath(std::string path) {
 
 void Response::GETResponseBuilder() {
 
-    // this->setResponseBody();
-    // this->setHeaders();
-    // this->setResponseLine();
+    this->setResponseBody();
+    this->setHeaders();
+    this->setResponseLine();
 
     this->response = this->responseLine + this->responseHeaders + this->responseBody;
+
+	std::cout << this->response << std::endl;
 }
 
 void Response::clearResponse() {
+
     (*this).path = "";
     (*this).response = "";
     (*this).responseLine = "";
     (*this).responseHeaders = "";
     (*this).responseBody = "";
     (*this).statusCode = 0;
-
+	(*this).clientSidePath = "/Users/abahsine/Documents/1337-projects/webserv/src/client-side/";
 }
 
 void Response::setRequest(RequestParser &request) {
@@ -184,7 +199,7 @@ void Response::responseBuilder() {
     if (this->request->getRequestLine()["method"] == "GET") {
 
         this->setPath(request->getRequestLine()["path"]);
-
+		Log::w(path);
         this->GETResponseBuilder();
         
     } else if (this->request->getRequestLine()["method"] == "POST") {

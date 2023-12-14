@@ -122,6 +122,10 @@ int ServerInstance::recvRequest(int clientFd) {
     }
     if(client->parser.getParsingState().ok) {
         client->request = client->parser.getRequestData();
+		
+		client->response.setRequest(client->parser);
+		client->response.setServer(*((*this).serverInformations));
+		client->response.responseBuilder();
         // client->response.setServer(*((*this).serverInformations));
         // client->response.setRequest(client->parser);
         // client->response.responseBuilder();
@@ -176,8 +180,8 @@ ClientProfile *ServerInstance::getClientProfile(int clientFd) {
 }
 
 void ServerInstance::sendResponse(int clientFd) {
-    send(clientFd, getClientProfile(clientFd)->responseStr.c_str(),getClientProfile(clientFd)->responseStr.length(),0);;
-    getClientProfile(clientFd)->responseStr.clear();
+    send(clientFd, getClientProfile(clientFd)->response.getResponse().c_str(),getClientProfile(clientFd)->response.getResponse().length(),0);;
+    getClientProfile(clientFd)->response.clearResponse();
     Log::d("Serving Client " + getClientProfile(clientFd)->ipAdress + " ...");
 }
 

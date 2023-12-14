@@ -38,9 +38,10 @@ class Response {
         void setPath(std::string path);
         void setTroute();
         void setResponseLine();
-        // void setHeaders();
+        void setHeaders();
         void setResponseBody();
 
+		std::string getResponse();
         std::string getStringStatus();
 
         void setErrorResponse(int statusCode);
