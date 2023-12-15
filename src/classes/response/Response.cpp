@@ -53,44 +53,40 @@ std::string Response::getErrorPageHTML(){
     switch(this->statusCode){
 		case 301:
             this->path = getErrorPagePath(this->server->error_pages, 301);
-            responseBody = File::getFileContent(this->path);
 			break;
         case 400:
             this->path = getErrorPagePath(this->server->error_pages, 400);
-            responseBody = File::getFileContent(this->path);
             break;
         case 404:
             this->path = getErrorPagePath(this->server->error_pages, 404);
-            responseBody = File::getFileContent(this->path);
             break;
         case 403:
             this->path = getErrorPagePath(this->server->error_pages, 403);
-            responseBody = File::getFileContent(this->path);
             break;
         case 405:
             this->path = getErrorPagePath(this->server->error_pages, 405);
-            responseBody = File::getFileContent(this->path);
             break;
         case 409:
             this->path = getErrorPagePath(this->server->error_pages, 409);
-            responseBody = File::getFileContent(this->path);
             break;
         case 413:
             this->path = getErrorPagePath(this->server->error_pages, 413);
-            responseBody = File::getFileContent(this->path);
             break;
         case 414:
             this->path = getErrorPagePath(this->server->error_pages, 414);
-            responseBody = File::getFileContent(this->path);
             break;
         case 500:
             this->path = getErrorPagePath(this->server->error_pages, 500);
-            responseBody = File::getFileContent(this->path);
             break;
         default:
             this->path = getErrorPagePath(this->server->error_pages, 501);
-            responseBody = File::getFileContent(this->path);
             break;
+    }
+    try {
+        responseBody = File::getFileContent(this->path);
+    } catch (std::exception &e) {
+        responseBody = "<html><body><h1>ERROR 403</h1><p>Forbidden</p></body></html>";
+        Log::e("Error page not found, who edited the permissions MFs!");
     }
     return responseBody;
 }
