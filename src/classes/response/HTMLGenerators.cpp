@@ -59,7 +59,7 @@ void Response::autoIndexHTMLBuilder(std::string indexHTML) {
 
 			bodyHTML += createBodyHTML(createAnchor(entry->d_name), createParagraph(std::ctime(&lastUpdateTime)), createSizeParagraph(static_cast<long long>(stats.st_size)));
 		}
-
+		closedir(directory);
 	} else {
 		this->statusCode = 404;
 		std::cerr << "ERROR AUTOINDEX" << std::endl;
