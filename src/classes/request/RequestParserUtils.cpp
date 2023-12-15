@@ -72,3 +72,39 @@ void RequestParser::logParsedRequest(){
         Log::v("RequestParser: Parsing failed with code " + String::to_string(this->parsingState.failCode) + " and reason: " + this->parsingState.failReason);
     }
 }
+
+bool RequestParser::isPathAccessible() {
+    this->requestResourcePath = "";
+    size_t firstSlash = this->requestLine["path"].find_first_of("/");
+    std::string location;
+    bool slashRoute = false;
+
+    if(firstSlash != std::string::npos) {
+        size_t secondSlach = this->requestLine["path"].find_first_of("/", firstSlash + 1);
+        if(secondSlach != std::string::npos) {
+            location = this->requestLine["path"].substr(0, secondSlach);        
+        }
+        else location = "/";
+    }
+    t_route *route = NULL;
+    t_route *slashR = NULL;
+    for(std::vector<t_route>::iterator it = this->server->routes.begin(); it != this->server->routes.end(); ++it) {
+        if(it->path == "/" && location != "/" && slashRoute == false) {
+            slashRoute = true;
+            slashR = &(*it);
+        }
+        if(location == it->path) {
+            route = &(*it);
+            break;
+        }
+    }
+    this->requestResourcePath.append(File::getWorkingDir());
+    this->requestResourcePath.append((!route && slashRoute) ? slashR->root : route->root);
+    this->requestResourcePath.append(getRequestLine()["path"]);
+    Log::w("RequestParser: Request resource path: " + this->requestResourcePath);
+    return(File::isFile(this->requestResourcePath) || File::isDirectory(this->requestResourcePath));
+}
+
+bool RequestParser::isMethodAllowed() {
+    return true; // TODO: implement
+}

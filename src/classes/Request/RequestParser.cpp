@@ -67,6 +67,16 @@ void RequestParser::parseFinalRequest(){
         this->parsingState.failReason = "Request Entity Too Large";
         return;
     }
+    if (!isPathAccessible()) {
+        this->parsingState.failCode = 404;
+        this->parsingState.failReason = "Not Found";
+        return;
+    }
+    if(!isMethodAllowed()){
+        this->parsingState.failCode = 405;
+        this->parsingState.failReason = "Method Not Allowed";
+        return;
+    }
 }
 
 void RequestParser::parseRequestLine(std::string &requestData) {

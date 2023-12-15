@@ -16,6 +16,7 @@ Response::~Response() {}
 
 void Response::responseBuilder() {
     if (this->request->getRequestLine()["method"] == "GET") {
+
         this->setPath(request->getRequestLine()["path"],"GET");
         this->GETResponseBuilder();
     } else if (this->request->getRequestLine()["method"] == "POST") {

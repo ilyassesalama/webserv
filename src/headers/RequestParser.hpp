@@ -21,6 +21,7 @@ class RequestParser {
         std::map<std::string, std::string> params;
         std::string body;
 		t_server *server;
+        std::string requestResourcePath;
     public:
         RequestParser();
 
@@ -42,4 +43,6 @@ class RequestParser {
         const std::string &getBody();
         const ParsingState &getParsingState();
         std::string& getRequestData();
+        bool isPathAccessible();
+        bool isMethodAllowed();
 };
