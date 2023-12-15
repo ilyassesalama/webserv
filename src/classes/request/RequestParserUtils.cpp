@@ -86,6 +86,7 @@ bool RequestParser::isPathAccessible() {
         }
         else location = "/";
     }
+    //get location matched with route
     t_route *route = NULL;
     t_route *slashR = NULL;
     for(std::vector<t_route>::iterator it = this->server->routes.begin(); it != this->server->routes.end(); ++it) {
@@ -98,13 +99,22 @@ bool RequestParser::isPathAccessible() {
             break;
         }
     }
-    this->requestResourcePath.append(File::getWorkingDir());
-    this->requestResourcePath.append((!route && slashRoute) ? slashR->root : route->root);
-    this->requestResourcePath.append(getRequestLine()["path"]);
+    if(route == NULL) {
+        if(slashRoute == true) {
+            //check if allowed method in slash route
+            this->requestResourcePath.append(File::getWorkingDir());
+            this->requestResourcePath.append(slashR->root);
+            this->requestResourcePath.append(getRequestLine()["path"]);
+        }
+    } else {
+        this->requestResourcePath.append(File::getWorkingDir());
+        this->requestResourcePath.append(route->root);
+        this->requestResourcePath.append(getRequestLine()["path"]);
+    }
     Log::w("RequestParser: Request resource path: " + this->requestResourcePath);
     return(File::isFile(this->requestResourcePath) || File::isDirectory(this->requestResourcePath));
 }
 
 bool RequestParser::isMethodAllowed() {
-    return true; // TODO: implement
+    return true;
 }
