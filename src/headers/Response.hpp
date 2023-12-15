@@ -10,19 +10,18 @@ class Response {
         
         void setRequest(RequestParser &request);
         void setServer(t_server &server);
-        void setPath(std::string path);
+        void setPath(std::string path, std::string method);
         void setRoute();
         void setResponseLine();
         void setHeaders();
         void setResponseBody();
-		void setServedBytes(int bytes);
-        void setErrorResponse(int statusCode);
+        void setStatusCode(int code);
 
-		int getServerdBytes();
 		std::string getResponse();
         std::string getStringStatus();
 		t_route * getSpecificRoute(std::string location);
         std::string getErrorPageHTML();
+        std::string getAllowedMethod(std::string location, std::string method);
 
 
 		void buildResourcePath(t_route *route);

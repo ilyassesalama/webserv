@@ -1,7 +1,13 @@
 #include "../../../webserv.hpp"
 
 Response::Response() {
-    (*this).clientSidePath = "/Users/abahsine/Documents/1337-projects/webserv/src/client-side/";
+
+
+    char cwd[PATH_MAX];
+    getcwd(cwd, sizeof(cwd));
+    std::cout << cwd << std::endl;
+    (*this).clientSidePath.append(cwd);
+    (*this).clientSidePath.append("/src/client-side");
     (*this).path = "";
     (*this).server = NULL;
     (*this).request = NULL;
@@ -19,6 +25,17 @@ Response::~Response() {
 /*
 	GETTER FUNCTIONS
 */
+
+std::string Response::getAllowedMethod(std::string location, std::string method) {
+    for(std::vector<t_route>::iterator it = (*this).routes.begin(); it != (*this).routes.end(); ++it) {
+        if(location == it->path) {
+            if(std::find(it->allowed_methods.begin(), it->allowed_methods.end(), method) == it->allowed_methods.end())
+                return("METHOD NOT ALLOWED IN THIS LOCATION");
+            else return(method);
+        }
+    }
+    return("NO LOCATION FOUND");
+}
 
 std::string Response::getResponse() {
 	return((*this).response);
@@ -126,20 +143,30 @@ std::string getPathLocation(std::string path) {
 	SETTER FUNCTIONS
 */
 
-void Response::setPath(std::string path) {
+
+void Response::setStatusCode(int code) {
+    (*this).statusCode = code;
+}
+
+void Response::setPath(std::string path,std::string method) {
     (*this).path = path;
     std::string locationPath = getPathLocation(path);
 
     t_route *route = getSpecificRoute(locationPath);
+
     if(route == NULL) {
         if(locationPath == "/") {
             //resource not found set error code 
             std::cout << "NO LOCATION FOUND" << std::endl;
         }
-        else  buildResourcePath(getSpecificRoute("/")); 
     }
-    else buildResourcePath(route);
-
+    else  {
+        //check if the method allowed on that location 
+        if(getAllowedMethod(locationPath,method) == method)
+            buildResourcePath(route);
+        else
+            setStatusCode(405);
+    }
 }
 
 void Response::setRequest(RequestParser &request) {
@@ -249,12 +276,12 @@ void Response::buildResourcePath(t_route *route) {
 
 void Response::responseBuilder() {
     if (this->request->getRequestLine()["method"] == "GET") {
-        this->setPath(request->getRequestLine()["path"]);
+        this->setPath(request->getRequestLine()["path"],"GET");
 		Log::w(path);
         this->GETResponseBuilder();
         
     } else if (this->request->getRequestLine()["method"] == "POST") {
-		this->setPath(request->getRequestLine()["path"]);
+		this->setPath(request->getRequestLine()["path"],"POST");
 		Log::w(path);
 		this->POSTResponseBuilder();
     } else if (this->request->getRequestLine()["method"] == "DELETE") {
@@ -269,5 +296,10 @@ void Response::clearResponse() {
     (*this).responseHeaders = "";
     (*this).responseBody = "";
     (*this).statusCode = 0;
-	(*this).clientSidePath = "/Users/abahsine/Documents/1337-projects/webserv/src/client-side";
+    char cwd[PATH_MAX];
+    (*this).clientSidePath.clear();
+    getcwd(cwd, sizeof(cwd));
+    std::cout << cwd << std::endl;
+    (*this).clientSidePath.append(cwd);
+    (*this).clientSidePath.append("/src/client-side");
 }
