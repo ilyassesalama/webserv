@@ -7,6 +7,8 @@ typedef struct ParsingState {
     bool headsOk;
     bool bodyOk;
     bool ok;
+    int failCode;
+    std::string failReason;
 } ParsingState;
 
 class RequestParser {
@@ -29,6 +31,7 @@ class RequestParser {
         void parseRequestHeaders(std::string &requestData);
         void parseRequestParams(std::string &requestData);
         void parseRequestBody(std::string &requestData);
+        void parseFinalRequest();
 
         std::map<std::string, std::string> &getRequestLine();
         std::map<std::string, std::string> &getHeaders();

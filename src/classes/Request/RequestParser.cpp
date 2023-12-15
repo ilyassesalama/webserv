@@ -13,6 +13,8 @@ void RequestParser::nullOutVars(){
     this->parsingState.headLineOk = false;
     this->parsingState.headsOk = false;
     this->parsingState.bodyOk = false;
+    this->parsingState.failCode = 0;
+    this->parsingState.failReason = "";
 }
 
 void RequestParser::mergeRequestChunks(std::string &requestInput) {
@@ -33,7 +35,42 @@ void RequestParser::mergeRequestChunks(std::string &requestInput) {
     parsingState.ok = parsingState.headLineOk && parsingState.headsOk; // don't care about the body since it's optional
     Log::d("Request parsing finished with status: " + String::to_string(parsingState.ok));
     if (parsingState.ok && FULL_LOGGING_ENABLED) {
+        parseFinalRequest();
         logParsedRequest();
+    }
+}
+
+void RequestParser::parseFinalRequest(){
+    if(!File::isDirectory(this->requestLine["path"]) && !File::isFile(this->requestLine["path"])){
+        this->parsingState.failCode = 404;
+        this->parsingState.failReason = "Not Found";
+        return;
+    }
+    if(!this->headers["Transfer-Encoding"].empty() && this->headers["Transfer-Encoding"] != "chunked"){
+        this->parsingState.failCode = 501;
+        this->parsingState.failReason = "Not Implemented";
+        return;
+    }
+    if(this->requestLine["method"] == "POST" && (this->headers["Content-Length"].empty() || this->headers["Content-Length"].empty())){
+        this->parsingState.failCode = 400;
+        this->parsingState.failReason = "Bad Request";
+        return;
+    }
+    if(this->requestLine["path"].find_first_of("/\\:*?\"<>|") != std::string::npos){
+        this->parsingState.failCode = 400;
+        this->parsingState.failReason = "Bad Request";
+        return;
+    }
+    if(this->requestLine["path"].length() > 2048){
+        this->parsingState.failCode = 414;
+        this->parsingState.failReason = "URI Too Long";
+        return;
+    }
+    size_t bodyMaxSizeFromConfig = -1;
+    if(this->body.length() > bodyMaxSizeFromConfig){
+        this->parsingState.failCode = 413;
+        this->parsingState.failReason = "Request Entity Too Large";
+        return;
     }
 }
 
@@ -169,5 +206,8 @@ void RequestParser::logParsedRequest(){
     } else {
         Log::v("RequestParser: Parsed body:");
         std::cout << this->body << "\n";
+    }
+    if(this->parsingState.failCode != 0){
+        Log::v("RequestParser: Parsing failed with code " + String::to_string(this->parsingState.failCode) + " and reason: " + this->parsingState.failReason);
     }
 }
