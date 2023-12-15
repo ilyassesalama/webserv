@@ -86,7 +86,6 @@ bool RequestParser::isPathAccessible() {
         }
         else location = "/";
     }
-    //get location matched with route
     t_route *route = NULL;
     t_route *slashR = NULL;
     for(std::vector<t_route>::iterator it = this->server->routes.begin(); it != this->server->routes.end(); ++it) {
@@ -101,7 +100,7 @@ bool RequestParser::isPathAccessible() {
     }
     if(route == NULL) {
         if(slashRoute == true) {
-            //check if allowed method in slash route
+
             this->requestResourcePath.append(File::getWorkingDir());
             this->requestResourcePath.append(slashR->root);
             this->requestResourcePath.append(getRequestLine()["path"]);
@@ -116,5 +115,22 @@ bool RequestParser::isPathAccessible() {
 }
 
 bool RequestParser::isMethodAllowed() {
-    return true;
+    size_t firstSlash = this->requestLine["path"].find_first_of("/");
+    std::string location;
+
+    if(firstSlash != std::string::npos) {
+        size_t secondSlach = this->requestLine["path"].find_first_of("/", firstSlash + 1);
+        if(secondSlach != std::string::npos) {
+            location = this->requestLine["path"].substr(0, secondSlach);        
+        }
+        else location = "/";
+    }
+    for(std::vector<t_route>::iterator it = this->server->routes.begin(); it != this->server->routes.end(); ++it) {
+        if(location == it->path) {
+            if(std::find(it->allowed_methods.begin(), it->allowed_methods.end(), getRequestLine()["method"]) == it->allowed_methods.end())
+                return(false);
+            else return(true);
+        }
+    }
+    return(false);
 }

@@ -77,6 +77,7 @@ void RequestParser::parseFinalRequest(){
         this->parsingState.failReason = "Method Not Allowed";
         return;
     }
+
 }
 
 void RequestParser::parseRequestLine(std::string &requestData) {
