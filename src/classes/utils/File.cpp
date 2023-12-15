@@ -55,3 +55,11 @@ bool File::isDirectory(const std::string& path) {
     }
     return S_ISDIR(statbuf.st_mode);
 }
+
+std::string File::getWorkingDir(){
+	char cwd[PATH_MAX];
+	std::string path = "";
+    getcwd(cwd, sizeof(cwd));
+    path.append(cwd).append("/src/client-side");
+	return path;
+}

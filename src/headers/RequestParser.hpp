@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../webserv.hpp"
+#include "ConfigurationFile.hpp"
 
 typedef struct ParsingState {
     bool headLineOk;
@@ -19,6 +20,7 @@ class RequestParser {
         std::map<std::string, std::string> headers;
         std::map<std::string, std::string> params;
         std::string body;
+		t_server *server;
     public:
         RequestParser();
 
@@ -33,6 +35,7 @@ class RequestParser {
         void parseRequestBody(std::string &requestData);
         void parseFinalRequest();
 
+		void setServerInformation(t_server *server);
         std::map<std::string, std::string> &getRequestLine();
         std::map<std::string, std::string> &getHeaders();
         const std::map<std::string, std::string> &getParams();

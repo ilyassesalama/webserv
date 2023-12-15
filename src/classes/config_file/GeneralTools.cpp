@@ -58,3 +58,27 @@ bool isDigits( std::string value ) {
 		if (!isdigit(value[i])) return false;
 	return true;
 }
+
+bool checkErrorCode(int errorCode) {
+	int errorCodes[10] = {301, 400, 403, 404, 405, 409, 413, 414, 500, 501};
+
+	for (size_t i = 0; i < 10; i++)
+		if (errorCode == errorCodes[i]) return 1;
+	return 0;
+}
+
+void setDefaultErrors(std::list<t_server> &servers) {
+	(void) servers;
+	// std::list<t_server>::iterator it;
+	// std::vector<t_error_page>::iterator errorsIt;
+	// int errorCodes[10] = {301, 400, 403, 404, 405, 409, 413, 414, 500, 501};
+
+	// for (it = servers.begin(); it != servers.end(); it++) {
+
+	// 	for (errorsIt = it->error_pages.begin(); errorsIt != it->error_pages.end(); errorsIt++) {
+	// 		if (checkErrorCode(errorsIt->error_code) )
+	// 	}
+
+	// }
+
+}

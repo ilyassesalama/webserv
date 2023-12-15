@@ -165,7 +165,7 @@ bool checkUnit(int unit)
 	return true;
 }
 
-void parseClientBodySize(int *body_size, std::string &body_size_unit, std::string value)
+void parseClientBodySize(size_t *body_size, std::string &body_size_unit, std::string value)
 {
 
 	if (onlySpaces(value) || value.empty()) throw(Utils::WebservException("Error, client_body_size syntax error"));
@@ -186,7 +186,7 @@ void parseClientBodySize(int *body_size, std::string &body_size_unit, std::strin
 	if (i == pos || i == value.size()) throw(Utils::WebservException("Error, client_body_size syntax error"));
 
 	std::stringstream buffer(value.substr(pos, i - pos));
-	int client_body_size;
+	size_t client_body_size;
 	buffer >> client_body_size;
 	if (buffer.fail()) throw(Utils::WebservException("Error, stringstream"));
 
@@ -200,9 +200,6 @@ std::vector<t_error_page> parseErrorPage(std::string value)
 {
 
 	if (onlySpaces(value) || value.empty()) throw(Utils::WebservException("Error, error_page syntax error"));
-	size_t pos = value.find(" ");
-
-	if (pos == std::string::npos) throw(Utils::WebservException("Error, error_page syntax error"));
 
 	std::vector<t_error_page>errors;
 	t_error_page err;
@@ -211,35 +208,40 @@ std::vector<t_error_page> parseErrorPage(std::string value)
 
 	std::string error_page;
 
+	size_t pos = value.find(" ");
+	if (pos == std::string::npos) throw(Utils::WebservException("Error, error_page syntax error"));
+
 	while (pos != std::string::npos) {
-			if (!isDigits(value.substr(0, pos))) throw(Utils::WebservException("Error, error_page syntax error"));
+		if (!isDigits(value.substr(0, pos))) throw(Utils::WebservException("Error, error_page syntax error"));
 		std::stringstream buffer(value.substr(0, pos));
 		int errorCode;
 		buffer >> errorCode;
 		if (buffer.fail()) throw(Utils::WebservException("Error, stringstream"));
+		if (!checkErrorCode(errorCode)) throw(Utils::WebservException("Error, error_code not allowed"));
 		err.error_code = errorCode;
 
-		for (; pos < value.size(); pos++)
-			if (value[pos] != ' ') break ;
 		value = value.substr(pos);
 
-		if ((onlySpaces(value) || value.empty()) && err.error_page.empty()) throw(Utils::WebservException("Error, error_page syntax error"));
-		else if ((onlySpaces(value) || value.empty()) && !err.error_page.empty()) break ;
+		pos = value.find(" ");
+		skipSpaces(value, &pos);
 
+		value = value.substr(pos);
 		pos = value.find(" ");
 
 		errors.push_back(err);
 
-		if (pos == std::string::npos) {
-					error_page = value;
-					break;
+		if ((pos == std::string::npos && value.substr(0, pos).empty())) throw(Utils::WebservException("Error, error_page syntax error"));
+		else if (pos == std::string::npos || (pos != std::string::npos && onlySpaces(value.substr(pos)))) {
+			error_page = value.substr(0, pos);
+			break ;
 		}
 	}
 
 	std::vector<t_error_page>::iterator it;
 
-	for (it = errors.begin(); it != errors.end(); it++)
+	for (it = errors.begin(); it != errors.end(); it++) {
 		it->error_page = error_page;
+	}
 
 	return errors;
 }

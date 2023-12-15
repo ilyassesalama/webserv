@@ -1,12 +1,7 @@
 #include "../../../webserv.hpp"
 
 Response::Response() {
-
-
-    char cwd[PATH_MAX];
-    getcwd(cwd, sizeof(cwd));
-    (*this).clientSidePath.append(cwd);
-    (*this).clientSidePath.append("/src/client-side");
+    (*this).clientSidePath = File::getWorkingDir();
     (*this).path = "";
     (*this).server = NULL;
     (*this).request = NULL;
@@ -147,7 +142,11 @@ void Response::setStatusCode(int code) {
     (*this).statusCode = code;
 }
 
-void Response::setPath(std::string path,std::string method) {
+void Response::setPath(std::string path, std::string method) {
+
+	if (!this->request->getParsingState().ok)
+		return ;
+
     (*this).path = path;
     std::string locationPath = getPathLocation(path);
 
@@ -215,9 +214,9 @@ void Response::setResponseBody() {
     } else if (File::isFile(this->path)) {
         this->handleFileRequest();
     } else {
-        this->statusCode = 404;
-        this->responseBody = this->getErrorPageHTML();
-    }
+		this->statusCode = 404;
+		this->responseBody = this->getErrorPageHTML();
+	}
 }
 
 void Response::setRoute() {
@@ -300,9 +299,5 @@ void Response::clearResponse() {
     (*this).responseHeaders = "";
     (*this).responseBody = "";
     (*this).statusCode = 0;
-    char cwd[PATH_MAX];
-    (*this).clientSidePath.clear();
-    getcwd(cwd, sizeof(cwd));
-    (*this).clientSidePath.append(cwd);
-    (*this).clientSidePath.append("/src/client-side");
+	(*this).clientSidePath = File::getWorkingDir();
 }

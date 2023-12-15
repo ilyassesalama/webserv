@@ -8,5 +8,6 @@ class File {
         static std::string getContentType(std::string path);
         static bool isFile(const std::string &path);
         static bool isDirectory(const std::string &path);
+		static std::string getWorkingDir();
 };
 

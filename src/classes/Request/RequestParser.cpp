@@ -41,11 +41,6 @@ void RequestParser::mergeRequestChunks(std::string &requestInput) {
 }
 
 void RequestParser::parseFinalRequest(){
-    if(!File::isDirectory(this->requestLine["path"]) && !File::isFile(this->requestLine["path"])){
-        this->parsingState.failCode = 404;
-        this->parsingState.failReason = "Not Found";
-        return;
-    }
     if(!this->headers["Transfer-Encoding"].empty() && this->headers["Transfer-Encoding"] != "chunked"){
         this->parsingState.failCode = 501;
         this->parsingState.failReason = "Not Implemented";
@@ -56,17 +51,17 @@ void RequestParser::parseFinalRequest(){
         this->parsingState.failReason = "Bad Request";
         return;
     }
-    if(this->requestLine["path"].find_first_of("/\\:*?\"<>|") != std::string::npos){
-        this->parsingState.failCode = 400;
-        this->parsingState.failReason = "Bad Request";
-        return;
-    }
+    // if(this->requestLine["path"].find_first_of("/\\:*?\"<>|") != std::string::npos){
+    //     this->parsingState.failCode = 400;
+    //     this->parsingState.failReason = "Bad Request";
+    //     return;
+    // }
     if(this->requestLine["path"].length() > 2048){
         this->parsingState.failCode = 414;
         this->parsingState.failReason = "URI Too Long";
         return;
     }
-    size_t bodyMaxSizeFromConfig = -1;
+    size_t bodyMaxSizeFromConfig = this->server->client_body_size;
     if(this->body.length() > bodyMaxSizeFromConfig){
         this->parsingState.failCode = 413;
         this->parsingState.failReason = "Request Entity Too Large";
@@ -171,6 +166,12 @@ ParsingState const &RequestParser::getParsingState(){
 
 std::string &RequestParser::getRequestData() {
     return(requestData);
+}
+
+// setters
+
+void RequestParser::setServerInformation(t_server *server){
+	this->server = server;
 }
 
 // helper functions

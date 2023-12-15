@@ -41,7 +41,7 @@ typedef struct s_server {
 	std::vector<t_listen>listen;
 	std::vector<std::string>server_names;
 	std::vector<t_error_page>error_pages;
-	int client_body_size;
+	size_t client_body_size;
 	std::string body_size_unit;
 
 	bool is_client_body_size;
@@ -83,6 +83,8 @@ void skipSpaces( std::string str, size_t *idx );
 int valueCounter( std::string str, int value );
 bool isDigits( std::string value );
 bool onlySpaces( std::string str );
+bool checkErrorCode(int errorCode);
+void setDefaultErrors(std::list<t_server> &servers);
 
 /* directives tools */
 
@@ -92,7 +94,7 @@ std::string getSingleValue( std::string value, size_t *startPos );
 std::string getMultipleValues( std::string value, size_t *startPos );
 t_listen parseListen( std::string value );
 std::vector<std::string> multipleValuesParser( std::string value );
-void parseClientBodySize( int *body_size, std::string &body_size_unit, std::string value );
+void parseClientBodySize( size_t *body_size, std::string &body_size_unit, std::string value );
 std::vector<t_error_page> parseErrorPage( std::string value );
 std::string singleValueParser( std::string value );
 

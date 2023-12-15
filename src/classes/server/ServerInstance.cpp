@@ -113,6 +113,7 @@ int ServerInstance::recvRequest(int clientFd) {
         return(DROP_CLIENT);
     }
     ClientProfile *client = getClientProfile(clientFd);
+	client->parser.setServerInformation(((*this).serverInformations));
 
     try {
         client->parser.mergeRequestChunks(receivedRequest);
@@ -122,6 +123,7 @@ int ServerInstance::recvRequest(int clientFd) {
     }
     if(client->parser.getParsingState().ok) {
         client->request = client->parser.getRequestData();
+		client->response.setStatusCode(client->parser.getParsingState().failCode);
 		client->response.setRequest(client->parser);
 		client->response.setServer(*((*this).serverInformations));
 		client->response.responseBuilder();
