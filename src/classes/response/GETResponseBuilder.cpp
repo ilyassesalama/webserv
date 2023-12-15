@@ -1,12 +1,8 @@
 #include "../../../webserv.hpp"
 
-void uploadRequest() {
+void Response::GETResponseBuilder() {
 
-}
-
-void Response::POSTResponseBuilder() {
-
-	this->setResponseBody();
+    this->setResponseBody();
     this->setHeaders();
     this->setResponseLine();
 

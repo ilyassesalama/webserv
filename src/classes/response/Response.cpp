@@ -57,53 +57,18 @@ std::string Response::getErrorPageHTML(){
     return responseBody;
 }
 
-void Response::autoIndexHTMLBuilder(std::string indexHTML) {
 
-	std::string filePath;
-	std::string bodyHTML;
-	std::string autoIndexHTML;
-	std::time_t lastUpdateTime;
-
-	DIR* directory = opendir(this->path.c_str());
-
-	autoIndexHTML = generateHTMLStart(this->request->getRequestLine()["path"]);
-
-	if (directory) {
-
-		struct dirent* entry;
-
-		while ((entry = readdir(directory)) != NULL) {
-
-			if (entry->d_name[0] == '.')
-				continue ;
-
-			filePath = this->path + entry->d_name;
-
-			struct stat stats;
-
-			if (stat(filePath.c_str(), &stats) == 0) {
-				lastUpdateTime = stats.st_mtime;
-
-			} else {
-				this->statusCode = 404;
-				std::cerr << "ERROR 2: AUTOINDEX" << std::endl;
-				return ;
-			}
-
-			bodyHTML += createBodyHTML(createAnchor(entry->d_name), createParagraph(std::ctime(&lastUpdateTime)), createSizeParagraph(static_cast<long long>(stats.st_size)));
-		}
-
-	} else {
-		this->statusCode = 404;
-		std::cerr << "ERROR AUTOINDEX" << std::endl;
-		return ;
-	}
-
-	autoIndexHTML += generateHTMLEnd(bodyHTML);
-
-	this->responseBody = autoIndexHTML;
-	this->statusCode = 200;
-	this->path += indexHTML;
+std::string Response::getStringStatus(){
+    switch(this->statusCode){
+        case 200:
+            return "200 OK";
+        case 404:
+            return "404 Not Found";
+        case 500:
+            return "500 Internal Server Error";
+        default:
+            return "501 Unknown";
+    }
 }
 
 void Response::handleDirectoryRequest() {
@@ -169,22 +134,19 @@ void Response::setHeaders() {
 void Response::setResponseBody() {
 
 	// Under construction
-	// std::vector<std::string> allowed_methods;
-	// allowed_methods.push_back("POST");
+	std::vector<std::string> allowed_methods;
+	allowed_methods.push_back("POST");
 
-	// if (allowed_methods.size() != 0 && std::find(allowed_methods.begin(), allowed_methods.end(), "POST") != allowed_methods.end()) {
-	// 	this->statusCode = 200;
-	// 	size_t slashPos = this->path.find_last_of("/");
-	// 	std::string indexHTML = slashPos != this->path.size() - 1 ? "/index.html" : "index.html";
-	// 	this->path += indexHTML;
-	// 		this->responseBody = File::getFileContent(this->path + indexHTML);
-	// } else 
-	if (File::isDirectory(this->path)) {
+	bool uploadSupport = true;
+
+	if (allowed_methods.size() != 0 && std::find(allowed_methods.begin(), allowed_methods.end(), "POST") != allowed_methods.end() && this->request->getRequestLine()["method"] == "POST" && uploadSupport) {
+		
+	} else if (File::isDirectory(this->path)) {
         this->handleDirectoryRequest();
     } else if (File::isFile(this->path)) {
         this->handleFileRequest();
     } else {
-        this->statusCode = 301;
+        this->statusCode = 404;
         this->responseBody = this->getErrorPageHTML();
     }
 }
@@ -240,18 +202,6 @@ void Response::setPath(std::string path) {
 
 }
 
-
-void Response::GETResponseBuilder() {
-
-    this->setResponseBody();
-    this->setHeaders();
-    this->setResponseLine();
-
-    this->response = this->responseLine + this->responseHeaders + this->responseBody;
-
-	// std::cout << this->response << std::endl;
-}
-
 void Response::clearResponse() {
 
     (*this).path = "";
@@ -272,39 +222,20 @@ void Response::setServer(t_server &server) {
     setTroute();
 }
 
-std::string Response::getStringStatus(){
-    switch(this->statusCode){
-        case 200:
-            return "200 OK";
-        case 404:
-            return "404 Not Found";
-        case 500:
-            return "500 Internal Server Error";
-        default:
-            return "501 Unknown";
-    }
-}
-
 void Response::responseBuilder() {
-    
-	std::cout << "path: " << this->request->getRequestLine()["path"] << std::endl;
-
     if (this->request->getRequestLine()["method"] == "GET") {
         this->setPath(request->getRequestLine()["path"]);
 		Log::w(path);
         this->GETResponseBuilder();
         
     } else if (this->request->getRequestLine()["method"] == "POST") {
-		// this->setPath(request->getRequestLine()["path"]);
-		// Log::w(path);
-		// this->POSTResponseBuilder();
+		this->setPath(request->getRequestLine()["path"]);
+		Log::w(path);
+		this->POSTResponseBuilder();
     } else if (this->request->getRequestLine()["method"] == "DELETE") {
 
     }
-
 }
-
-
 
 // Response::Response(int clientFd, const RequestParser &parser){
 //     this->clientFD = clientFd;

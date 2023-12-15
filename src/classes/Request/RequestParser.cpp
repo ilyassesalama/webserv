@@ -77,6 +77,7 @@ void RequestParser::parseRequestHeaders(std::string &requestData) {
         if(line == "\r") break; // reached the end of headers
         std::string key = line.substr(0, line.find(":"));
         std::string value = line.substr(line.find(":") + 2);
+
         keyValuePairs[key] = value;
     }
     this->headers = keyValuePairs;

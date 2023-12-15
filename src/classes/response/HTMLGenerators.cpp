@@ -23,3 +23,52 @@ std::string createBodyHTML(std::string nameHTML, std::string lastUpdateHTML, std
 std::string generateHTMLEnd(std::string bodyHTML) {
 	return bodyHTML + "</div><div class=\"line\"></div></div></body></html>";
 }
+
+void Response::autoIndexHTMLBuilder(std::string indexHTML) {
+
+	std::string filePath;
+	std::string bodyHTML;
+	std::string autoIndexHTML;
+	std::time_t lastUpdateTime;
+
+	DIR* directory = opendir(this->path.c_str());
+
+	autoIndexHTML = generateHTMLStart(this->request->getRequestLine()["path"]);
+
+	if (directory) {
+
+		struct dirent* entry;
+
+		while ((entry = readdir(directory)) != NULL) {
+
+			if (entry->d_name[0] == '.')
+				continue ;
+
+			filePath = this->path + entry->d_name;
+
+			struct stat stats;
+
+			if (stat(filePath.c_str(), &stats) == 0) {
+				lastUpdateTime = stats.st_mtime;
+
+			} else {
+				this->statusCode = 404;
+				std::cerr << "ERROR 2: AUTOINDEX" << std::endl;
+				return ;
+			}
+
+			bodyHTML += createBodyHTML(createAnchor(entry->d_name), createParagraph(std::ctime(&lastUpdateTime)), createSizeParagraph(static_cast<long long>(stats.st_size)));
+		}
+
+	} else {
+		this->statusCode = 404;
+		std::cerr << "ERROR AUTOINDEX" << std::endl;
+		return ;
+	}
+
+	autoIndexHTML += generateHTMLEnd(bodyHTML);
+
+	this->responseBody = autoIndexHTML;
+	this->statusCode = 200;
+	this->path += indexHTML;
+}

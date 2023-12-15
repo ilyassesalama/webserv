@@ -72,7 +72,8 @@
 	"iomanip": "cpp",
 	"stack": "cpp",
 	"list": "cpp",
-	"filesystem": "cpp"
+	"filesystem": "cpp",
+	"__memory": "cpp"
 },
   "C_Cpp.intelliSenseEngineFallback": "enabled"
 }
