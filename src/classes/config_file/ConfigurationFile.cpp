@@ -189,7 +189,7 @@ ConfigurationFile::ConfigurationFile( std::string file ) {
 
 		this->configFileParsing();
 
-		// setDefaultErrors(this->getConfigFileServers());
+		setDefaultErrors(this->getConfigFileServers());
 	}
 	catch (std::exception &e) {
 		Log::e("Caught exception due to: " + std::string(e.what()));

@@ -35,49 +35,60 @@ std::string Response::getResponse() {
 	return((*this).response);
 }
 
+std::string getErrorPagePath(std::vector<t_error_page> &pages, int errorCode) {
+
+	std::vector<t_error_page>::iterator it;
+
+	for (it = pages.begin(); it != pages.end(); it++)
+		if (it->error_code == errorCode)
+			return it->error_page;
+	return NULL;
+}
+
 std::string Response::getErrorPageHTML(){
 
     std::string responseBody;
+	std::string error_page;
 
     switch(this->statusCode){
 		case 301:
-            this->path = "src/client-side/error_pages/301.html";
+            this->path = getErrorPagePath(this->server->error_pages, 301);
             responseBody = File::getFileContent(this->path);
 			break;
         case 400:
-            this->path = "src/client-side/error_pages/400.html";
+            this->path = getErrorPagePath(this->server->error_pages, 400);
             responseBody = File::getFileContent(this->path);
             break;
         case 404:
-            this->path = "src/client-side/error_pages/404.html";
+            this->path = getErrorPagePath(this->server->error_pages, 404);
             responseBody = File::getFileContent(this->path);
             break;
         case 403:
-            this->path = "src/client-side/error_pages/403.html";
+            this->path = getErrorPagePath(this->server->error_pages, 403);
             responseBody = File::getFileContent(this->path);
             break;
         case 405:
-            this->path = "src/client-side/error_pages/405.html";
+            this->path = getErrorPagePath(this->server->error_pages, 405);
             responseBody = File::getFileContent(this->path);
             break;
         case 409:
-            this->path = "src/client-side/error_pages/409.html";
+            this->path = getErrorPagePath(this->server->error_pages, 409);
             responseBody = File::getFileContent(this->path);
             break;
         case 413:
-            this->path = "src/client-side/error_pages/413.html";
+            this->path = getErrorPagePath(this->server->error_pages, 413);
             responseBody = File::getFileContent(this->path);
             break;
         case 414:
-            this->path = "src/client-side/error_pages/414.html";
+            this->path = getErrorPagePath(this->server->error_pages, 414);
             responseBody = File::getFileContent(this->path);
             break;
         case 500:
-            this->path = "src/client-side/error_pages/500.html";
+            this->path = getErrorPagePath(this->server->error_pages, 500);
             responseBody = File::getFileContent(this->path);
             break;
         default:
-            this->path = "src/client-side/error_pages/501.html";
+            this->path = getErrorPagePath(this->server->error_pages, 501);
             responseBody = File::getFileContent(this->path);
             break;
     }

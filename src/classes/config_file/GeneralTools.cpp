@@ -67,18 +67,31 @@ bool checkErrorCode(int errorCode) {
 	return 0;
 }
 
+void setErrorCode(std::list<t_server>::iterator &it, int errorCode) {
+	t_error_page error;
+	error.error_code = errorCode;
+	error.error_page = "src/client-side/error_pages/" + String::to_string(errorCode) + ".html";
+	it->error_pages.push_back(error);
+}
+
 void setDefaultErrors(std::list<t_server> &servers) {
-	(void) servers;
-	// std::list<t_server>::iterator it;
-	// std::vector<t_error_page>::iterator errorsIt;
-	// int errorCodes[10] = {301, 400, 403, 404, 405, 409, 413, 414, 500, 501};
+	std::list<t_server>::iterator it;
+	std::vector<t_error_page>::iterator errorsIt;
+	int errorCodes[10] = {301, 400, 403, 404, 405, 409, 413, 414, 500, 501};
+	bool isFound;
 
-	// for (it = servers.begin(); it != servers.end(); it++) {
-
-	// 	for (errorsIt = it->error_pages.begin(); errorsIt != it->error_pages.end(); errorsIt++) {
-	// 		if (checkErrorCode(errorsIt->error_code) )
-	// 	}
-
-	// }
-
+	for (it = servers.begin(); it != servers.end(); it++) {
+		for (size_t i = 0; i < 10; i++) {
+			isFound = false;
+			for (errorsIt = it->error_pages.begin(); errorsIt != it->error_pages.end(); errorsIt++) {
+				if (errorCodes[i] == errorsIt->error_code) {
+					isFound = true;
+					break ;
+				}
+			}
+			if (!isFound) {
+				setErrorCode(it, errorCodes[i]);
+			}
+		}
+	}
 }
