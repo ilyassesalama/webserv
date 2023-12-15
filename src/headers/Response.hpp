@@ -3,31 +3,6 @@
 #include "../../webserv.hpp"
 #include "ConfigurationFile.hpp"
 
-// #include"ServerInstance.hpp"
-// class Response {
-//     private:
-//         RequestParser requestParser;
-//         std::string response;
-//         std::string path;
-//         std::string contentType;
-//         std::string contentSize;
-//         int clientFD;
-//         int status;
-//     public:
-        
-//         Response(int clientFd, const RequestParser &parser);
-    
-//         std::string sendResponse();
-
-//         void setPath(const std::string &path);
-
-//         const int &getStatus();
-//         const std::string &getResponse();
-//         std::string getErrorPageHTML();
-//         std::string getStringStatus();
-// };
-
-
 class Response {
     public:
         Response();
@@ -36,21 +11,21 @@ class Response {
         void setRequest(RequestParser &request);
         void setServer(t_server &server);
         void setPath(std::string path);
-        void setTroute();
+        void setRoute();
         void setResponseLine();
         void setHeaders();
         void setResponseBody();
 		void setServedBytes(int bytes);
+        void setErrorResponse(int statusCode);
 
 		int getServerdBytes();
 		std::string getResponse();
         std::string getStringStatus();
 		t_route * getSpecificRoute(std::string location);
-		void buildResourcePath(t_route *route);
-
-        void setErrorResponse(int statusCode);
-        size_t getContentLength();
         std::string getErrorPageHTML();
+
+
+		void buildResourcePath(t_route *route);
         void GETResponseBuilder();
 		void POSTResponseBuilder();
         void responseBuilder();
@@ -59,10 +34,8 @@ class Response {
 		void handleDirectoryRequest();
         void handleFileRequest();
 		void autoIndexHTMLBuilder(std::string indexHTML);
-		bool getServingStatus();
     private:
         std::string path;
-
         RequestParser *request;
         t_server *server;
         int statusCode;
@@ -72,9 +45,6 @@ class Response {
         std::string responseBody; 
         std::vector<t_route>routes;
         int contentLength;
-		int servedBytes;
-		bool isServed;
-
         std::string clientSidePath;
 };
 
@@ -84,6 +54,3 @@ std::string createParagraph(std::string lastUpdate);
 std::string createSizeParagraph(long long size);
 std::string createBodyHTML(std::string nameHTML, std::string lastUpdateHTML, std::string sizeHTML);
 std::string generateHTMLEnd(std::string bodyHTML);
-
-// headers in response : 
-// content-Type / content-length / Transfer-encoding / connection 
