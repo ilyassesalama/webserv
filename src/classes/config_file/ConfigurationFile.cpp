@@ -41,10 +41,7 @@ void ConfigurationFile::parseRouteValue( std::string key, std::string value, t_r
 		route->root = singleValueParser(value);
 		route->is_root = true;
 	} else if (key == "directory_listing" && !route->is_directory_listing) {
-		std::string boolean = singleValueParser(value);
-		if (boolean != "true" && boolean != "false") throw (Utils::WebservException("Error, directory_listing can only be true or false"));
-		else if (boolean == "true") route->directory_listing = true;
-		else if (boolean == "false") route->directory_listing = false;
+		route->directory_listing = boolParser(value);
 		route->is_directory_listing = true;
 	} else if (key == "is_directory" && !route->is_is_directory) {
 		route->is_directory = singleValueParser(value);
@@ -60,11 +57,13 @@ void ConfigurationFile::parseRouteValue( std::string key, std::string value, t_r
 		route->cgi_methods = multipleValuesParser(value);
 		checkCGIMethod(route->cgi_methods);
 		route->is_cgi_methods = true;
-	} else if (key == "redirection" && !route->is_cgi_methods) {
+	} else if (key == "redirection" && !route->is_redirection) {
 		route->redirection = singleValueParser(value);
 		route->is_redirection = true;
-	}
-	else if (key != "root" && key != "directory_listing" && key != "is_directory" && key != "cgi_extension" && key != "allowed_methods" && key != "cgi_methods") {
+	} else if (key == "upload_support" && !route->is_upload) {
+		route->upload_support = boolParser(value);
+		route->is_upload = true;
+	} else if (key != "root" && key != "directory_listing" && key != "is_directory" && key != "cgi_extension" && key != "allowed_methods" && key != "cgi_methods" && key != "upload_support") {
 		throw (Utils::WebservException ("Error, directive not allowed"));
 	}
 }
@@ -81,6 +80,8 @@ void ConfigurationFile::handleLocation( std::string file, size_t *startIndex, st
 	t_route route;
 
 	route.path = path;
+	route.directory_listing = false;
+	route.upload_support = false;
 
 	initRouteBooleans(&route);
 	for (i = 0; i < endIndex && file[i] != '}'; i++) {

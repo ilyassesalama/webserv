@@ -37,6 +37,7 @@ void initRouteBooleans(t_route *route) {
 	route->is_is_directory = false;
 	route->is_cgi_extension = false;
 	route->is_cgi_methods = false;
+	route->is_upload = false;
 }
 
 bool isRouteAlreadyExist(t_server server, std::string path) {
@@ -86,4 +87,11 @@ void checkAllowedMethods(std::vector<std::string>allowed_methods) {
 std::string getRouteDirectiveValue(std::string key, std::string file, size_t *startIndex)
 {
 	return key != "allowed_methods" && key != "cgi_methods" ? getSingleValue(file, startIndex) : getMultipleValues(file, startIndex);
+}
+
+bool boolParser(std::string &value) {
+	std::string boolean = singleValueParser(value);
+	if (boolean != "true" && boolean != "false") throw (Utils::WebservException("Error, directory_listing can only be true or false"));
+	else if (boolean == "true") return true;
+	return false;
 }
