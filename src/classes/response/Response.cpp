@@ -33,16 +33,24 @@ std::string Response::getErrorPageHTML(){
             this->path = "src/client-side/error_pages/301.html";
             responseBody = File::getFileContent(this->path);
 			break;
+        case 400:
+            this->path = "src/client-side/error_pages/400.html";
+            responseBody = File::getFileContent(this->path);
+            break;
         case 404:
             this->path = "src/client-side/error_pages/404.html";
             responseBody = File::getFileContent(this->path);
             break;
         case 403:
-            this->path = "src/client-side/error_pages/402.html";
+            this->path = "src/client-side/error_pages/403.html";
             responseBody = File::getFileContent(this->path);
             break;
         case 405:
             this->path = "src/client-side/error_pages/405.html";
+            responseBody = File::getFileContent(this->path);
+            break;
+        case 409:
+            this->path = "src/client-side/error_pages/409.html";
             responseBody = File::getFileContent(this->path);
             break;
         case 413:
@@ -57,10 +65,6 @@ std::string Response::getErrorPageHTML(){
             this->path = "src/client-side/error_pages/500.html";
             responseBody = File::getFileContent(this->path);
             break;
-        case 501:
-            this->path = "src/client-side/error_pages/501.html";
-            responseBody = File::getFileContent(this->path);
-            break;
         default:
             this->path = "src/client-side/error_pages/501.html";
             responseBody = File::getFileContent(this->path);
@@ -72,14 +76,26 @@ std::string Response::getErrorPageHTML(){
 
 std::string Response::getStringStatus(){
     switch(this->statusCode){
-        case 200:
-            return "200 OK";
+		case 301:
+            return "301 Moved Permanently";
+        case 400:
+            return "400 Bad Request";
         case 404:
             return "404 Not Found";
+        case 403:
+            return "403 Forbidden";
+        case 405:
+            return "405 Method Not Allowed";
+        case 409:
+            return "409 Conflict";
+        case 413:
+            return "413 Request Entity Too Large";
+        case 414:
+            return "414 Request-URI Too Long";
         case 500:
             return "500 Internal Server Error";
         default:
-            return "501 Unknown";
+            return "501 Not Implemented";
     }
 }
 
@@ -110,12 +126,6 @@ std::string getPathLocation(std::string path) {
 	SETTER FUNCTIONS
 */
 
-void Response::setServedBytes(int bytes) {
-	(*this).servedBytes +=  bytes;
-	if((*this).servedBytes == (int)(*this).response.length())
-		(*this).isServed = true;
-}
-
 void Response::setPath(std::string path) {
     (*this).path = path;
     std::string locationPath = getPathLocation(path);
@@ -138,7 +148,7 @@ void Response::setRequest(RequestParser &request) {
 
 void Response::setServer(t_server &server) {
     (*this).server = &server;
-    setTroute();
+    setRoute();
 }
 
 void Response::setResponseLine() {
