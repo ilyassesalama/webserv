@@ -5,7 +5,6 @@ Response::Response() {
 
     char cwd[PATH_MAX];
     getcwd(cwd, sizeof(cwd));
-    std::cout << cwd << std::endl;
     (*this).clientSidePath.append(cwd);
     (*this).clientSidePath.append("/src/client-side");
     (*this).path = "";
@@ -152,18 +151,16 @@ void Response::setPath(std::string path,std::string method) {
     (*this).path = path;
     std::string locationPath = getPathLocation(path);
 
-    t_route *route = getSpecificRoute(locationPath);
+	this->currentRoute = getSpecificRoute(locationPath);
 
-    if(route == NULL) {
-        if(locationPath == "/") {
-            //resource not found set error code 
-            std::cout << "NO LOCATION FOUND" << std::endl;
-        }
+    if(this->currentRoute == NULL) {
+		//resource not found set error code 
+		setStatusCode(404);
     }
     else  {
         //check if the method allowed on that location 
         if(getAllowedMethod(locationPath,method) == method)
-            buildResourcePath(route);
+            buildResourcePath(this->currentRoute);
         else
             setStatusCode(405);
     }
@@ -198,11 +195,18 @@ void Response::setHeaders() {
 
 void Response::setResponseBody() {
 
-	// Under construction
 	std::vector<std::string> allowed_methods;
-	allowed_methods.push_back("POST");
+	bool uploadSupport;
 
-	bool uploadSupport = true;
+	if (this->currentRoute != NULL) {
+		allowed_methods = this->currentRoute->allowed_methods;
+		uploadSupport = true;
+	}
+
+	if (this->statusCode != 200 && this->statusCode != 0) {
+		this->responseBody = this->getErrorPageHTML();
+		return ;
+	}
 
 	if (allowed_methods.size() != 0 && std::find(allowed_methods.begin(), allowed_methods.end(), "POST") != allowed_methods.end() && this->request->getRequestLine()["method"] == "POST" && uploadSupport) {
 		
@@ -235,7 +239,7 @@ void Response::handleDirectoryRequest() {
         this->responseBody = File::getFileContent(this->path);
 		this->statusCode = 200;
     } else {
-        bool directory_listing = true; // temporary
+        bool directory_listing = this->currentRoute->directory_listing;
 
         if (directory_listing) {
             // response should be list of files in the directory
@@ -249,9 +253,8 @@ void Response::handleDirectoryRequest() {
 
 void Response::handleFileRequest() {
 
-    std::vector<std::string>cgi_methods; // temporary
-    // cgi_methods.push_back("GET"); // temporary
-    std::string cgi_extension = "php"; // temporary
+    std::vector<std::string>cgi_methods = this->currentRoute->cgi_methods;
+    std::string cgi_extension = this->currentRoute->cgi_extension;
 
     if (cgi_methods.size() != 0) {
 
@@ -268,6 +271,7 @@ void Response::handleFileRequest() {
 
 void Response::buildResourcePath(t_route *route) {
     std::string requestedResource;
+
     requestedResource.append(this->clientSidePath);
     requestedResource.append(route->root);
     requestedResource.append(this->path);
@@ -277,12 +281,12 @@ void Response::buildResourcePath(t_route *route) {
 void Response::responseBuilder() {
     if (this->request->getRequestLine()["method"] == "GET") {
         this->setPath(request->getRequestLine()["path"],"GET");
-		Log::w(path);
+		Log::e(path);
         this->GETResponseBuilder();
         
     } else if (this->request->getRequestLine()["method"] == "POST") {
 		this->setPath(request->getRequestLine()["path"],"POST");
-		Log::w(path);
+		// Log::w(path);
 		this->POSTResponseBuilder();
     } else if (this->request->getRequestLine()["method"] == "DELETE") {
 
@@ -299,7 +303,6 @@ void Response::clearResponse() {
     char cwd[PATH_MAX];
     (*this).clientSidePath.clear();
     getcwd(cwd, sizeof(cwd));
-    std::cout << cwd << std::endl;
     (*this).clientSidePath.append(cwd);
     (*this).clientSidePath.append("/src/client-side");
 }

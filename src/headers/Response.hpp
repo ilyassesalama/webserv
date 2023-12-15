@@ -45,6 +45,7 @@ class Response {
         std::vector<t_route>routes;
         int contentLength;
         std::string clientSidePath;
+		t_route *currentRoute;
 };
 
 std::string generateHTMLStart(std::string path);
