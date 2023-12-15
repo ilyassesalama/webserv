@@ -35,8 +35,7 @@ std::string File::getContentType(std::string path) {
     } else if (String::endsWith(path, ".ttf")) {
         return "font/ttf";
     } else {
-        // default content type
-        return "text/plain";
+        return "text/plain";  // default content type
     }
 }
 

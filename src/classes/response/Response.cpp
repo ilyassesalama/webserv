@@ -12,9 +12,21 @@ Response::Response() {
     (*this).statusCode = 0;
 }
 
-Response::~Response() {
+Response::~Response() {}
 
+void Response::responseBuilder() {
+    if (this->request->getRequestLine()["method"] == "GET") {
+        this->setPath(request->getRequestLine()["path"],"GET");
+        this->GETResponseBuilder();
+    } else if (this->request->getRequestLine()["method"] == "POST") {
+
+		this->setPath(request->getRequestLine()["path"],"POST");
+		this->POSTResponseBuilder();
+    } else if (this->request->getRequestLine()["method"] == "DELETE") {
+        // TODO: To be implemented
+    }
 }
+
 
 /*
 	GETTER FUNCTIONS
@@ -36,52 +48,22 @@ std::string Response::getResponse() {
 }
 
 std::string getErrorPagePath(std::vector<t_error_page> &pages, int errorCode) {
-
 	std::vector<t_error_page>::iterator it;
 
 	for (it = pages.begin(); it != pages.end(); it++)
 		if (it->error_code == errorCode)
 			return it->error_page;
+	for (it = pages.begin(); it != pages.end(); it++)
+		if (it->error_code == 500)
+			return it->error_page;
 	return NULL;
 }
 
 std::string Response::getErrorPageHTML(){
-
     std::string responseBody;
 	std::string error_page;
 
-    switch(this->statusCode){
-		case 301:
-            this->path = getErrorPagePath(this->server->error_pages, 301);
-			break;
-        case 400:
-            this->path = getErrorPagePath(this->server->error_pages, 400);
-            break;
-        case 404:
-            this->path = getErrorPagePath(this->server->error_pages, 404);
-            break;
-        case 403:
-            this->path = getErrorPagePath(this->server->error_pages, 403);
-            break;
-        case 405:
-            this->path = getErrorPagePath(this->server->error_pages, 405);
-            break;
-        case 409:
-            this->path = getErrorPagePath(this->server->error_pages, 409);
-            break;
-        case 413:
-            this->path = getErrorPagePath(this->server->error_pages, 413);
-            break;
-        case 414:
-            this->path = getErrorPagePath(this->server->error_pages, 414);
-            break;
-        case 500:
-            this->path = getErrorPagePath(this->server->error_pages, 500);
-            break;
-        default:
-            this->path = getErrorPagePath(this->server->error_pages, 501);
-            break;
-    }
+    this->path = getErrorPagePath(this->server->error_pages, this->statusCode);
     try {
         responseBody = File::getFileContent(this->path);
     } catch (std::exception &e) {
@@ -110,10 +92,10 @@ std::string Response::getStringStatus(){
             return "413 Request Entity Too Large";
         case 414:
             return "414 Request-URI Too Long";
-        case 500:
-            return "500 Internal Server Error";
-        default:
+        case 501:
             return "501 Not Implemented";
+        default:
+            return "500 Internal Server Error";
     }
 }
 
@@ -205,7 +187,7 @@ void Response::setResponseBody() {
 	bool uploadSupport;
 
 	if (this->currentRoute != NULL) {
-		allowed_methods = this->currentRoute->allowed_methods;
+		// allowed_methods = this->currentRoute->allowed_methods;
 		uploadSupport = true;
 	}
 
@@ -284,20 +266,7 @@ void Response::buildResourcePath(t_route *route) {
     (*this).path = requestedResource;
 }
 
-void Response::responseBuilder() {
-    if (this->request->getRequestLine()["method"] == "GET") {
-        this->setPath(request->getRequestLine()["path"],"GET");
-		Log::e(path);
-        this->GETResponseBuilder();
-        
-    } else if (this->request->getRequestLine()["method"] == "POST") {
-		this->setPath(request->getRequestLine()["path"],"POST");
-		// Log::w(path);
-		this->POSTResponseBuilder();
-    } else if (this->request->getRequestLine()["method"] == "DELETE") {
 
-    }
-}
 
 void Response::clearResponse() {
     (*this).path = "";

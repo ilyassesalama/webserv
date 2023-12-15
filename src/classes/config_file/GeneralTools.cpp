@@ -70,7 +70,7 @@ bool checkErrorCode(int errorCode) {
 void setErrorCode(std::list<t_server>::iterator &it, int errorCode) {
 	t_error_page error;
 	error.error_code = errorCode;
-	error.error_page = "src/client-side/error_pages/" + String::to_string(errorCode) + ".html";
+	error.error_page = File::getWorkingDir() + "/error_pages/" + String::to_string(errorCode) + ".html";
 	it->error_pages.push_back(error);
 }
 
