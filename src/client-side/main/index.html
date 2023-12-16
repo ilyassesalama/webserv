@@ -22,6 +22,7 @@
 
 		ul {
 			display: flex;
+			align-items: center;
 			justify-content: flex-end;
 		}
 
@@ -33,17 +34,42 @@
 			text-decoration: none;
 		}
 
+		nav {
+			display: flex;
+			align-items: center;
+			justify-content: flex-end;
+		}
+
 		ul li a {
 			color: #333;
 			text-transform: uppercase;
 			margin-right: 20px;
 		}
 
+		ul li a:hover {
+			color: #87CEEB;
+		}
+
+		ul li button {
+			background-color: #87CEEB;
+			padding: 10px 20px;
+			border: 1px solid transparent;
+			border-radius: 5px;
+			color: #fff;
+			cursor: pointer;
+		}
+
+		ul li button:hover {
+			background-color: transparent;
+			border: 1px solid #87CEEB;
+			color: #87CEEB;
+		}
+
 		.line {
 			width: 80%;
 			height: 1px;
 			background-color: #333;
-			margin: 20px auto;
+			margin: 15px auto;
 		}
 /*
 		nav {
@@ -154,7 +180,8 @@
     <div class="content">
 		<nav>
 			<ul>
-				<li><a href="#">Login</a></li>
+				<li><a href="#">File Upload</a></li>
+				<li><a href="#"><button>Login</button></a></li>
 			</ul>
 		</nav>
 		<div class="line"></div>
