@@ -15,6 +15,10 @@ std::string File::getFileContent(const std::string &path){
     return content;
 }
 
+/*
+    Adding a new allowed type to this list will require adding it
+    to the list of allowed types in the std::vector<std::string> getAllowedTypes() method as well.
+*/
 std::string File::getContentType(std::string path) {
     if (String::endsWith(path, ".css")) {
         return "text/css";
