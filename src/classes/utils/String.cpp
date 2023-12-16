@@ -1,8 +1,11 @@
 #include "../../../webserv.hpp"
 
 std::string String::getExtension(const std::string &path){
-    std::string extension = path.substr(path.find_last_of("."));
-    return extension;
+	size_t pos = path.find_last_of(".");
+	if (pos == std::string::npos) {
+		return "none";
+	}
+    return path.substr(pos);
 }
 
 bool String::endsWith(const std::string &str, const std::string &suffix){

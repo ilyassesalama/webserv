@@ -77,6 +77,11 @@ void RequestParser::parseFinalRequest(){
         this->parsingState.failReason = "Method Not Allowed";
         return;
     }
+	if (!parseContentType()) {
+		this->parsingState.failCode = 400;
+		this->parsingState.failReason = "Bad Request";
+		std::cout << "ENTERED" << std::endl;
+	}
 
 }
 

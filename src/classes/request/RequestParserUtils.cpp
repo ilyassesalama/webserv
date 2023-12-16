@@ -134,3 +134,69 @@ bool RequestParser::isMethodAllowed() {
     }
     return(false);
 }
+
+std::vector<std::string> getAllowedTypes() {
+	std::vector<std::string>allowedTypes;
+
+	allowedTypes.push_back("multipart/form-data");
+	allowedTypes.push_back("text/html");
+	allowedTypes.push_back("text/css");
+	allowedTypes.push_back("application/javascript");
+	allowedTypes.push_back("image/jpeg");
+	allowedTypes.push_back("image/png");
+	allowedTypes.push_back("image/gif");
+	allowedTypes.push_back("image/svg+xml");
+	allowedTypes.push_back("image/x-icon");
+	allowedTypes.push_back("font/ttf");
+	allowedTypes.push_back("text/plain");
+
+	return allowedTypes;
+}
+
+bool checkMultiPartFormData(std::string contentType, std::string fullContentType, size_t paramPos) {
+	if (contentType == "multipart/form-data") {
+		skipSpaces(fullContentType, &paramPos);
+		size_t startPos = fullContentType.find("boundary=");
+		if (startPos == std::string::npos || startPos != paramPos) {
+			// error code bad request
+			return false;
+		}
+		std::string boundary = fullContentType.substr(startPos);
+		paramPos = boundary.find(" ");
+		if (paramPos != std::string::npos) {
+			skipSpaces(boundary, &paramPos);
+			// error code bad request
+			if (paramPos != boundary.size()) {
+				std::cout << "Bad request" << std::endl;
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+bool checkContentType(std::string fullContentType) {
+	size_t endPos = fullContentType.find(";");
+	if (endPos == std::string::npos) {
+		endPos = fullContentType.size() - 1;
+	}
+
+	std::string contentType = fullContentType.substr(0, endPos);
+	std::vector<std::string> allowedTypes = getAllowedTypes();
+	if (std::find(allowedTypes.begin(), allowedTypes.end(), contentType) != allowedTypes.end()) {
+		return checkMultiPartFormData(contentType, fullContentType, ++endPos);
+	}
+	return false;
+}
+
+bool RequestParser::parseContentType() {
+
+	bool isExist = this->headers.find("Content-Type") != this->headers.end() ? true : false;
+
+	if (isExist) {
+		return checkContentType(this->headers["Content-Type"]);
+	}
+	std::string path = "/path/to/file.dffg";
+	this->headers["Content-Type"] = File::getContentType(this->requestLine["path"]);
+	return true;
+}

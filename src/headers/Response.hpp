@@ -54,3 +54,5 @@ std::string createParagraph(std::string lastUpdate);
 std::string createSizeParagraph(long long size);
 std::string createBodyHTML(std::string nameHTML, std::string lastUpdateHTML, std::string sizeHTML);
 std::string generateHTMLEnd(std::string bodyHTML);
+
+std::string getContentType(std::map<std::string, std::string>&headers, std::string path);

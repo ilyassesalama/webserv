@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Web Server Response</title>
     <style>
+		*, *::after, *::before {
+			box-sizing: border-box;
+		}
         body {
             font-family: Arial, sans-serif;
             background-color: #f2f2f2;
@@ -14,13 +17,56 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+			text-align: center;
         }
+
+		ul {
+			display: flex;
+			justify-content: flex-end;
+		}
+
+		li {
+			list-style: none;
+		}
+
+		a {
+			text-decoration: none;
+		}
+
+		ul li a {
+			color: #333;
+			text-transform: uppercase;
+			margin-right: 20px;
+		}
+
+		.line {
+			width: 80%;
+			height: 1px;
+			background-color: #333;
+			margin: 20px auto;
+		}
+/*
+		nav {
+			width: 100%;
+			border: 0.7px solid #001e47;
+			background-color: #a1c4fc;
+			border-radius: 50px;
+		}
+
+		nav ul li a {
+			color: #fff;
+			border: 0.7px solid #001e47;
+			background-color: #4e6fa5;
+			border-radius: 50px;
+			padding: 10px 20px 10px 20px;
+		} */
 
         .content {
             background-color: #ffffff;
             padding: 20px;
-            border-radius: 8px;
+            border-radius: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+			width: 60%;
         }
 
         h1 {
@@ -30,15 +76,101 @@
         p {
             color: #666666;
         }
+		.images {
+			width: 100%;
+			display: grid;
+			grid-template-columns: repeat(3, 1fr);
+			grid-gap: 20px;
+			margin-top: 30px;
+			height: 200px;
+		}
+		.images .image {
+			position: relative;
+			border-radius: 20px;
+			overflow: hidden;
+			width: 100%;
+			display: flex;
+			justify-content: center;
+			align-items: flex-end;
+			text-align: center;
+		}
+
+		.images .image:nth-child(1) {
+			background-image: url('https://cdn.intra.42.fr/users/8d11a1f3e2e74d37d841fb2cae1d4dbc/bel-kala.jpg');
+			background-size: cover;
+			background-position: center;
+		}
+
+		.images .image:nth-child(2) {
+			background-image: url('https://cdn.intra.42.fr/users/2ab5324b37b5488b9ff173cf09da2475/abahsine.jpg');
+			background-size: cover;
+			background-position: center;
+		}
+		.images .image:nth-child(3) {
+			background-image: url('https://cdn.intra.42.fr/users/62d6663a3270103c25d47dc9d12a58b1/isalama.jpg');
+			background-size: cover;
+			background-position: center;
+		}
+
+		.images .image h1 {
+			position: relative;
+			bottom: 15px;
+			z-index: 2;
+			width: 100%;
+			height: 40px;
+			color: #fff;
+			font-size: 18px;
+			font-weight: 300;
+			padding: 0 50px;
+			margin: 0;
+			opacity: 0;
+			user-select: none;
+			transition: 0.5s;
+		}
+
+		.images .image:hover h1 {
+			display: block;
+			opacity: 1;
+			transition-delay: 0.1s;
+		}
+
+		.images .image::after {
+			content: '';
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			bottom: -100%;
+			left: 0;
+			background-color: rgba(51, 51, 51, .5);
+		}
+
+		.images .image:hover::after {
+			bottom: 0;
+			transition: 0.5s;
+		}
     </style>
 </head>
 <body>
     <div class="content">
+		<nav>
+			<ul>
+				<li><a href="#">Login</a></li>
+			</ul>
+		</nav>
+		<div class="line"></div>
         <h1>Hello, Web Server!</h1>
         <p>This is a simple HTML and CSS response sent from the web server.</p>
-        <img src="https://cdn.intra.42.fr/users/2ab5324b37b5488b9ff173cf09da2475/abahsine.jpg" alt="Abahsine's Image" style="width: 100px; height: 100px;">
-        <img src="https://cdn.intra.42.fr/users/62d6663a3270103c25d47dc9d12a58b1/isalama.jpg" alt="Isalama's Image" style="width: 100px; height: 100px;">
-        <img src="https://cdn.intra.42.fr/users/8d11a1f3e2e74d37d841fb2cae1d4dbc/bel-kala.jpg" alt="Bel-Kala's Image" style="width: 100px; height: 100px;">
+		<div class="images">
+			<div class="image">
+				<h1>Badr Eddine El Kalai</h1>
+			</div>
+			<div class="image">
+				<h1>Abdellah Bahsine</h1>
+			</div>
+			<div class="image">
+				<h1>Ilyasse Salama</h1>
+			</div>
+		</div>
     </div>
 </body>
 </html>

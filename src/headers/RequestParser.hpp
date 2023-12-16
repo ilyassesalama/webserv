@@ -45,4 +45,5 @@ class RequestParser {
         std::string& getRequestData();
         bool isPathAccessible();
         bool isMethodAllowed();
+		bool parseContentType(); // add by abahsine
 };

@@ -77,6 +77,8 @@ std::string Response::getErrorPageHTML(){
 
 std::string Response::getStringStatus(){
     switch(this->statusCode){
+		case 200:
+            return "200 OK";
 		case 301:
             return "301 Moved Permanently";
         case 400:
