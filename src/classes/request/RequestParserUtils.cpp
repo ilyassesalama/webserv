@@ -135,6 +135,10 @@ bool RequestParser::isMethodAllowed() {
     return(false);
 }
 
+/*
+    Adding a new allowed type to this list will require adding it
+    in the File::getContentType() function as well.
+*/
 std::vector<std::string> getAllowedTypes() {
 	std::vector<std::string>allowedTypes;
 
@@ -157,19 +161,16 @@ bool checkMultiPartFormData(std::string contentType, std::string fullContentType
 	if (contentType == "multipart/form-data") {
 		skipSpaces(fullContentType, &paramPos);
 		size_t startPos = fullContentType.find("boundary=");
-		if (startPos == std::string::npos || startPos != paramPos) {
-			// error code bad request
+		// error code bad request
+		if (startPos == std::string::npos || startPos != paramPos)
 			return false;
-		}
 		std::string boundary = fullContentType.substr(startPos);
 		paramPos = boundary.find(" ");
 		if (paramPos != std::string::npos) {
 			skipSpaces(boundary, &paramPos);
 			// error code bad request
-			if (paramPos != boundary.size()) {
-				std::cout << "Bad request" << std::endl;
-				return false;
-			}
+			if (paramPos != boundary.size())
+                return false;
 		}
 	}
 	return true;
@@ -190,13 +191,11 @@ bool checkContentType(std::string fullContentType) {
 }
 
 bool RequestParser::parseContentType() {
-
-	bool isExist = this->headers.find("Content-Type") != this->headers.end() ? true : false;
+    bool isExist = Utils::isHeaderKeyExists(this->headers, "Content-Type");
 
 	if (isExist) {
 		return checkContentType(this->headers["Content-Type"]);
 	}
-	std::string path = "/path/to/file.dffg";
 	this->headers["Content-Type"] = File::getContentType(this->requestLine["path"]);
 	return true;
 }

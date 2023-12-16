@@ -46,7 +46,7 @@ void RequestParser::parseFinalRequest(){
         this->parsingState.failReason = "Not Implemented";
         return;
     }
-    if(this->requestLine["method"] == "POST" && (this->headers["Content-Length"].empty() || this->headers["Transfer-Encoding"].empty())){
+    if(this->requestLine["method"] == "POST" && (!Utils::isHeaderKeyExists(this->headers, "Content-Length") || this->headers["Transfer-Encoding"].empty())){
         this->parsingState.failCode = 400;
         this->parsingState.failReason = "Bad Request";
         return;
