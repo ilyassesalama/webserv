@@ -42,4 +42,5 @@ class ServerInstance {
         std::vector<struct ClientProfile> clientProfiles;
         const int backLog;
         std::vector<t_listen> listenDirectives;
+        size_t sendSize;
 };

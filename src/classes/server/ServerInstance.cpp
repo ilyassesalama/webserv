@@ -11,6 +11,8 @@ ServerInstance::ServerInstance(s_server &serverInfos): backLog(100) {
         (*this).hint.ai_family = AF_INET;
         (*this).hint.ai_socktype = SOCK_STREAM;
         (*this).hint.ai_flags = AI_PASSIVE;
+        (*this).sendSize = 1000;
+
 
 }
 
@@ -124,8 +126,10 @@ int ServerInstance::recvRequest(int clientFd) {
     if(client->parser.getParsingState().ok) {
         client->request = client->parser.getRequestData();
 		client->response.setStatusCode(client->parser.getParsingState().failCode);
+        client->response.setPath(client->parser.getRequestedResourcePath());
 		client->response.setRequest(client->parser);
 		client->response.setServer(*((*this).serverInformations));
+        client->response.setRoute(client->parser.getRoute());
 		client->response.responseBuilder();
         client->request.clear();
 		client->parser.nullOutVars();
@@ -170,15 +174,18 @@ ClientProfile *ServerInstance::getClientProfile(int clientFd) {
 }
 
 int ServerInstance::sendResponse(int clientFd) {
-    send(clientFd, getClientProfile(clientFd)->response.getResponse().c_str(),getClientProfile(clientFd)->response.getResponse().length(),0);;
-    getClientProfile(clientFd)->response.clearResponse();
-    Log::d("Serving Client " + getClientProfile(clientFd)->ipAdress + " ...");
+    static int count = 0;
+    ClientProfile *client = getClientProfile(clientFd);
+    size_t bytesSent = send(clientFd, &client->response.getResponse()[0],client->response.getResponse().size(),0);
+    Log::d("Serving clinet ... " + String::to_string(count++));
+    client->response.setBytesSent(bytesSent);
+    client->response.feedDataToTheSender();
+    if(client->response.isServing()) {
+        return(-1);
+    }
+    client->response.clearResponse();
 	return 1;
 }
-
-// std::string ServerInstance::getIpType(std::string ipAdress) {
-
-// }
 
 
 ServerInstance::~ServerInstance () {

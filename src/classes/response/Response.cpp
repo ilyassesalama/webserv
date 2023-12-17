@@ -10,42 +10,66 @@ Response::Response() {
     (*this).responseHeaders = "";
     (*this).responseBody = "";
     (*this).statusCode = 0;
+    (*this).bytesToRead = 10000;
+    (*this).fileOffset = 0;
+    (*this).bytesSent = 0;
+    (*this).servingState = false;
 }
+
 
 Response::~Response() {}
 
-void Response::responseBuilder() {
-    if (this->request->getRequestLine()["method"] == "GET") {
 
-        this->setPath(request->getRequestLine()["path"],"GET");
-        this->GETResponseBuilder();
-    } else if (this->request->getRequestLine()["method"] == "POST") {
-
-		this->setPath(request->getRequestLine()["path"],"POST");
-		this->POSTResponseBuilder();
-    } else if (this->request->getRequestLine()["method"] == "DELETE") {
-        // TODO: To be implemented
+void Response::feedDataToTheSender() {
+    if(fileOffset == -1 && bytesSent == responseVector.size())
+    {   
+        //finished file : change the serving status so he can recv another requestes
+        setServingState(false);
+        return;
+    }
+    else if(bytesSent < responseVector.size()) {
+        std::vector<char>tmp(responseVector.begin() + bytesSent,responseVector.end());
+        (*this).responseVector = tmp;
+    }
+    else if(bytesSent == responseVector.size()) {
+        bytesSent = 0;
+        responseVector.clear();
+        addDataToResponse((*this).readFileByOffset());
     }
 }
+
+
+void Response::responseBuilder() {
+   try {
+        //check if the parser failed
+        if((*this).statusCode != 200 && (*this).statusCode != 201)
+            throw(Utils::WebservException(String::to_string((*this).statusCode)));
+        else {
+            if (this->request->getRequestLine()["method"] == "GET") {
+                GETResponseBuilder();
+            }
+        }
+    }
+    catch(Utils::WebservException &ex) {
+        //build error Response based on the error code
+        buildErrorResponse();
+    }
+} 
 
 
 /*
 	GETTER FUNCTIONS
 */
 
-std::string Response::getAllowedMethod(std::string location, std::string method) {
-    for(std::vector<t_route>::iterator it = (*this).routes.begin(); it != (*this).routes.end(); ++it) {
-        if(location == it->path) {
-            if(std::find(it->allowed_methods.begin(), it->allowed_methods.end(), method) == it->allowed_methods.end())
-                return("METHOD NOT ALLOWED IN THIS LOCATION");
-            else return(method);
-        }
-    }
-    return("NO LOCATION FOUND");
-}
-
-std::string Response::getResponse() {
-	return((*this).response);
+void Response::buildErrorResponse() {
+    //get The Body Of the Error Page
+    (*this).responseBody =  getErrorPageHTML();
+    setResponseLine();
+    setHeaders();
+    (*this).response.append((*this).responseLine);
+    (*this).response.append((*this).responseHeaders);
+    (*this).response.append((*this).responseBody);
+    addDataToResponse(response);
 }
 
 std::string getErrorPagePath(std::vector<t_error_page> &pages, int errorCode) {
@@ -75,149 +99,6 @@ std::string Response::getErrorPageHTML(){
 }
 
 
-std::string Response::getStringStatus(){
-    switch(this->statusCode){
-		case 200:
-            return "200 OK";
-		case 301:
-            return "301 Moved Permanently";
-        case 400:
-            return "400 Bad Request";
-        case 404:
-            return "404 Not Found";
-        case 403:
-            return "403 Forbidden";
-        case 405:
-            return "405 Method Not Allowed";
-        case 409:
-            return "409 Conflict";
-        case 413:
-            return "413 Request Entity Too Large";
-        case 414:
-            return "414 Request-URI Too Long";
-        case 501:
-            return "501 Not Implemented";
-        default:
-            return "500 Internal Server Error";
-    }
-}
-
-t_route *Response::getSpecificRoute(std::string location) {
-    for(std::vector<t_route>::iterator it = (*this).routes.begin(); it != (*this).routes.end(); ++it) {
-        if(location == it->path) {
-            return(&(*it));
-        }
-    }
-    return(NULL);
-}
-
-std::string getPathLocation(std::string path) {
-    std::string location;
-
-    size_t firstSlash = path.find("/");
-
-    if(firstSlash != std::string::npos) {
-        size_t secondSlash = path.find("/", firstSlash + 1);
-        if(secondSlash != std::string::npos) {
-             return path.substr(0, secondSlash); 
-        }
-    }
-    return("/");
-}
-
-/*
-	SETTER FUNCTIONS
-*/
-
-
-void Response::setStatusCode(int code) {
-    (*this).statusCode = code;
-}
-
-void Response::setPath(std::string path, std::string method) {
-
-	if (!this->request->getParsingState().ok)
-		return ;
-
-    (*this).path = path;
-    std::string locationPath = getPathLocation(path);
-
-	this->currentRoute = getSpecificRoute(locationPath);
-
-    if(this->currentRoute == NULL) {
-		//resource not found set error code 
-		setStatusCode(404);
-    }
-    else  {
-        //check if the method allowed on that location 
-        if(getAllowedMethod(locationPath,method) == method)
-            buildResourcePath(this->currentRoute);
-        else
-            setStatusCode(405);
-    }
-}
-
-void Response::setRequest(RequestParser &request) {
-    (*this).request = &request;
-}
-
-void Response::setServer(t_server &server) {
-    (*this).server = &server;
-    setRoute();
-}
-
-void Response::setResponseLine() {
-
-    std::string status = getStringStatus();
-
-    this->responseLine = "HTTP/1.1 " + status;
-}
-
-void Response::setHeaders() {
-
-	std::string contentType;
-	std::string contentSize;
-
-	contentType = File::getContentType(this->path);
-	(*this).contentLength = this->responseBody.size();
-	contentSize = String::to_string((*this).contentLength);
-	this->responseHeaders = "\nContent-Type: " + contentType + " \nContent-Length: " + contentSize + "\n\n";
-}
-
-void Response::setResponseBody() {
-
-	std::vector<std::string> allowed_methods;
-	bool uploadSupport;
-
-	if (this->currentRoute != NULL) {
-		// allowed_methods = this->currentRoute->allowed_methods;
-		uploadSupport = true;
-	}
-
-	if (this->statusCode != 200 && this->statusCode != 0) {
-		this->responseBody = this->getErrorPageHTML();
-		return ;
-	}
-
-	if (allowed_methods.size() != 0 && std::find(allowed_methods.begin(), allowed_methods.end(), "POST") != allowed_methods.end() && this->request->getRequestLine()["method"] == "POST" && uploadSupport) {
-		
-	} else if (File::isDirectory(this->path)) {
-        this->handleDirectoryRequest();
-    } else if (File::isFile(this->path)) {
-        this->handleFileRequest();
-    } else {
-		this->statusCode = 404;
-		this->responseBody = this->getErrorPageHTML();
-	}
-}
-
-void Response::setRoute() {
-    (*this).routes = server->routes;
-}
-
-/*
-	Other member functions
-*/
 
 void Response::handleDirectoryRequest() {
 
@@ -242,22 +123,51 @@ void Response::handleDirectoryRequest() {
     }
 }
 
+std::string Response::readFileByOffset() {
+    char buffer[(*this).bytesToRead];
+    std::string content;
+    std::ifstream file((*this).path.c_str(),std::ios::binary);
+
+    if(!file.is_open()) {
+        throw(Utils::WebservException("404"));
+    }
+    file.seekg((*this).fileOffset);
+    file.read(buffer,(*this).bytesToRead);
+    (*this).fileOffset = file.tellg();
+
+    content.append(buffer,file.gcount());
+    return(content);
+}
+
 void Response::handleFileRequest() {
 
-    std::vector<std::string>cgi_methods = this->currentRoute->cgi_methods;
-    std::string cgi_extension = this->currentRoute->cgi_extension;
+    // std::vector<std::string>cgi_methods = this->currentRoute->cgi_methods;
+    // std::string cgi_extension = this->currentRoute->cgi_extension;
 
-    if (cgi_methods.size() != 0) {
+    // if (cgi_methods.size() != 0) {
 
-        if (!cgi_extension.empty() && std::find(cgi_methods.begin(), cgi_methods.end(), "GET") != cgi_methods.end()) {
+    //     if (!cgi_extension.empty() && std::find(cgi_methods.begin(), cgi_methods.end(), "GET") != cgi_methods.end()) {
 
-        }
+    //     }
 
-    } else {
-        this->responseBody = File::getFileContent(this->path);
-		this->statusCode = 200;
-    }
+    // }
+    // else 
+        this->responseBody = readFileByOffset();
 
+}
+
+void Response::clearResponse() {
+    (*this).path = "";
+    (*this).response = "";
+    (*this).responseLine = "";
+    (*this).responseHeaders = "";
+    (*this).responseBody = "";
+    (*this).statusCode = 0;
+	(*this).clientSidePath = File::getWorkingDir();
+    (*this).responseVector.clear();
+    (*this).fileOffset = 0;
+    (*this).servingState = false;
+    (*this).bytesSent = 0;
 }
 
 void Response::buildResourcePath(t_route *route) {
@@ -270,13 +180,3 @@ void Response::buildResourcePath(t_route *route) {
 }
 
 
-
-void Response::clearResponse() {
-    (*this).path = "";
-    (*this).response = "";
-    (*this).responseLine = "";
-    (*this).responseHeaders = "";
-    (*this).responseBody = "";
-    (*this).statusCode = 0;
-	(*this).clientSidePath = File::getWorkingDir();
-}

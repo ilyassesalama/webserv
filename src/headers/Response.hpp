@@ -10,18 +10,22 @@ class Response {
         
         void setRequest(RequestParser &request);
         void setServer(t_server &server);
-        void setPath(std::string path, std::string method);
-        void setRoute();
+        void setPath(std::string requestedResourcePath);
+        void setRoute(t_route *route);
         void setResponseLine();
         void setHeaders();
         void setResponseBody();
         void setStatusCode(int code);
-
-		std::string getResponse();
+        void setServingState(bool status);
+        void setBytesSent(size_t bytes);
+;
+		std::vector<char>& getResponse();
+        bool isServing();
         std::string getStringStatus();
-		t_route * getSpecificRoute(std::string location);
+		// t_route * getSpecificRoute(std::string location);
         std::string getErrorPageHTML();
-        std::string getAllowedMethod(std::string location, std::string method);
+        std::string readFileByOffset();
+        // std::string getAllowedMethod(std::string location, std::string method);
 
 
 		void buildResourcePath(t_route *route);
@@ -33,6 +37,9 @@ class Response {
 		void handleDirectoryRequest();
         void handleFileRequest();
 		void autoIndexHTMLBuilder(std::string indexHTML);
+        void buildErrorResponse();
+        void addDataToResponse(std::string data);
+        void feedDataToTheSender();
     private:
         std::string path;
         RequestParser *request;
@@ -43,9 +50,15 @@ class Response {
         std::string responseHeaders;
         std::string responseBody; 
         std::vector<t_route>routes;
+        std::vector<char>responseVector;
         int contentLength;
         std::string clientSidePath;
 		t_route *currentRoute;
+        size_t bytesToRead;
+        std::streampos fileOffset;
+
+        bool servingState;
+        size_t bytesSent;
 };
 
 std::string generateHTMLStart(std::string path);
@@ -54,5 +67,3 @@ std::string createParagraph(std::string lastUpdate);
 std::string createSizeParagraph(long long size);
 std::string createBodyHTML(std::string nameHTML, std::string lastUpdateHTML, std::string sizeHTML);
 std::string generateHTMLEnd(std::string bodyHTML);
-
-std::string getContentType(std::map<std::string, std::string>&headers, std::string path);

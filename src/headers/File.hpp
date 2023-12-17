@@ -9,5 +9,6 @@ class File {
         static bool isFile(const std::string &path);
         static bool isDirectory(const std::string &path);
 		static std::string getWorkingDir();
+        static size_t getFileSize(std::string path);
 };
 

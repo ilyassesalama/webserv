@@ -22,6 +22,8 @@ std::string File::getFileContent(const std::string &path){
 std::string File::getContentType(std::string path) {
     if (String::endsWith(path, ".css")) {
         return "text/css";
+    } else if(String::endsWith(path,".mp4")) {
+        return("video/mp4");
     } else if (String::endsWith(path, ".js")) {
         return "application/javascript";
     } else if (String::endsWith(path, ".html") || String::endsWith(path, ".htm")) {
@@ -65,4 +67,19 @@ std::string File::getWorkingDir(){
     getcwd(cwd, sizeof(cwd));
     path.append(cwd).append("/src/client-side");
 	return path;
+}
+
+size_t File::getFileSize(std::string path) {
+    std::ifstream file(path.c_str());
+
+    if(!file.is_open()) {
+        Log::e("error opening the file");
+        throw(Utils::WebservException("404"));
+    }
+    file.seekg(0, std::ios::end);
+    std::streampos size = file.tellg();
+    file.close();
+    if(size == -1)
+        throw(Utils::WebservException("404"));
+    return static_cast<size_t>(size);
 }
