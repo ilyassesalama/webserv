@@ -22,6 +22,7 @@ class RequestParser {
         std::string body;
 		t_server *server;
         std::string requestResourcePath;
+        t_route *route;
     public:
         RequestParser();
 
@@ -36,8 +37,10 @@ class RequestParser {
         void parseRequestBody(std::string &requestData);
         void parseFinalRequest();
 
+        t_route *getRoute();
 		void setServerInformation(t_server *server);
         std::map<std::string, std::string> &getRequestLine();
+        std::string getRequestedResourcePath();
         std::map<std::string, std::string> &getHeaders();
         const std::map<std::string, std::string> &getParams();
         const std::string &getBody();

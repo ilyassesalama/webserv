@@ -2,6 +2,14 @@
 
 // getters
 
+t_route* RequestParser::getRoute() {
+    return((*this).route);
+}
+
+std::string RequestParser::getRequestedResourcePath() {
+    return((*this).requestResourcePath);
+}
+
 std::map<std::string, std::string>& RequestParser::getRequestLine() {
     return this->requestLine;
 }
@@ -100,39 +108,27 @@ bool RequestParser::isPathAccessible() {
     }
     if(route == NULL) {
         if(slashRoute == true) {
-
+            (*this).route = slashR;
             this->requestResourcePath.append(File::getWorkingDir());
             this->requestResourcePath.append(slashR->root);
             this->requestResourcePath.append(getRequestLine()["path"]);
         }
     } else {
+        (*this).route = route;
         this->requestResourcePath.append(File::getWorkingDir());
         this->requestResourcePath.append(route->root);
         this->requestResourcePath.append(getRequestLine()["path"]);
     }
-    Log::w("RequestParser: Request resource path: " + this->requestResourcePath);
+    if(FULL_LOGGING_ENABLED)
+        Log::v("RequestParser: Request resource path after merge: " + this->requestResourcePath);
     return(File::isFile(this->requestResourcePath) || File::isDirectory(this->requestResourcePath));
 }
 
 bool RequestParser::isMethodAllowed() {
-    size_t firstSlash = this->requestLine["path"].find_first_of("/");
-    std::string location;
-
-    if(firstSlash != std::string::npos) {
-        size_t secondSlach = this->requestLine["path"].find_first_of("/", firstSlash + 1);
-        if(secondSlach != std::string::npos) {
-            location = this->requestLine["path"].substr(0, secondSlach);        
-        }
-        else location = "/";
+    if(std::find(route->allowed_methods.begin(), route->allowed_methods.end(), getRequestLine()["method"]) == route->allowed_methods.end()){
+        return(false);
     }
-    for(std::vector<t_route>::iterator it = this->server->routes.begin(); it != this->server->routes.end(); ++it) {
-        if(location == it->path) {
-            if(std::find(it->allowed_methods.begin(), it->allowed_methods.end(), getRequestLine()["method"]) == it->allowed_methods.end())
-                return(false);
-            else return(true);
-        }
-    }
-    return(false);
+    return(true);
 }
 
 /*
