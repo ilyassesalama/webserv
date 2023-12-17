@@ -16,9 +16,5 @@ void Response::GETResponseBuilder() {
     addDataToResponse((*this).responseLine);
     addDataToResponse((*this).responseHeaders);
     addDataToResponse((*this).responseBody);
-
-    for (size_t i = 0; i < responseVector.size(); ++i) {
-        std::cout << responseVector[i];
-    }
     setServingState(true);
 }

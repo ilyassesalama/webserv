@@ -174,10 +174,10 @@ ClientProfile *ServerInstance::getClientProfile(int clientFd) {
 }
 
 int ServerInstance::sendResponse(int clientFd) {
-    static int count = 0;
+    // static int count = 0;
     ClientProfile *client = getClientProfile(clientFd);
     size_t bytesSent = send(clientFd, &client->response.getResponse()[0],client->response.getResponse().size(),0);
-    Log::d("Serving clinet ... " + String::to_string(count++));
+    // Log::d("Serving clinet ... " + String::to_string(count++));
     client->response.setBytesSent(bytesSent);
     client->response.feedDataToTheSender();
     if(client->response.isServing()) {

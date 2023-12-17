@@ -10,7 +10,7 @@ Response::Response() {
     (*this).responseHeaders = "";
     (*this).responseBody = "";
     (*this).statusCode = 0;
-    (*this).bytesToRead = 10000;
+    (*this).bytesToRead = 1024;
     (*this).fileOffset = 0;
     (*this).bytesSent = 0;
     (*this).servingState = false;

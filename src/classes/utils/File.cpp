@@ -24,6 +24,8 @@ std::string File::getContentType(std::string path) {
         return "text/css";
     } else if(String::endsWith(path,".mp4")) {
         return("video/mp4");
+    }else if(String::endsWith(path, ".pdf")) {
+        return("application/pdf");
     } else if (String::endsWith(path, ".js")) {
         return "application/javascript";
     } else if (String::endsWith(path, ".html") || String::endsWith(path, ".htm")) {
