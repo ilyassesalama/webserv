@@ -1,24 +1,30 @@
 #include "../../../webserv.hpp"
 
 bool Log::isInitialized = false;
+char Log::logFilter = NO_FILTER;
 
 void Log::v(std::string message) {
-    std::cout << "\033[1;35m" << formatLoggingMessage(message) << "\033[0m" << std::endl;
+    if(!(logFilter == NO_FILTER || logFilter == VERBOSE)) return;
+    std::cout << "\033[3;35m" << formatLoggingMessage(message) << "\033[0m" << std::endl;
 }
 
 void Log::d(std::string message) {
+    if(!(logFilter == NO_FILTER || logFilter == DEBUG)) return;
     std::cout << "\033[3;34m" << formatLoggingMessage(message) << "\033[0m" << std::endl;
 }
 
 void Log::i(std::string message) {
+    if(!(logFilter == NO_FILTER || logFilter == INFO)) return;
     std::cout << "\033[3;79m" << formatLoggingMessage(message) << "\033[0m" << std::endl; 
 }
 
 void Log::w(std::string message) {
+    if(!(logFilter == NO_FILTER || logFilter == WARNING)) return;
     std::cout << "\033[3;33m" << formatLoggingMessage(message) << "\033[0m" << std::endl;
 }
 
 void Log::e(std::string message) {
+    if(!(logFilter == NO_FILTER || logFilter == ERROR)) return;
     std::cerr << "\033[3;31m" << formatLoggingMessage(message) << "\033[0m" << std::endl;
 }
 
@@ -66,4 +72,8 @@ void setSocketNonBlocking(int socketFd) {
         Log::e("fcntl eroor");
         close(socketFd);
     }
+}
+
+void Log::setLogFilter(LogFilter filter) {
+    logFilter = static_cast<char>(filter);
 }
