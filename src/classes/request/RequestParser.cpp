@@ -51,7 +51,7 @@ void RequestParser::parseFinalRequest(){
         this->parsingState.failReason = "Bad Request";
         return;
     }
-    if(this->requestLine["path"].find_first_not_of("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ._~:/?#[]@!$&'()*+,;=%") != std::string::npos){
+    if(this->requestLine["path"].find_first_not_of("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ._~:/?#[]@!$&'()*+,;=%-") != std::string::npos){
         this->parsingState.failCode = 400;
         this->parsingState.failReason = "Bad Request";
         return;
@@ -82,7 +82,7 @@ void RequestParser::parseFinalRequest(){
 		this->parsingState.failReason = "Bad Request";
 		std::cout << "ENTERED" << std::endl;
 	}
-
+    this->parsingState.failCode = 200;
 }
 
 void RequestParser::parseRequestLine(std::string &requestData) {
