@@ -32,15 +32,15 @@ void RequestParser::mergeRequestChunks(std::string &requestInput) {
         parseRequestBody(requestData);
         if(FULL_LOGGING_ENABLED) Log::v("Parsing request body finished with status: " + String::to_string(parsingState.bodyOk));
     }
-    parsingState.ok = parsingState.headLineOk && parsingState.headsOk; // don't care about the body since it's optional
+    verifyIfRequestIsSafe(); // can only be called once all the parsing is done
+    this->parsingState.ok = parsingState.headLineOk && parsingState.headsOk; // don't care about the body since it's optional
     Log::d("Request parsing finished with status: " + String::to_string(parsingState.ok));
     if (parsingState.ok && FULL_LOGGING_ENABLED) {
-        parseFinalRequest();
         logParsedRequest();
     }
 }
 
-void RequestParser::parseFinalRequest(){
+void RequestParser::verifyIfRequestIsSafe(){
     if(!this->headers["Transfer-Encoding"].empty() && this->headers["Transfer-Encoding"] != "chunked"){
         this->parsingState.failCode = 501;
         this->parsingState.failReason = "Not Implemented";
@@ -51,7 +51,7 @@ void RequestParser::parseFinalRequest(){
         this->parsingState.failReason = "Bad Request";
         return;
     }
-    if(this->requestLine["path"].find_first_not_of("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ._~:/?#[]@!$&'()*+,;=%-") != std::string::npos){
+    if(!isHeaderLineValid()){
         this->parsingState.failCode = 400;
         this->parsingState.failReason = "Bad Request";
         return;
@@ -80,7 +80,6 @@ void RequestParser::parseFinalRequest(){
 	if (!parseContentType()) {
 		this->parsingState.failCode = 400;
 		this->parsingState.failReason = "Bad Request";
-		std::cout << "ENTERED" << std::endl;
 	}
     this->parsingState.failCode = 200;
 }
@@ -93,21 +92,14 @@ void RequestParser::parseRequestLine(std::string &requestData) {
     // only get the first line
     if(std::getline(httpStream, line))
     ;
+    line = line.substr(0, line.find("\r"));
     std::string method = line.substr(0, line.find(" "));
-    if(method != "GET" && method != "POST" && method != "DELETE"){
-        throw(Utils::WebservException("Error: Invalid HTTP method\n"));
-    }
     std::string path = line.substr(line.find(" ") + 1, line.rfind(" ") - line.find(" ") - 1);
-    if(path[0] != '/'){
-        throw(Utils::WebservException("Error: Invalid HTTP path\n"));
-    }
     std::string httpVersion = line.substr(line.rfind(" ") + 1);
-    if (httpVersion.find("HTTP/") == std::string::npos){
-        throw(Utils::WebservException("Error: Invalid HTTP version\n"));
-    }
     keyValuePairs["method"] = method;
     keyValuePairs["path"] = path;
     keyValuePairs["httpVersion"] = httpVersion;
+
     this->requestLine = keyValuePairs;
     parsingState.headLineOk = true;
     parseRequestParams(path);
@@ -123,6 +115,7 @@ void RequestParser::parseRequestHeaders(std::string &requestData) {
             continue;
         }
         if(line == "\r") break; // reached the end of headers
+        line = line.substr(0, line.find("\r"));
         std::string key = line.substr(0, line.find(":"));
         std::string value = line.substr(line.find(":") + 2);
 

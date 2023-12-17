@@ -30,12 +30,11 @@ class RequestParser {
         void nullOutVars();
         void logParsedRequest();
 
-        void setParsingState(ParsingState state);
         void parseRequestLine(std::string &requestData);
         void parseRequestHeaders(std::string &requestData);
         void parseRequestParams(std::string &requestData);
         void parseRequestBody(std::string &requestData);
-        void parseFinalRequest();
+        void verifyIfRequestIsSafe();
 
         t_route *getRoute();
 		void setServerInformation(t_server *server);
@@ -48,5 +47,6 @@ class RequestParser {
         std::string& getRequestData();
         bool isPathAccessible();
         bool isMethodAllowed();
+        bool isHeaderLineValid();
 		bool parseContentType(); // add by abahsine
 };

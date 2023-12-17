@@ -76,8 +76,8 @@ void RequestParser::logParsedRequest(){
         Log::v("RequestParser: Parsed body:");
         std::cout << this->body << "\n";
     }
-    if(this->parsingState.failCode != 0){
-        Log::v("RequestParser: Parsing failed with code " + String::to_string(this->parsingState.failCode) + " and reason: " + this->parsingState.failReason);
+    if(this->parsingState.failCode != 0 && this->parsingState.failCode != 200){
+        Log::e("RequestParser: Parsing failed with code " + String::to_string(this->parsingState.failCode) + " and reason: " + this->parsingState.failReason);
     }
 }
 
@@ -125,9 +125,27 @@ bool RequestParser::isPathAccessible() {
 }
 
 bool RequestParser::isMethodAllowed() {
-    if(std::find(route->allowed_methods.begin(), route->allowed_methods.end(), getRequestLine()["method"]) == route->allowed_methods.end()){
+    std::string method = getRequestLine()["method"];
+    if(method != "GET" && method != "POST" && method != "DELETE")
+        return(false);
+    if(std::find(route->allowed_methods.begin(), route->allowed_methods.end(), method) == route->allowed_methods.end()){
         return(false);
     }
+    return(true);
+}
+
+/*
+    Check if the request line is valid. HTTP method is checked in isMethodAllowed().
+    No need to check for it again.
+*/
+bool RequestParser::isHeaderLineValid(){
+    std::string httpVersion = getRequestLine()["httpVersion"];
+    std::string path = getRequestLine()["path"];
+
+    if((this->requestLine["path"][0] != '/' || this->requestLine["path"].find_first_not_of("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ._~:/?#[]@!$&'()*+,;=%-") != std::string::npos))
+        return(false);
+    if((this->requestLine["httpVersion"] != "HTTP/1.1"))
+        return(false);
     return(true);
 }
 
