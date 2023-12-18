@@ -4,200 +4,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Web Server Response</title>
-    <style>
-		*, *::after, *::before {
-			box-sizing: border-box;
-		}
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f2f2f2;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-			text-align: center;
-        }
-
-		ul {
-			display: flex;
-			align-items: center;
-			justify-content: flex-end;
-		}
-
-		li {
-			list-style: none;
-		}
-
-		a {
-			text-decoration: none;
-		}
-
-		nav {
-			display: flex;
-			align-items: center;
-			justify-content: flex-end;
-		}
-
-		ul li a {
-			color: #333;
-			text-transform: uppercase;
-			margin-right: 20px;
-		}
-
-		ul li a:hover {
-			color: #87CEEB;
-		}
-
-		ul li button {
-			background-color: #87CEEB;
-			padding: 10px 20px;
-			border: 1px solid transparent;
-			border-radius: 5px;
-			color: #fff;
-			cursor: pointer;
-		}
-
-		ul li button:hover {
-			background-color: transparent;
-			border: 1px solid #87CEEB;
-			color: #87CEEB;
-		}
-
-		.line {
-			width: 80%;
-			height: 1px;
-			background-color: #333;
-			margin: 15px auto;
-		}
-/*
-		nav {
-			width: 100%;
-			border: 0.7px solid #001e47;
-			background-color: #a1c4fc;
-			border-radius: 50px;
-		}
-
-		nav ul li a {
-			color: #fff;
-			border: 0.7px solid #001e47;
-			background-color: #4e6fa5;
-			border-radius: 50px;
-			padding: 10px 20px 10px 20px;
-		} */
-
-        .content {
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-			width: 60%;
-        }
-
-        h1 {
-            color: #333333;
-        }
-
-        p {
-            color: #666666;
-        }
-		.images {
-			width: 100%;
-			display: grid;
-			grid-template-columns: repeat(3, 1fr);
-			grid-gap: 20px;
-			margin-top: 30px;
-			height: 200px;
-		}
-		.images .image {
-			position: relative;
-			border-radius: 20px;
-			overflow: hidden;
-			width: 100%;
-			display: flex;
-			justify-content: center;
-			align-items: flex-end;
-			text-align: center;
-		}
-
-		.images .image:nth-child(1) {
-			background-image: url('https://cdn.intra.42.fr/users/8d11a1f3e2e74d37d841fb2cae1d4dbc/bel-kala.jpg');
-			background-size: cover;
-			background-position: center;
-		}
-
-		.images .image:nth-child(2) {
-			background-image: url('https://cdn.intra.42.fr/users/2ab5324b37b5488b9ff173cf09da2475/abahsine.jpg');
-			background-size: cover;
-			background-position: center;
-		}
-		.images .image:nth-child(3) {
-			background-image: url('https://cdn.intra.42.fr/users/62d6663a3270103c25d47dc9d12a58b1/isalama.jpg');
-			background-size: cover;
-			background-position: center;
-		}
-
-		.images .image h1 {
-			position: relative;
-			bottom: 15px;
-			z-index: 2;
-			width: 100%;
-			height: 40px;
-			color: #fff;
-			font-size: 18px;
-			font-weight: 300;
-			padding: 0 50px;
-			margin: 0;
-			opacity: 0;
-			user-select: none;
-			transition: 0.5s;
-		}
-
-		.images .image:hover h1 {
-			display: block;
-			opacity: 1;
-			transition-delay: 0.1s;
-		}
-
-		.images .image::after {
-			content: '';
-			position: absolute;
-			width: 100%;
-			height: 100%;
-			bottom: -100%;
-			left: 0;
-			background-color: rgba(51, 51, 51, .5);
-		}
-
-		.images .image:hover::after {
-			bottom: 0;
-			transition: 0.5s;
-		}
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="content">
-		<nav>
-			<ul>
-				<li><a href="#">File Upload</a></li>
-				<li><a href="#"><button>Login</button></a></li>
-			</ul>
-		</nav>
-		<div class="line"></div>
-        <h1>Hello, Web Server!</h1>
-        <p>This is a simple HTML and CSS response sent from the web server.</p>
-		<div class="images">
-			<div class="image">
-				<h1>Badr Eddine El Kalai</h1>
-			</div>
-			<div class="image">
-				<h1>Abdellah Bahsine</h1>
-			</div>
-			<div class="image">
-				<h1>Ilyasse Salama</h1>
+	<div class="container">
+		<div class="content article">
+			<div class="glows"></div>
+			<nav>
+				<div>
+					<!-- <div id="webservTitle">
+
+					</div>
+
+					<div id="webservSubtitle">
+
+
+					</div> -->
+					<h1>Web Server</h1>
+					<p>This is a simple HTML and CSS response sent from the web server.</p>
+				</div>
+				<ul>
+					<li><a href="#">File Upload</a></li>
+					<li><a href="#"><button>Login</button></a></li>
+				</ul>
+			</nav>
+			<div class="line"></div>
+			
+			<h3>Slaves:</h3>
+			<div class="images">
+				<div class="image article">
+					<h1>Badr Eddine El Kalai</h1>
+				</div>
+				<div class="image article">
+					<h1>Abdellah Bahsine</h1>
+				</div>
+				<div class="image article">
+					<h1>Ilyasse Salama</h1>
+				</div>
 			</div>
 		</div>
-    </div>
+	</div>
+
+	<script src="main.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.9/dat.gui.min.js" integrity="sha512-WoO4Ih0CDOSLYafy22wZD/mcJ7k0ESLqtQsFa6zFKnEUrbtuGU+GkLtVhgt93xa2qewG5gKEC6CWlN8OaCTSVg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.9/dat.gui.js" integrity="sha512-Mcz+Mt8k23j06ycA5EJGfyXbtzB6xqEoJxjGftQQoed/zQzem9Lt21LRymjlcm+NUsbF0LOHgfdN8LO8GtKDOw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </body>
 </html>
