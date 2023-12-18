@@ -72,6 +72,11 @@ void RequestParser::verifyIfRequestIsSafe(){
         this->parsingState.failReason = "Not Found";
         return;
     }
+    if(File::isDirectory(this->requestResourcePath) && this->requestResourcePath[this->requestResourcePath.length() - 1] != '/'){
+        this->parsingState.failCode = 301;
+        this->parsingState.failReason = "Moved Permanently";
+        return;
+    }
     if(!isMethodAllowed()){
         this->parsingState.failCode = 405;
         this->parsingState.failReason = "Method Not Allowed";

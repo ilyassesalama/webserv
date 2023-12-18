@@ -98,8 +98,6 @@ std::string Response::getErrorPageHTML(){
     return responseBody;
 }
 
-
-
 void Response::handleDirectoryRequest() {
 
     size_t slashPos = this->path.find_last_of("/");

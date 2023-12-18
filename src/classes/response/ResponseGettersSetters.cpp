@@ -106,6 +106,9 @@ void Response::setHeaders() {
     if(statusCode != 200 && statusCode != 201) {
         (*this).responseHeaders.append(addHeaders("Connection", "close"));
     }
+    if(statusCode == 301) {
+        (*this).responseHeaders.append(addHeaders("Location", this->request->getRequestLine()["path"] + "/"));
+    }
     (*this).responseHeaders.append("\r\n");
 }
 
