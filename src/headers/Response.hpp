@@ -36,7 +36,7 @@ class Response {
 
 		void handleDirectoryRequest();
         void handleFileRequest();
-		void autoIndexHTMLBuilder(std::string indexHTML);
+		void autoIndexHTMLBuilder(size_t slashPos);
         void buildErrorResponse();
         void addDataToResponse(std::string data);
         void feedDataToTheSender();

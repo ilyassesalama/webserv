@@ -24,7 +24,7 @@ std::string generateHTMLEnd(std::string bodyHTML) {
 	return bodyHTML + "</div><div class=\"line\"></div></div></body></html>";
 }
 
-void Response::autoIndexHTMLBuilder(std::string indexHTML) {
+void Response::autoIndexHTMLBuilder(size_t slashPos) {
 
 	std::string filePath;
 	std::string bodyHTML;
@@ -44,7 +44,9 @@ void Response::autoIndexHTMLBuilder(std::string indexHTML) {
 			if (entry->d_name[0] == '.')
 				continue ;
 
-			filePath = this->path + entry->d_name;
+			filePath = this->path;
+			filePath += slashPos != this->path.size() - 1 ? "/" : "";
+			filePath += entry->d_name;
 
 			struct stat stats;
 
@@ -70,5 +72,8 @@ void Response::autoIndexHTMLBuilder(std::string indexHTML) {
 
 	this->responseBody = autoIndexHTML;
 	this->statusCode = 200;
-	this->path += indexHTML;
+	std::fstream myFile("/tmp/index.html", std::ios::out);
+	myFile << this->responseBody;
+	this->path = "/tmp/index.html";
+	myFile.close();
 }

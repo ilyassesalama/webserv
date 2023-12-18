@@ -115,7 +115,7 @@ void Response::handleDirectoryRequest() {
 
         if (directory_listing) {
             // response should be list of files in the directory
-			this->autoIndexHTMLBuilder(indexHTML);
+			this->autoIndexHTMLBuilder(slashPos);
         } else {
             this->statusCode = 403;
             this->responseBody = this->getErrorPageHTML();
