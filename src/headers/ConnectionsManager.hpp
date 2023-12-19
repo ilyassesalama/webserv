@@ -13,10 +13,12 @@ class ConnectionsManager {
         void acceptNewIncommingConnections(ServerInstance *serverId);
         // int recvRequest(int clientFd,Server* serverId);
         void addFdToTheSet(int clientFd);
-        void changeClinetMonitoringEvent(std::string event, int clientFd);
+        void changeClientMonitoringEvent(std::string event, int clientFd);
         void addServerToTheSet(ServerInstance &serverInstance);
         ServerInstance* getFdServer(int clientFd);
         void deleteFromFdSet(int clientFd);
+        bool isTimeOut(time_t currentTime,  time_t time);
+        void checkClientTimeOut();
     private:
         std::vector<ServerInstance> serversSet;
         std::vector<struct pollfd> masterFdSet;

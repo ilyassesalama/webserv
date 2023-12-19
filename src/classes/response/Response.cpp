@@ -24,6 +24,10 @@ Response::~Response() {}
     their message??? check in this exception by printing a message.
 */
 void Response::feedDataToTheSender() {
+    if(fileOffset == -2 &&  bytesSent == responseVector.size()) {
+        setServingState(false);
+        return;
+    }
     if(fileOffset == -1 && bytesSent == responseVector.size()) {   
         //finished file : change the serving status so he can recv another requestes
         setServingState(false);

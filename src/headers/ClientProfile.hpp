@@ -17,7 +17,7 @@ struct ClientProfile {
     struct sockaddr_storage address;
     int port;
     bool isConnected;
-    time_t connectionsTime;
+    time_t connectionTime;
     int requestCount;
     
     std::string request;

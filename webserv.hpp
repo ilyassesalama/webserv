@@ -24,6 +24,8 @@
 #include <arpa/inet.h>
 #include <dirent.h>
 #include <ctime>
+#include <sys/time.h>
+
 
 #include "src/headers/CGInstance.hpp"
 #include "src/headers/ClientProfile.hpp"

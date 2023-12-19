@@ -111,9 +111,16 @@ int ServerInstance::recvRequest(int clientFd) {
     bytesRead = recv(clientFd, buffer, sizeof(buffer), 0);
     if(bytesRead > 0) receivedRequest.append(buffer, bytesRead);
     if(bytesRead == 0) {
+        Log::e("client closed the connection ...");
         (*this).dropClient(clientFd);
         return(DROP_CLIENT);
     }
+    if(bytesRead < 0) {
+        Log::e("recv failed ...");
+        (*this).dropClient(clientFd);
+        return(DROP_CLIENT);
+    }
+
     ClientProfile *client = getClientProfile(clientFd);
 	client->parser.setServerInformation(((*this).serverInformations));
 
@@ -175,15 +182,28 @@ ClientProfile *ServerInstance::getClientProfile(int clientFd) {
 
 int ServerInstance::sendResponse(int clientFd) {
     // static int count = 0;
+    // std::cout << clientFd << std::endl;
     ClientProfile *client = getClientProfile(clientFd);
+    if(client == NULL) {
+        Log::e("client NULL");
+    }
+    signal(SIGPIPE, SIG_IGN);
     size_t bytesSent = send(clientFd, &client->response.getResponse()[0],client->response.getResponse().size(),0);
+    if(bytesSent == 0) {
+        Log::e("0 bytes sent");
+    }
     // Log::d("Serving clinet ... " + String::to_string(count++));
+    if(bytesSent < 0) {
+        Log::e("send failed");;
+    }
     client->response.setBytesSent(bytesSent);
     client->response.feedDataToTheSender();
     if(client->response.isServing()) {
         return(-1);
     }
+    client->connectionTime = std::time(0);
     client->response.clearResponse();
+
 	return 1;
 }
 

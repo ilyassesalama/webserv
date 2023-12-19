@@ -13,6 +13,7 @@ void Response::DELETEResponseBuilder() {
     this->setResponseBody();
     this->setHeaders();
     this->setResponseLine();
+    (*this).fileOffset = -2;
     addDataToResponse(this->responseLine);
     addDataToResponse(this->responseHeaders);
     addDataToResponse(this->responseBody);

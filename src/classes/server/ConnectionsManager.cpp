@@ -23,7 +23,7 @@ void ConnectionsManager::deleteFromFdSet(int clientFd) {
     for(std::vector<struct pollfd>::iterator it = (*this).masterFdSet.begin(); it != (*this).masterFdSet.end(); it++) {
         if(it->fd == clientFd) {
             (*this).masterFdSet.erase(it);
-            close(clientFd);
+            // close(clientFd);
             break;
         }
     }
@@ -41,6 +41,30 @@ void ConnectionsManager::addFdToTheSet(int clientFd) {
     (*this).masterFdSet.push_back(client);
 }
 
+
+bool ConnectionsManager::isTimeOut(time_t currentTime,  time_t time) {
+    if(currentTime - time < 30) {
+        return(false);
+    }
+    return(true);
+
+}
+
+void ConnectionsManager::checkClientTimeOut() {
+    ClientProfile *client;
+    ServerInstance *serverId;
+    time_t currentTime = std::time(0);
+    std::vector<struct pollfd> tmp ((*this).masterFdSet.begin() + (*this).serverCount , (*this).masterFdSet.end());
+    for(std::vector<struct pollfd>::iterator it = tmp.begin(); it != tmp.end(); ++it) {
+        serverId = getFdServer(it->fd);
+        client = serverId->getClientProfile(it->fd);
+        if(isTimeOut(currentTime, client->connectionTime)) {
+            serverId->dropClient(it->fd);
+            (*this).deleteFromFdSet(it->fd);
+        }
+    }
+}
+
 void ConnectionsManager::acceptNewIncommingConnections(ServerInstance *serverId) {
     ClientProfile client;
 
@@ -56,7 +80,7 @@ void ConnectionsManager::acceptNewIncommingConnections(ServerInstance *serverId)
     char address_buffer[100];
     getnameinfo((struct sockaddr*)&client.address, client.address_length, address_buffer, sizeof(address_buffer), 0, 0, NI_NUMERICHOST);
     std::string ipAdress(address_buffer);
-    client.ipAdress = ipAdress;
+    client.connectionTime = std::time(0);
     serverId->AddToClientProfiles(client);
     Log::d("New client connected: " + ipAdress + " on Port " + serverId->getServerPort());
 }
@@ -71,7 +95,7 @@ ServerInstance* ConnectionsManager::getFdServer(int clientFd) {
     return NULL; 
 }
 
-void ConnectionsManager::changeClinetMonitoringEvent(std::string event, int clientFd) {
+void ConnectionsManager::changeClientMonitoringEvent(std::string event, int clientFd) {
     for(std::vector<struct pollfd>::iterator it = (*this).masterFdSet.begin(); it != (*this).masterFdSet.end(); it++) {
         if(it->fd == clientFd) {
             if(event == "write") {
@@ -89,35 +113,41 @@ void ConnectionsManager::changeClinetMonitoringEvent(std::string event, int clie
 
 
 void ConnectionsManager::socketMonitore() {
-    while(true) {
-        if(poll(&masterFdSet[0], masterFdSet.size(), -1) < 0) {
+    int pollResult;
+    while (true) {
+        checkClientTimeOut();
+        pollResult = poll(&masterFdSet[0], masterFdSet.size(), -1);
+        if (pollResult < 0) {
             Log::e("Poll Failed ...");
             exit(1);
         }
         for (std::vector<struct pollfd>::iterator it = masterFdSet.begin(); it != masterFdSet.end(); ++it) {
-            if(it->revents & POLLIN) {
-                if(it == masterFdSet.begin()) {
+            if (it->revents & POLLIN) {
+                if (it == masterFdSet.begin()) {
                     acceptNewIncommingConnections(getFdServer(it->fd));
+                    (*this).masterFdSet[0].events = POLLIN;
+                    (*this).masterFdSet[0].revents = 0;
                     break;
-                }
-                else {
+                } else {
                     int requestState = getFdServer(it->fd)->recvRequest(it->fd);
-                    if(requestState == FULL_REQUEST_RECEIVED) {
-                        changeClinetMonitoringEvent("write", it->fd);
-                    }
-                    else if(requestState == DROP_CLIENT) {
+                    if (requestState == FULL_REQUEST_RECEIVED) {
+                        changeClientMonitoringEvent("write", it->fd);
+                    } else if (requestState == DROP_CLIENT) {
                         (*this).deleteFromFdSet(it->fd);
-                        break;
+                        break; 
                     }
+                    it->revents = 0;
                 }
             }
-            if(it->revents & POLLOUT) {
-                if(getFdServer(it->fd)->sendResponse(it->fd) == 1)
-                	changeClinetMonitoringEvent("read", it->fd);
+            if (it->revents & POLLOUT) {
+                if (getFdServer(it->fd)->sendResponse(it->fd) == 1)
+                    changeClientMonitoringEvent("read", it->fd);
+                it->revents = 0;
             }
         }
     }
 }
+
 
 
 
