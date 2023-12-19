@@ -10,5 +10,6 @@ class File {
         static bool isDirectory(const std::string &path);
 		static std::string getWorkingDir();
         static size_t getFileSize(std::string path);
+        static void deleteFile(std::string path);
 };
 

@@ -19,6 +19,10 @@ std::string Response::getStringStatus(){
     switch(this->statusCode){
         case 200:
             return "200 OK";
+        case 201:
+            return "201 Created";
+        case 204:
+            return "204 No Content";
 		case 301:
             return "301 Moved Permanently";
         case 400:
@@ -98,26 +102,30 @@ std::string addHeaders(std::string key, std::string value) {
     return(header.str());
 }
 
+/*
+    Add oheaders to the response headers accrordingly depending on the status code.
+*/
 void Response::setHeaders() {
-
-    (*this).responseHeaders.append(addHeaders("Content-Type", File::getContentType(this->path)));
-    (*this).responseHeaders.append(addHeaders("Content-Length", String::to_string(File::getFileSize((*this).path))));
-    //add more headers based on the status code
+    if(statusCode != 204){
+        this->responseHeaders.append(addHeaders("Content-Type", File::getContentType(this->path)));
+        this->responseHeaders.append(addHeaders("Content-Length", String::to_string(File::getFileSize(this->path))));
+    }
     if(statusCode != 200 && statusCode != 201) {
-        (*this).responseHeaders.append(addHeaders("Connection", "close"));
+        this->responseHeaders.append(addHeaders("Connection", "close"));
     }
     if(statusCode == 301) {
-        (*this).responseHeaders.append(addHeaders("Location", this->request->getRequestLine()["path"] + "/"));
+        this->responseHeaders.append(addHeaders("Location", this->request->getRequestLine()["path"] + "/"));
     }
-    (*this).responseHeaders.append("\r\n");
+    this->responseHeaders.append("\r\n");
 }
 
 void Response::setResponseBody() {
 	if (File::isDirectory(this->path)) {
         this->handleDirectoryRequest();
-    } 
-    else if (File::isFile(this->path)) {
+    } else if (File::isFile(this->path)) {
         this->handleFileRequest();
+    } else {
+        this->responseBody = "";
     }
 }
 

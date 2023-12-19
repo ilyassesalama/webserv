@@ -1,9 +1,9 @@
 const CONTAINER = document.querySelector('.container')
 const CARDS = document.querySelectorAll('.article')
 
-var charWidth = 2.5;
+var charWidth = 0;
 var spaceWidth = 8;
-var animSpeed = 20;
+var animSpeed = 40;
 var fadeSec = 0.5;
 var lineSpace = 25;
 
@@ -11,7 +11,6 @@ function writeChars(p, t, lim) {
 	var zone = document.getElementById(p);
 	var width = 0;
 	var top = 0;
-	console.log(zone);
 	var chars = t.split("");
 	for (var i = 0; i < chars.length; i++) {
 		var s = "<span id ='" + p + "char" + i +
@@ -36,12 +35,12 @@ function writeChars(p, t, lim) {
 }
 
 var text = "Webserver";
-var moreText = "This is a simple HTML and CSS response sent from the web server.";
+var moreText = "Welcome to Webserver, a mini server that hosts your website!";
 
-// writeChars("webservTitle", text, 100);
-// setTimeout(function() {
-// 	writeChars("webservSubtitle", moreText, 400);
-// }, 500);
+writeChars("webservTitle", text, 100);
+setTimeout(function() {
+	writeChars("webservSubtitle", moreText, 300);
+}, 500);
 
 const CONFIG = {
   proximity: 40,

@@ -25,6 +25,7 @@
 #include <dirent.h>
 #include <ctime>
 
+#include "src/headers/CGInstance.hpp"
 #include "src/headers/ClientProfile.hpp"
 #include "src/headers/ConfigurationFile.hpp"
 #include "src/headers/ConnectionsManager.hpp"

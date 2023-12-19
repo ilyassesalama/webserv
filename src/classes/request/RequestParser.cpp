@@ -4,8 +4,10 @@ RequestParser::RequestParser(){
     nullOutVars();
 }
 
+/*
+    Null out all the variables in the class to avoid any server failures.
+*/
 void RequestParser::nullOutVars(){
-    // null out the request line, headers and body to avoid segfaults >:(
     this->requestLine = std::map<std::string, std::string>();
     this->headers = std::map<std::string, std::string>();
     this->body = "";
@@ -17,6 +19,10 @@ void RequestParser::nullOutVars(){
     this->parsingState.failReason = "";
 }
 
+/*
+    The first function to be called, specifically by ServerInstance::recvRequest()
+    to receive and merge the final full request.
+*/
 void RequestParser::mergeRequestChunks(std::string &requestInput) {
     this->requestData.append(requestInput);
 
@@ -40,6 +46,10 @@ void RequestParser::mergeRequestChunks(std::string &requestInput) {
     }
 }
 
+/*
+    The last function to be called when the parsing has finished, this
+    function makes sure that the request is safe so we can start sending the response.
+*/
 void RequestParser::verifyIfRequestIsSafe(){
     if(!this->headers["Transfer-Encoding"].empty() && this->headers["Transfer-Encoding"] != "chunked"){
         this->parsingState.failCode = 501;
@@ -89,6 +99,10 @@ void RequestParser::verifyIfRequestIsSafe(){
     this->parsingState.failCode = 200;
 }
 
+/*
+    Handles only the request line and set their values to their
+    respective variables. (ex: GET /index.html HTTP/1.1)
+*/
 void RequestParser::parseRequestLine(std::string &requestData) {
     std::map<std::string, std::string> keyValuePairs;
     std::string line;
@@ -110,6 +124,10 @@ void RequestParser::parseRequestLine(std::string &requestData) {
     parseRequestParams(path);
 }
 
+/*
+    Handles only the request headers and set their values to their
+    respective variables. (ex: Content-Type: text/html)
+*/
 void RequestParser::parseRequestHeaders(std::string &requestData) {
     std::map<std::string, std::string> keyValuePairs;
     std::string line;
@@ -130,6 +148,11 @@ void RequestParser::parseRequestHeaders(std::string &requestData) {
     parsingState.headsOk = true;
 }
 
+/*
+    NOT NECESSARY, but will probably be useful later?
+    Handles only the URI parameters and set their values to their
+    respective variables. (ex: ?key=value&key2=value2)
+*/
 void RequestParser::parseRequestParams(std::string &requestData){
     size_t start = requestData.find("?"); // look for the first param
     if (start == std::string::npos) return; // no parameters found! get out!!!
@@ -148,6 +171,9 @@ void RequestParser::parseRequestParams(std::string &requestData){
     }
 }
 
+/*
+    Last check by the request parser, stores the body if it exists.
+*/
 void RequestParser::parseRequestBody(std::string &requestData){
     size_t found = requestData.rfind("\r\n\r\n");
     this->body += requestData.substr(found + 4);
