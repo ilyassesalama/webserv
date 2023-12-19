@@ -57,7 +57,8 @@ void RequestParser::verifyIfRequestIsSafe(){
         this->parsingState.failReason = "Not Implemented";
         return;
     }
-    if(this->requestLine["method"] == "POST" && (!Utils::isHeaderKeyExists(this->headers, "Content-Length") || this->headers["Transfer-Encoding"].empty())){
+    // if(this->requestLine["method"] == "POST" && (!Utils::isHeaderKeyExists(this->headers, "Content-Length") || this->headers["Transfer-Encoding"].empty())){
+    if(this->requestLine["method"] == "POST" && (!Utils::isHeaderKeyExists(this->headers, "Content-Length") || this->headers.find("Transfer-Encoding") == this->headers.end())){
         this->parsingState.failCode = 400;
         this->parsingState.failReason = "Bad Request";
         return;
