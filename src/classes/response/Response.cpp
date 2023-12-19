@@ -1,40 +1,44 @@
 #include "../../../webserv.hpp"
 
 Response::Response() {
-    (*this).clientSidePath = File::getWorkingDir();
-    (*this).path = "";
-    (*this).server = NULL;
-    (*this).request = NULL;
-    (*this).response = "";
-    (*this).responseLine = "";
-    (*this).responseHeaders = "";
-    (*this).responseBody = "";
-    (*this).statusCode = 0;
-    (*this).bytesToRead = 1024;
-    (*this).fileOffset = 0;
-    (*this).bytesSent = 0;
-    (*this).servingState = false;
+    this->clientSidePath = File::getWorkingDir();
+    this->path = "";
+    this->server = NULL;
+    this->request = NULL;
+    this->response = "";
+    this->responseLine = "";
+    this->responseHeaders = "";
+    this->responseBody = "";
+    this->statusCode = 0;
+    this->bytesToRead = 1024;
+    this->fileOffset = 0;
+    this->bytesSent = 0;
+    this->servingState = false;
 }
 
 
 Response::~Response() {}
 
-
+/*
+    IMPORTANT: why the fuck this function is called so many times even if the sender got
+    their message??? check in this exception by printing a message.
+*/
 void Response::feedDataToTheSender() {
-    if(fileOffset == -1 && bytesSent == responseVector.size())
-    {   
+    if(fileOffset == -1 && bytesSent == responseVector.size()) {   
         //finished file : change the serving status so he can recv another requestes
         setServingState(false);
         return;
-    }
-    else if(bytesSent < responseVector.size()) {
+    } else if(bytesSent < responseVector.size()) {
         std::vector<char>tmp(responseVector.begin() + bytesSent,responseVector.end());
-        (*this).responseVector = tmp;
-    }
-    else if(bytesSent == responseVector.size()) {
+        this->responseVector = tmp;
+    } else if(bytesSent == responseVector.size()) {
         bytesSent = 0;
         responseVector.clear();
-        addDataToResponse((*this).readFileByOffset());
+        try {
+            addDataToResponse(this->readFileByOffset());
+        } catch (Utils::WebservException &ex) {
+            addDataToResponse("");
+        }
     }
 }
 
@@ -42,15 +46,16 @@ void Response::feedDataToTheSender() {
 void Response::responseBuilder() {
    try {
         //check if the parser failed
-        if((*this).statusCode != 200 && (*this).statusCode != 201)
-            throw(Utils::WebservException(String::to_string((*this).statusCode)));
+        if(this->statusCode != 200 && this->statusCode != 201)
+            throw(Utils::WebservException(String::to_string(this->statusCode)));
         else {
             if (this->request->getRequestLine()["method"] == "GET") {
                 GETResponseBuilder();
+            } else if (this->request->getRequestLine()["method"] == "DELETE") {
+                DELETEResponseBuilder();
             }
         }
-    }
-    catch(Utils::WebservException &ex) {
+    } catch(Utils::WebservException &ex) {
         //build error Response based on the error code
         buildErrorResponse();
     }
@@ -134,16 +139,16 @@ void Response::handleDirectoryRequest() {
 }
 
 std::string Response::readFileByOffset() {
-    char buffer[(*this).bytesToRead];
+    char buffer[this->bytesToRead];
     std::string content;
-    std::ifstream file((*this).path.c_str(),std::ios::binary);
+    std::ifstream file(this->path.c_str(),std::ios::binary);
 
     if(!file.is_open()) {
-        throw(Utils::WebservException("404"));
+        throw(Utils::WebservException("readFileByOffset: Can't open \"" + this->path + "\" due to " + std::string(strerror(errno))));
     }
-    file.seekg((*this).fileOffset);
-    file.read(buffer,(*this).bytesToRead);
-    (*this).fileOffset = file.tellg();
+    file.seekg(this->fileOffset);
+    file.read(buffer,this->bytesToRead);
+    this->fileOffset = file.tellg();
 
     content.append(buffer,file.gcount());
     return(content);
@@ -167,17 +172,17 @@ void Response::handleFileRequest() {
 }
 
 void Response::clearResponse() {
-    (*this).path = "";
-    (*this).response = "";
-    (*this).responseLine = "";
-    (*this).responseHeaders = "";
-    (*this).responseBody = "";
-    (*this).statusCode = 0;
-	(*this).clientSidePath = File::getWorkingDir();
-    (*this).responseVector.clear();
-    (*this).fileOffset = 0;
-    (*this).servingState = false;
-    (*this).bytesSent = 0;
+    this->path = "";
+    this->response = "";
+    this->responseLine = "";
+    this->responseHeaders = "";
+    this->responseBody = "";
+    this->statusCode = 0;
+	this->clientSidePath = File::getWorkingDir();
+    this->responseVector.clear();
+    this->fileOffset = 0;
+    this->servingState = false;
+    this->bytesSent = 0;
 }
 
 void Response::buildResourcePath(t_route *route) {
@@ -186,7 +191,7 @@ void Response::buildResourcePath(t_route *route) {
     requestedResource.append(this->clientSidePath);
     requestedResource.append(route->root);
     requestedResource.append(this->path);
-    (*this).path = requestedResource;
+    this->path = requestedResource;
 }
 
 

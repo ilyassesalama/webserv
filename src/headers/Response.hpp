@@ -30,6 +30,7 @@ class Response {
 
 		void buildResourcePath(t_route *route);
         void GETResponseBuilder();
+		void DELETEResponseBuilder();
 		void POSTResponseBuilder();
         void responseBuilder();
         void clearResponse();
