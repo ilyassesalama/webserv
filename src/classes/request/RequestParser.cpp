@@ -51,12 +51,14 @@ void RequestParser::mergeRequestChunks(std::string &requestInput) {
     function makes sure that the request is safe so we can start sending the response.
 */
 void RequestParser::verifyIfRequestIsSafe(){
-    if(!this->headers["Transfer-Encoding"].empty() && this->headers["Transfer-Encoding"] != "chunked"){
+    // if(!this->headers["Transfer-Encoding"].empty() && this->headers["Transfer-Encoding"] != "chunked"){
+	if (this->headers.find("Transfer-Encoding") != this->headers.end() && this->headers["Transfer-Encoding"] != "chunked") {
         this->parsingState.failCode = 501;
         this->parsingState.failReason = "Not Implemented";
         return;
     }
-    if(this->requestLine["method"] == "POST" && (!Utils::isHeaderKeyExists(this->headers, "Content-Length") || this->headers["Transfer-Encoding"].empty())){
+    // if(this->requestLine["method"] == "POST" && (!Utils::isHeaderKeyExists(this->headers, "Content-Length") || this->headers["Transfer-Encoding"].empty())){
+    if(this->requestLine["method"] == "POST" && (!Utils::isHeaderKeyExists(this->headers, "Content-Length") || this->headers.find("Transfer-Encoding") == this->headers.end())){
         this->parsingState.failCode = 400;
         this->parsingState.failReason = "Bad Request";
         return;
