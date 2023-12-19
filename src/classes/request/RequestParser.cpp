@@ -52,7 +52,7 @@ void RequestParser::mergeRequestChunks(std::string &requestInput) {
 */
 void RequestParser::verifyIfRequestIsSafe(){
     // if(!this->headers["Transfer-Encoding"].empty() && this->headers["Transfer-Encoding"] != "chunked"){
-	if (this->headers.find("Transfer-Encoding") != this->headers.end() && this->headers["Transfer-Encoding"] != "chunked")
+	if (this->headers.find("Transfer-Encoding") != this->headers.end() && this->headers["Transfer-Encoding"] != "chunked") {
         this->parsingState.failCode = 501;
         this->parsingState.failReason = "Not Implemented";
         return;
