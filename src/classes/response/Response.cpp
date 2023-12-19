@@ -48,6 +48,9 @@ void Response::responseBuilder() {
             if (this->request->getRequestLine()["method"] == "GET") {
                 GETResponseBuilder();
             }
+            else if (this->request->getRequestLine()["method"] == "POST") {
+                POSTResponseBuilder();
+            }
         }
     }
     catch(Utils::WebservException &ex) {

@@ -12,7 +12,6 @@ bool isTransferEncoding(std::map<std::string, std::string>&headers) {
 }
 
 std::string getBody(const std::string &body) {
-
 	size_t sizePos = body.find("0123456789");
 	if (sizePos == std::string::npos)
 	 return "";
@@ -29,37 +28,28 @@ std::string getBody(const std::string &body) {
 }
 
 void Response::POSTResponseBuilder() {
-	// std::string contentType = getContentType(this->request->getHeaders(), this->path);
-	// bool transfer_encoding = isTransferEncoding(this->request->getHeaders());
-	// if (contentType == "multipart/form-data") {
-	// 	// parse form-data
-	// 	std::string boundary = getBoundary();
-	// } else {
 
+	bool isRequestFinished = false; // should be in class with false as default
+	bool isTransferEncoding = this->request->getHeaders().find("Transfer-Encoding") != this->request->getHeaders().end() ? true : false;
 
+	std::string body; // this should be in class
 
-	// 	if (transfer_encoding) {
+	if (!isRequestFinished && isTransferEncoding) {
+		std::cout << "HEEY" << std::endl;
+		this->setResponseBody();
+		// collect in a buffer
+		body += getBody(this->request->getBody());
+	}
+	if (isRequestFinished) {
+		// save file
+	}
 
-	// 	}
-
-	// }
-
-	// bool isRequestFinished; // should be in class with false as default
-	// bool isTransferEncoding = std::find(this->request->getHeaders().begin(), this->request->getHeaders().end(), this->request->getHeaders()["Transfer-Encoding"]) != this->request->getHeaders().end() ? true : false;
-
-	// std::string body; // this should be in class
-
-	// if (!isRequestFinished && isTransferEncoding) {
-	// 	// collect in a buffer
-	// 	body += getBody(this->request->getBody());
-	// }
-	// if (isRequestFinished) {
-	// 	// save file
-	// }
-
-	this->setResponseBody();
+	if (!isTransferEncoding)
+		this->setResponseBody();
     this->setHeaders();
     this->setResponseLine();
-
-    this->response = this->responseLine + this->responseHeaders + this->responseBody;
+	addDataToResponse((*this).responseLine);
+    addDataToResponse((*this).responseHeaders);
+    addDataToResponse((*this).responseBody);
+    setServingState(true);
 }
