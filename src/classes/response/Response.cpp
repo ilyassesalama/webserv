@@ -58,20 +58,25 @@ void Response::responseBuilder() {
 
 
 /*
-	GETTER FUNCTIONS
+	Builds and adds the error page HTML source code to the response body
+    to the response verctor to get ready for sending as a response.
 */
-
 void Response::buildErrorResponse() {
-    //get The Body Of the Error Page
-    (*this).responseBody =  getErrorPageHTML();
+    this->responseBody = getErrorPageHTML();
     setResponseLine();
     setHeaders();
-    (*this).response.append((*this).responseLine);
-    (*this).response.append((*this).responseHeaders);
-    (*this).response.append((*this).responseBody);
+    this->response.append(this->responseLine);
+    this->response.append(this->responseHeaders);
+    this->response.append(this->responseBody);
     addDataToResponse(response);
 }
 
+/**
+ * @brief Iterates through the error pages vector and returns the path of the
+ * error page that matches the status code.
+ * 
+ * @return std::string: the path of the error page corresponding to the status code.
+ */
 std::string getErrorPagePath(std::vector<t_error_page> &pages, int errorCode) {
 	std::vector<t_error_page>::iterator it;
 
@@ -84,6 +89,13 @@ std::string getErrorPagePath(std::vector<t_error_page> &pages, int errorCode) {
 	return NULL;
 }
 
+
+/**
+ * @brief Responsible for getting error pages path by status code.
+ * In case of failure, this will return 403 error as a basic HTML page.
+ * 
+ * @return std::string: the HTML source code of the error page.
+ */
 std::string Response::getErrorPageHTML(){
     std::string responseBody;
 	std::string error_page;

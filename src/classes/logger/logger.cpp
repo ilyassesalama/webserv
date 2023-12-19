@@ -74,6 +74,15 @@ void setSocketNonBlocking(int socketFd) {
     }
 }
 
+/*
+    You can filter out the logs by setting the logFilter to one of the following:
+    - NO_FILTER: prints all logs
+    - VERBOSE: prints only mass logs for heavy debugging
+    - DEBUG: prints only logs for debugging
+    - INFO: prints only logs for information
+    - WARNING: prints only logs for warnings
+    - ERROR: prints only logs for errors
+*/
 void Log::setLogFilter(LogFilter filter) {
     logFilter = static_cast<char>(filter);
 }
