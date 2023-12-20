@@ -38,6 +38,7 @@
 #include "src/headers/ServerInstance.hpp"
 #include "src/headers/String.hpp"
 #include "src/headers/Utils.hpp"
+#include "src/headers/CGInstance.hpp"
 
 
 // -------- start global variables -------

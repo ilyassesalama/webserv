@@ -47,6 +47,16 @@ std::string File::getContentType(std::string path) {
     }
 }
 
+std::string File::getCGIbinary(std::string path) {
+    if(String::endsWith(path,".php")) {
+        return "php-cgi";
+    } else if (String::endsWith(path,".php")) {
+        return "py-cgi";
+    } else {
+        return "WALO" ; // :3 
+    }
+}
+
 bool File::isFile(const std::string& path) {
     if(access(path.c_str(), F_OK) == -1)
         return false;

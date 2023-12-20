@@ -11,5 +11,8 @@ class File {
 		static std::string getWorkingDir();
         static size_t getFileSize(std::string path);
         static void deleteFile(std::string path);
+        static std::string getCGIbinary(std::string path);
 };
+
+
 

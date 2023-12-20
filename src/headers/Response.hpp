@@ -18,7 +18,9 @@ class Response {
         void setStatusCode(int code);
         void setServingState(bool status);
         void setBytesSent(size_t bytes);
-;
+        void setRequestMethode(std::string methode);
+
+
 		std::vector<char>& getResponse();
         bool isServing();
         std::string getStringStatus();
@@ -41,6 +43,8 @@ class Response {
         void buildErrorResponse();
         void addDataToResponse(std::string data);
         void feedDataToTheSender();
+        bool isLocationHasCGI();
+
     private:
         std::string path;
         RequestParser *request;
@@ -60,6 +64,8 @@ class Response {
 
         bool servingState;
         size_t bytesSent;
+        std::string methode;
+
 };
 
 std::string generateHTMLStart(std::string path);

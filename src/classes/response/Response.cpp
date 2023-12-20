@@ -19,10 +19,6 @@ Response::Response() {
 
 Response::~Response() {}
 
-/*
-    IMPORTANT: why the fuck this function is called so many times even if the sender got
-    their message??? check in this exception by printing a message.
-*/
 void Response::feedDataToTheSender() {
     if(fileOffset == -2 &&  bytesSent == responseVector.size()) {
         setServingState(false);
@@ -32,10 +28,13 @@ void Response::feedDataToTheSender() {
         //finished file : change the serving status so he can recv another requestes
         setServingState(false);
         return;
-    } else if(bytesSent < responseVector.size()) {
+    }
+    if(bytesSent < responseVector.size()) {
         std::vector<char>tmp(responseVector.begin() + bytesSent,responseVector.end());
         this->responseVector = tmp;
-    } else if(bytesSent == responseVector.size()) {
+        return;
+    }
+    if(bytesSent == responseVector.size()) {
         bytesSent = 0;
         responseVector.clear();
         try {
@@ -54,6 +53,7 @@ void Response::responseBuilder() {
             throw(Utils::WebservException(String::to_string(this->statusCode)));
         else {
             if (this->request->getRequestLine()["method"] == "GET") {
+                (*this).setRequestMethode("GET");
                 GETResponseBuilder();
             } else if (this->request->getRequestLine()["method"] == "DELETE") {
                 DELETEResponseBuilder();
@@ -163,17 +163,11 @@ std::string Response::readFileByOffset() {
 
 void Response::handleFileRequest() {
 
-    // std::vector<std::string>cgi_methods = this->currentRoute->cgi_methods;
-    // std::string cgi_extension = this->currentRoute->cgi_extension;
-
-    // if (cgi_methods.size() != 0) {
-
-    //     if (!cgi_extension.empty() && std::find(cgi_methods.begin(), cgi_methods.end(), "GET") != cgi_methods.end()) {
-
-    //     }
-
-    // }
-    // else 
+    if((*this).isLocationHasCGI()) {
+        //handle CGI
+        std::cout << "yahoooo" << std::endl;
+    }
+    else
         this->responseBody = readFileByOffset();
 
 }

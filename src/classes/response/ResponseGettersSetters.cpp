@@ -8,6 +8,28 @@
 
 
 
+bool Response::isLocationHasCGI() {
+    if(!(*this).currentRoute->cgi_extension.empty() && !(*this).currentRoute->cgi_methods.empty()) {
+        if(std::find((*this).currentRoute->cgi_methods.begin(),(*this).currentRoute->cgi_methods.end(),(*this).methode) == (*this).currentRoute->cgi_methods.end()) {
+            Log::i("The CGI method is not supported at this location ...");
+            return(false);
+        } //abahsine will add more extentions to the config file 
+        if(File::getCGIbinary(path) == "WALO") {
+            Log::i("The CGI extension is not supported at this location ...");
+            return(false);            
+        }
+        Log::i("CGI is supported at this location ...");
+        return(true);
+    }
+    Log::i("No supported CGI found at this location ...");
+    return(false);
+}
+
+
+void Response::setRequestMethode(std::string methode) {
+    (*this).methode = methode;
+}
+
 
 std::vector<char>& Response::getResponse() {
 	return((*this).responseVector);
@@ -120,6 +142,7 @@ void Response::setHeaders() {
 }
 
 void Response::setResponseBody() {
+    
 	if (File::isDirectory(this->path)) {
         this->handleDirectoryRequest();
     } else if (File::isFile(this->path)) {

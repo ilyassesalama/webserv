@@ -1,6 +1,6 @@
 #include "../../../webserv.hpp"
 
-ServerInstance::ServerInstance(s_server &serverInfos): backLog(100) {
+ServerInstance::ServerInstance(s_server &serverInfos): backLog(200) {
 
         setListenAdressPort(serverInfos); //check if the array is empty !!!!
         (*this).serverName = serverInfos.server_names[0];
