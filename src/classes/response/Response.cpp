@@ -161,14 +161,25 @@ std::string Response::readFileByOffset() {
     return(content);
 }
 
+
+void Response::CGIhandler() {
+    CGInstance cgiHandler;
+
+    cgiHandler.setPath((*this).path);
+    cgiHandler.setcgiPath(File::getCGIbinary((*this).path));
+    cgiHandler.setEnvironnementVariables((*this).request);
+}
+
+
 void Response::handleFileRequest() {
 
     if((*this).isLocationHasCGI()) {
         //handle CGI
-        std::cout << "yahoooo" << std::endl;
+        CGIhandler();
     }
-    else
+    else {
         this->responseBody = readFileByOffset();
+    }
 
 }
 

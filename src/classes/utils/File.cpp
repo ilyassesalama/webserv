@@ -49,9 +49,9 @@ std::string File::getContentType(std::string path) {
 
 std::string File::getCGIbinary(std::string path) {
     if(String::endsWith(path,".php")) {
-        return "php-cgi";
+        return "/Users/bel-kala/Desktop/webserv/src/classes/cgi/bin/php-cgi";
     } else if (String::endsWith(path,".php")) {
-        return "py-cgi";
+        return "/Users/bel-kala/Desktop/webserv/src/classes/cgi/bin/py-cgi";
     } else {
         return "WALO" ; // :3 
     }

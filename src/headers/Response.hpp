@@ -44,6 +44,7 @@ class Response {
         void addDataToResponse(std::string data);
         void feedDataToTheSender();
         bool isLocationHasCGI();
+        void CGIhandler();
 
     private:
         std::string path;
