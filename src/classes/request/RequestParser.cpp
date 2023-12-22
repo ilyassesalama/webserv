@@ -54,6 +54,7 @@ void RequestParser::mergeRequestChunks(std::string &requestInput) {
     	this->parsingState.ok = parsingState.headLineOk && parsingState.headsOk && parsingState.bodyOk; // don't care about the body since it's optional
     Log::d("Request parsing finished with status: " + String::to_string(parsingState.ok));
     if (parsingState.ok && FULL_LOGGING_ENABLED) {
+		std::cout << "parsing state ok" << std::endl;
         logParsedRequest();
     }
 }
@@ -206,12 +207,16 @@ size_t getChunkEnd(std::string body, size_t chunkRemainder) {
 
 size_t getChunkedRequestBodyEnd(std::string &body, size_t chunkRemainder) {
 
-	size_t endPos = body.rfind("\r\n0\r\n");
+	size_t endPos = body.rfind("\r\n0\r\n\r\n");
 	if (endPos == std::string::npos) {
-		endPos = body.rfind("\n0\n");
-		if (endPos == std::string::npos) {
+		endPos = body.rfind("\n0\n\n");
+		if (endPos != std::string::npos && endPos == body.size() - 4)
+			return endPos;
+		else
 			return getChunkEnd(body, chunkRemainder);
-		}
+	} else {
+		if (endPos != std::string::npos && endPos == body.size() - 7)
+			return endPos;
 	}
 	return getChunkEnd(body, chunkRemainder);
 }
@@ -242,9 +247,19 @@ size_t getChunkSize(std::string body) {
 */
 
 size_t getZero(std::string &body) {
-	size_t zeroPos = body.rfind("\r\n0\r\n");
-	if (zeroPos == std::string::npos)
-		zeroPos = body.rfind("\n0\n");
+	size_t zeroPos = body.rfind("\r\n0\r\n\r\n");
+	if (zeroPos == std::string::npos) {
+		zeroPos = body.rfind("\n0\n\n");
+		if (zeroPos != std::string::npos && zeroPos == body.size() - 4)
+			return zeroPos;
+		else
+			return std::string::npos;
+	} else {
+		if (zeroPos != std::string::npos && zeroPos == body.size() - 7)
+			return zeroPos;
+		else
+			return std::string::npos;
+	}
 	return zeroPos;
 }
 
@@ -288,7 +303,9 @@ void RequestParser::getChunkedData(std::string &body) {
 	myFile.close();
 
 	if (isZero == true && this->chunkRemainder == 0) {
+		std::cout << "parsing state ok my function" << std::endl;
 		this->parsingState.bodyOk = true;
+		this->parsingState.failCode = 201;
 		return ;
 	}
 
@@ -332,6 +349,7 @@ void RequestParser::parseRequestBody(std::string &requestData){
 	} else if (Utils::isHeaderKeyExists(this->headers, "Transfer-Encoding"))
 		getChunkedData(requestData);
     else if(!Utils::isHeaderKeyExists(this->headers, "Transfer-Encoding") && requestData.length() - found - 4 == String::to_size_t(getHeaders()["Content-Length"])) {
+		std::cout << "parsing state ok salama function" << std::endl;
         parsingState.bodyOk = true;
     }
 }

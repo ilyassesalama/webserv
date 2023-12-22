@@ -127,11 +127,12 @@ std::string addHeaders(std::string key, std::string value) {
     Add oheaders to the response headers accrordingly depending on the status code.
 */
 void Response::setHeaders() {
-    if(statusCode != 204){
+    if(statusCode != 204 && statusCode != 201){
         this->responseHeaders.append(addHeaders("Content-Type", File::getContentType(this->path)));
         this->responseHeaders.append(addHeaders("Content-Length", String::to_string(File::getFileSize(this->path))));
-    }
-    if(statusCode != 200 && statusCode != 201) {
+    } else if (statusCode == 201)
+		this->responseHeaders.append(addHeaders("Content-Length", "0"));
+    if(statusCode != 200) {
         this->responseHeaders.append(addHeaders("Connection", "close"));
     }
     if(statusCode == 301) {

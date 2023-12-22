@@ -105,7 +105,7 @@ std::string bufferRequest = "";
 int ServerInstance::recvRequest(int clientFd) {
     int bytesRead;
     std::string receivedRequest;
-    char buffer[2500];
+    char buffer[10000];
 
     memset(buffer, 0, sizeof(buffer));
     bytesRead = recv(clientFd, buffer, sizeof(buffer), 0);
