@@ -18,7 +18,7 @@ class Response {
         void setStatusCode(int code);
         void setServingState(bool status);
         void setBytesSent(size_t bytes);
-        void setRequestMethode(std::string methode);
+        void setRequestMethod(std::string method);
 
 
 		std::vector<char>& getResponse();
@@ -51,6 +51,7 @@ class Response {
         RequestParser *request;
         t_server *server;
         int statusCode;
+        std::map<std::string, std::string> responseHeadersMap;
         std::string response;
         std::string responseLine;
         std::string responseHeaders;
@@ -65,7 +66,8 @@ class Response {
 
         bool servingState;
         size_t bytesSent;
-        std::string methode;
+        std::string method;
+        bool isCGI;
 
 };
 

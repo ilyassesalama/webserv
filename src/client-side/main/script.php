@@ -1,6 +1,6 @@
 <?php
     // set custom status code
-    http_response_code(404);
+    http_response_code(301);
     // tell the response that we're sending JSON
     header('Content-Type: application/json');
     // create a json

@@ -52,7 +52,7 @@ void Response::responseBuilder() {
             throw(Utils::WebservException(String::to_string(this->statusCode)));
         else {
             if (this->request->getRequestLine()["method"] == "GET") {
-                this->setRequestMethode("GET");
+                this->setRequestMethod("GET");
                 GETResponseBuilder();
             } else if (this->request->getRequestLine()["method"] == "DELETE") {
                 DELETEResponseBuilder();
@@ -74,8 +74,8 @@ void Response::responseBuilder() {
 */
 void Response::buildErrorResponse() {
     this->responseBody = getErrorPageHTML();
-    setResponseLine();
-    setHeaders();
+    this->setResponseLine();
+    this->setHeaders();
     this->response.append(this->responseLine);
     this->response.append(this->responseHeaders);
     this->response.append(this->responseBody);
@@ -162,6 +162,8 @@ std::string Response::readFileByOffset() {
 
 
 void Response::CGIhandler() {
+    this->fileOffset = -2;
+
     // this class needs to be refactored [later]
     CGInstance cgiHandler(*this->request);
     cgiHandler.setFilePath(this->path);
@@ -172,18 +174,17 @@ void Response::CGIhandler() {
     // GCI finished doing the cool stuff
     this->responseBody = cgiHandler.getCGIResponse();
     this->statusCode = cgiHandler.getCGIStatusCode();
-
-    // set the response headers
-    // cgiHandler.getCGIContentType();
-
+    this->responseHeadersMap["Content-Type"] = cgiHandler.getCGIContentType();
+    this->responseHeadersMap["Content-Length"] = String::to_string(cgiHandler.getCGIContentLength());
 }
 
 void Response::handleFileRequest() {
-    if(this->isLocationHasCGI()) {
+    this->isCGI = this->isLocationHasCGI();
+    if(this->isCGI){
         CGIhandler();
-    } else {
-        this->responseBody = readFileByOffset();
+        return;
     }
+    this->responseBody = readFileByOffset();
 }
 
 void Response::clearResponse() {

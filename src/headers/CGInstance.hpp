@@ -19,6 +19,7 @@ class CGInstance {
 
         std::string getCGIResponse();
         std::string getCGIContentType();
+        size_t getCGIContentLength();
         int getCGIStatusCode();
     private:
         RequestParser &request;

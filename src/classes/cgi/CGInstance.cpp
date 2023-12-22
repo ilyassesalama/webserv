@@ -78,15 +78,6 @@ void CGInstance::parseResponseBody() {
     cgiResponse = cgiResponse.substr(cgiResponse.find("\r\n\r\n") + 4);
 }
 
-void CGInstance::printCGIResponse() {
-    Log::v("CGI Response: Parsed headers:");
-    for (std::map<std::string, std::string>::iterator it = this->cgiResponseHeadersMap.begin(); it != this->cgiResponseHeadersMap.end(); it++) {
-        std::cout << "- " << it->first << ": " << it->second << std::endl;
-    }
-    Log::v("Body: ");
-    std::cout << this->cgiResponse << std::endl;
-}
-
 void CGInstance::setFilePath(std::string filePath) {
     this->filePath = filePath;
 }
@@ -106,4 +97,23 @@ std::string CGInstance::getCGIContentType() {
 int CGInstance::getCGIStatusCode() {
     if(!Utils::isHeaderKeyExists(this->cgiResponseHeadersMap, "Status")) return 200;
     return String::to_int(this->cgiResponseHeadersMap["Status"]);
+}
+
+size_t CGInstance::getCGIContentLength() {
+    size_t contentLength = 0;
+    if(Utils::isHeaderKeyExists(this->cgiResponseHeadersMap, "Content-Length")) {
+        contentLength = String::to_size_t(this->cgiResponseHeadersMap["Content-Length"]);
+    } else {
+        contentLength = this->cgiResponse.size();
+    }
+    return contentLength;
+}
+
+void CGInstance::printCGIResponse() {
+    Log::v("CGI Response: Parsed headers:");
+    for (std::map<std::string, std::string>::iterator it = this->cgiResponseHeadersMap.begin(); it != this->cgiResponseHeadersMap.end(); it++) {
+        std::cout << "- " << it->first << ": " << it->second << std::endl;
+    }
+    Log::v("Body: ");
+    std::cout << this->cgiResponse << std::endl;
 }

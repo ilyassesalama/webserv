@@ -10,7 +10,7 @@
 
 bool Response::isLocationHasCGI() {
     if(!this->currentRoute->cgi_extension.empty() && !this->currentRoute->cgi_methods.empty()) {
-        if(std::find(this->currentRoute->cgi_methods.begin(),this->currentRoute->cgi_methods.end(),this->methode) == this->currentRoute->cgi_methods.end()) {
+        if(std::find(this->currentRoute->cgi_methods.begin(),this->currentRoute->cgi_methods.end(),this->method) == this->currentRoute->cgi_methods.end()) {
             Log::i("The CGI method is not supported at this location ...");
             return(false);
         } //abahsine will add more extentions to the config file 
@@ -26,8 +26,8 @@ bool Response::isLocationHasCGI() {
 }
 
 
-void Response::setRequestMethode(std::string methode) {
-    this->methode = methode;
+void Response::setRequestMethod(std::string method) {
+    this->method = method;
 }
 
 
@@ -106,9 +106,7 @@ void Response::setServer(t_server &server) {
 }
 
 void Response::setResponseLine() {
-
     std::string status = getStringStatus();
-
     this->responseLine = "HTTP/1.1 " + status + "\r\n";
 }
 
@@ -127,16 +125,22 @@ std::string addHeaders(std::string key, std::string value) {
     Add oheaders to the response headers accrordingly depending on the status code.
 */
 void Response::setHeaders() {
-    if(statusCode != 204 && statusCode != 201){
-        this->responseHeaders.append(addHeaders("Content-Type", File::getContentType(this->path)));
-        this->responseHeaders.append(addHeaders("Content-Length", String::to_string(File::getFileSize(this->path))));
-    } else if (statusCode == 201)
-		this->responseHeaders.append(addHeaders("Content-Length", "0"));
-    if(statusCode != 200) {
-        this->responseHeaders.append(addHeaders("Connection", "close"));
+    if(!this->isCGI){
+        if(statusCode != 204 && statusCode != 201){
+            this->responseHeadersMap["Content-Length"] = String::to_string(File::getFileSize(this->path));
+            this->responseHeadersMap["Content-Type"] = File::getContentType(this->path);
+        } else if (statusCode == 201)
+            this->responseHeadersMap["Content-Length"] = "0";
+        if(statusCode != 200) {
+            this->responseHeadersMap["Connection"] = "close";
+        }
+        if(statusCode == 301) {
+            this->responseHeadersMap["Location"] = this->request->getRequestLine()["path"] + "/";
+        }
     }
-    if(statusCode == 301) {
-        this->responseHeaders.append(addHeaders("Location", this->request->getRequestLine()["path"] + "/"));
+    // convert map to string headers
+    for(std::map<std::string, std::string>::iterator it = this->responseHeadersMap.begin(); it != this->responseHeadersMap.end(); it++) {
+        this->responseHeaders.append(addHeaders(it->first, it->second));
     }
     this->responseHeaders.append("\r\n");
 }
@@ -153,9 +157,7 @@ void Response::setResponseBody() {
 
 void Response::setRoute(t_route *route) {
     this->currentRoute = route;
-
 }
-
 
 void Response::addDataToResponse(std::string data) {
     responseVector.insert(responseVector.end(), data.begin(), data.end());
