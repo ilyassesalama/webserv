@@ -214,7 +214,7 @@ void RequestParser::logParsedRequest(){
         Log::v("RequestParser: Parsed body:");
         std::cout << this->body << "\n";
     }
-    if(this->parsingState.failCode != 0 && this->parsingState.failCode != 200){
+    if(this->parsingState.failCode != 0 && this->parsingState.failCode != 200 && this->parsingState.failCode != 201){
         Log::e("RequestParser: Parsing failed with code " + String::to_string(this->parsingState.failCode) + " and reason: " + this->parsingState.failReason);
     }
 }

@@ -36,7 +36,6 @@ void RequestParser::mergeRequestChunks(std::string &requestInput) {
 		if(FULL_LOGGING_ENABLED) Log::v("Parsing request line finished with status: " + String::to_string(parsingState.headLineOk));
 	}
 	if(parsingState.headLineOk && !parsingState.headsOk && (requestData.find("\r\n\r\n") != std::string::npos || requestData.find("\n\n") != std::string::npos)) {
-		std::cout << "MAXBODY" << std::endl;
 		parseRequestHeaders(requestData);
 		if(FULL_LOGGING_ENABLED) Log::v("Parsing request headers finished with status: " + String::to_string(parsingState.headsOk));
 	}
