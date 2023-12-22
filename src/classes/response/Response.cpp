@@ -45,7 +45,6 @@ void Response::feedDataToTheSender() {
     }
 }
 
-
 void Response::responseBuilder() {
    try {
         //check if the parser failed
@@ -53,7 +52,7 @@ void Response::responseBuilder() {
             throw(Utils::WebservException(String::to_string(this->statusCode)));
         else {
             if (this->request->getRequestLine()["method"] == "GET") {
-                (*this).setRequestMethode("GET");
+                this->setRequestMethode("GET");
                 GETResponseBuilder();
             } else if (this->request->getRequestLine()["method"] == "DELETE") {
                 DELETEResponseBuilder();
@@ -163,24 +162,28 @@ std::string Response::readFileByOffset() {
 
 
 void Response::CGIhandler() {
-    CGInstance cgiHandler;
+    // this class needs to be refactored [later]
+    CGInstance cgiHandler(*this->request);
+    cgiHandler.setFilePath(this->path);
+    cgiHandler.setEnvironnementVariables();
+    cgiHandler.setCGIPath(File::getCGIbinary(this->path));
+    cgiHandler.executeScript(); // start the party
 
-    cgiHandler.setPath((*this).path);
-    cgiHandler.setcgiPath(File::getCGIbinary((*this).path));
-    cgiHandler.setEnvironnementVariables((*this).request);
+    // GCI finished doing the cool stuff
+    this->responseBody = cgiHandler.getCGIResponse();
+    this->statusCode = cgiHandler.getCGIStatusCode();
+
+    // set the response headers
+    // cgiHandler.getCGIContentType();
+
 }
 
-
 void Response::handleFileRequest() {
-
-    if((*this).isLocationHasCGI()) {
-        //handle CGI
+    if(this->isLocationHasCGI()) {
         CGIhandler();
-    }
-    else {
+    } else {
         this->responseBody = readFileByOffset();
     }
-
 }
 
 void Response::clearResponse() {

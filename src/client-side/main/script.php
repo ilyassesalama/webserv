@@ -1,12 +1,10 @@
-<!DOCTYPE html>
-<html>
-<body>
-
-<h1>My first PHP page</h1>
-
 <?php
-echo "Hello World!";
+    // set custom status code
+    http_response_code(404);
+    // tell the response that we're sending JSON
+    header('Content-Type: application/json');
+    // create a json
+    $abahsine = json_encode(array('message' => 'Hello World!'), JSON_PRETTY_PRINT);
+    // output the json
+    echo $abahsine;
 ?>
-
-</body>
-</html>

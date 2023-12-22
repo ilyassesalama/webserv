@@ -1,35 +1,39 @@
 #pragma once
 
 #include "../../webserv.hpp"
-#include"RequestParser.hpp"
+#include "RequestParser.hpp"
 
 
 class CGInstance {
     public:
-        CGInstance();
-        // ~CGInstance();
-        void setPath(std::string path);
-        void setcgiPath(std::string cgiPath);
-        void setEnvironnementVariables(RequestParser *parser);
-        // void executeScript(std::vector<std::string>& CGIenv);
-    private:
-        std::string path; // going to be constructed with
-        std::string cgiPath;
-        char** env;
+        CGInstance(RequestParser &request);
 
-        //env
-         std::string REQUEST_METHOD;
-         std::string QUERY_STRING;
-         std::string SCRIPT_FILENAME;
-         std::string SCRIPT_NAME;
-         std::string DOCUMENT_ROOT;
-         std::string SERVER_NAME;
-         std::string SERVER_PORT;
-         std::string REDIRECT_STATUS;
+        void setFilePath(std::string filePath);
+        void setCGIPath(std::string cgiPath);
+        void setEnvironnementVariables();
+
+        void executeScript();
+        void parseResponseHeaders();
+        void parseResponseBody();
+        void printCGIResponse();
+
+        std::string getCGIResponse();
+        std::string getCGIContentType();
+        int getCGIStatusCode();
+    private:
+        RequestParser &request;
+        std::string filePath;
+        std::string cgiPath;
+        std::string cgiResponse;
+        std::string cgiResponseHeaders;
+        std::string cgiContentType;
+        std::string cgiStatusCode;
+        std::map<std::string, std::string> cgiResponseHeadersMap;
+        char **cgiEnv;
 };
 
 
-//env 
+// env 
 // REQUEST_METHOD: The HTTP request method (e.g., "GET" or "POST").
 // QUERY_STRING: The query string portion of the URL.
 // CONTENT_TYPE: The content type of the request body for POST requests.

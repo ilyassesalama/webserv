@@ -28,8 +28,8 @@ std::string File::getContentType(std::string path) {
         return("application/pdf");
     } else if (String::endsWith(path, ".js")) {
         return "application/javascript";
-    } else if (String::endsWith(path, ".html") || String::endsWith(path, ".htm")) {
-        return "text/html";
+    } else if (String::endsWith(path, ".html") || String::endsWith(path, ".htm") || String::endsWith(path, ".php") || String::endsWith(path, ".py")) {
+        return "text/html charset=UTF-8";
     } else if (String::endsWith(path, ".jpg") || String::endsWith(path, ".jpeg")) {
         return "image/jpeg";
     } else if (String::endsWith(path, ".png")) {
@@ -48,10 +48,12 @@ std::string File::getContentType(std::string path) {
 }
 
 std::string File::getCGIbinary(std::string path) {
-    if(String::endsWith(path,".php")) {
-        return "/Users/bel-kala/Desktop/webserv/src/classes/cgi/bin/php-cgi";
-    } else if (String::endsWith(path,".php")) {
-        return "/Users/bel-kala/Desktop/webserv/src/classes/cgi/bin/py-cgi";
+    std::string cgiBinPath = getcwd(NULL, 0);
+    cgiBinPath.append("/src/classes/cgi/bin");
+    if(String::endsWith(path, ".php")) {
+        return cgiBinPath.append("/php-cgi");
+    } else if (String::endsWith(path, ".py")) {
+        return cgiBinPath.append("/py-cgi");
     } else {
         return "WALO" ; // :3 
     }
