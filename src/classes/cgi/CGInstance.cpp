@@ -104,5 +104,6 @@ std::string CGInstance::getCGIContentType() {
 }
 
 int CGInstance::getCGIStatusCode() {
+    if(!Utils::isHeaderKeyExists(this->cgiResponseHeadersMap, "Status")) return 200;
     return String::to_int(this->cgiResponseHeadersMap["Status"]);
 }
