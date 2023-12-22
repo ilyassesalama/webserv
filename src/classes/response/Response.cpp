@@ -129,7 +129,7 @@ void Response::handleDirectoryRequest() {
 
     if (File::isFile(this->path + indexHTML)) {
 		this->path += indexHTML;
-        this->responseBody = File::getFileContent(this->path);
+        this->responseBody = readFileByOffset();
 		this->statusCode = 200;
     } else {
         bool directory_listing = this->currentRoute->directory_listing;
