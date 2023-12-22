@@ -341,13 +341,19 @@ void RequestParser::parseRequestBody(std::string &requestData){
 	this->body += requestData.substr(found + 4);
 	if (!this->isChunked) {
 
-		if (Utils::isHeaderKeyExists(this->headers, "Transfer-Encoding")) {
+		if (Utils::isHeaderKeyExists(this->headers, "Content-Type") && this->headers["Content-Type"].find("multipart/form-data") != std::string::npos) {
+
+		} else if (Utils::isHeaderKeyExists(this->headers, "Transfer-Encoding")) {
 			std::string firstChunk = requestData.substr(found + 4);
 
 			getChunkedData(firstChunk);
 		}
-	} else if (Utils::isHeaderKeyExists(this->headers, "Transfer-Encoding"))
-		getChunkedData(requestData);
+	} else if (Utils::isHeaderKeyExists(this->headers, "Transfer-Encoding") || (Utils::isHeaderKeyExists(this->headers, "Content-Type") && this->headers["Content-Type"].find("multipart/form-data") != std::string::npos)) {
+		if (Utils::isHeaderKeyExists(this->headers, "Content-Type") && this->headers["Content-Type"].find("multipart/form-data") != std::string::npos)
+			getChunkedData(requestData);
+		else
+			getChunkedData(requestData);
+	}
     else if(!Utils::isHeaderKeyExists(this->headers, "Transfer-Encoding") && requestData.length() - found - 4 == String::to_size_t(getHeaders()["Content-Length"])) {
 		std::cout << "parsing state ok salama function" << std::endl;
         parsingState.bodyOk = true;
