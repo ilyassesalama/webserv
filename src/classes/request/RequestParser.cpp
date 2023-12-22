@@ -17,6 +17,8 @@ void RequestParser::nullOutVars(){
     this->parsingState.bodyOk = false;
     this->parsingState.failCode = 0;
     this->parsingState.failReason = "";
+	this->chunkRemainder = 0;
+	this->isChunked = false;
 }
 
 /*
@@ -24,22 +26,32 @@ void RequestParser::nullOutVars(){
     to receive and merge the final full request.
 */
 void RequestParser::mergeRequestChunks(std::string &requestInput) {
-    this->requestData.append(requestInput);
+	if (this->headers.empty())
+    	this->requestData.append(requestInput);
+	else if (Utils::isHeaderKeyExists(this->headers, "Transfer-Encoding"))
+		this->requestData = requestInput;
 
-    if(!parsingState.headLineOk && (requestData.find("\r\n") != std::string::npos)) {
-        parseRequestLine(requestData);
-        if(FULL_LOGGING_ENABLED) Log::v("Parsing request line finished with status: " + String::to_string(parsingState.headLineOk));
-    }
-    if(parsingState.headLineOk && !parsingState.headsOk && (requestData.find("\r\n\r\n") != std::string::npos || requestData.find("\n\n") != std::string::npos)) {
-        parseRequestHeaders(requestData);
-        if(FULL_LOGGING_ENABLED) Log::v("Parsing request headers finished with status: " + String::to_string(parsingState.headsOk));
-    }
+	if(!parsingState.headLineOk && (requestData.find("\r\n") != std::string::npos)) {
+		parseRequestLine(requestData);
+		if(FULL_LOGGING_ENABLED) Log::v("Parsing request line finished with status: " + String::to_string(parsingState.headLineOk));
+	}
+	if(parsingState.headLineOk && !parsingState.headsOk && (requestData.find("\r\n\r\n") != std::string::npos || requestData.find("\n\n") != std::string::npos)) {
+		std::cout << "MAXBODY" << std::endl;
+		parseRequestHeaders(requestData);
+		if(FULL_LOGGING_ENABLED) Log::v("Parsing request headers finished with status: " + String::to_string(parsingState.headsOk));
+	}
     if(parsingState.headsOk && !parsingState.bodyOk) {
         parseRequestBody(requestData);
         if(FULL_LOGGING_ENABLED) Log::v("Parsing request body finished with status: " + String::to_string(parsingState.bodyOk));
     }
-    verifyIfRequestIsSafe(); // can only be called once all the parsing is done
-    this->parsingState.ok = parsingState.headLineOk && parsingState.headsOk; // don't care about the body since it's optional
+	if (!this->isChunked) {
+    	verifyIfRequestIsSafe(); // can only be called once all the parsing is done
+		this->isChunked = Utils::isHeaderKeyExists(this->headers, "Transfer-Encoding") ? true : false;
+	}
+	if (this->getRequestLine()["method"] == "GET" || this->getRequestLine()["method"] == "DELETE")
+    	this->parsingState.ok = parsingState.headLineOk && parsingState.headsOk; // don't care about the body since it's optional
+	else
+    	this->parsingState.ok = parsingState.headLineOk && parsingState.headsOk && parsingState.bodyOk; // don't care about the body since it's optional
     Log::d("Request parsing finished with status: " + String::to_string(parsingState.ok));
     if (parsingState.ok && FULL_LOGGING_ENABLED) {
         logParsedRequest();
@@ -51,14 +63,12 @@ void RequestParser::mergeRequestChunks(std::string &requestInput) {
     function makes sure that the request is safe so we can start sending the response.
 */
 void RequestParser::verifyIfRequestIsSafe(){
-    // if(!this->headers["Transfer-Encoding"].empty() && this->headers["Transfer-Encoding"] != "chunked"){
-	if (this->headers.find("Transfer-Encoding") != this->headers.end() && this->headers["Transfer-Encoding"] != "chunked") {
+	if (Utils::isHeaderKeyExists(this->headers, "Transfer-Encoding") && this->headers["Transfer-Encoding"] != "chunked") {
         this->parsingState.failCode = 501;
         this->parsingState.failReason = "Not Implemented";
         return;
     }
-    // if(this->requestLine["method"] == "POST" && (!Utils::isHeaderKeyExists(this->headers, "Content-Length") || this->headers["Transfer-Encoding"].empty())){
-    if(this->requestLine["method"] == "POST" && (!Utils::isHeaderKeyExists(this->headers, "Content-Length") || this->headers.find("Transfer-Encoding") == this->headers.end())){
+    if(this->requestLine["method"] == "POST" && (!Utils::isHeaderKeyExists(this->headers, "Content-Length") || !Utils::isHeaderKeyExists(this->headers, "Transfer-Encoding"))){
         this->parsingState.failCode = 400;
         this->parsingState.failReason = "Bad Request";
         return;
@@ -97,6 +107,7 @@ void RequestParser::verifyIfRequestIsSafe(){
 	if (!parseContentType()) {
 		this->parsingState.failCode = 400;
 		this->parsingState.failReason = "Bad Request";
+		return;
 	}
     this->parsingState.failCode = 200;
 }
@@ -174,12 +185,153 @@ void RequestParser::parseRequestParams(std::string &requestData){
 }
 
 /*
+	returns remaining chunk size of previous request
+	if chunk size is not less than request size it returns request size
+*/
+
+size_t getChunkEnd(std::string body, size_t chunkRemainder) {
+
+	size_t i;
+	for (i = 0; i < body.size(); i++) {
+		if (chunkRemainder == 0)
+			return i;
+		chunkRemainder--;
+	}
+	return i;
+}
+
+/*
+	returns chunk end because there may be two chunks in one request or this request ends with 0
+*/
+
+size_t getChunkedRequestBodyEnd(std::string &body, size_t chunkRemainder) {
+
+	size_t endPos = body.rfind("\r\n0\r\n");
+	if (endPos == std::string::npos) {
+		endPos = body.rfind("\n0\n");
+		if (endPos == std::string::npos) {
+			return getChunkEnd(body, chunkRemainder);
+		}
+	}
+	return getChunkEnd(body, chunkRemainder);
+}
+
+/*
+	this function subtracts the size of the next chunk from the request body
+	the main function only calls this when chunk remainder is zero
+*/
+
+size_t getChunkSize(std::string body) {
+
+	size_t pos = body.find("\r\n");
+	if (pos == std::string::npos)
+		pos = body.find("\n");
+
+	std::string firstLine = body.substr(0, pos);
+
+
+	size_t hexSize;
+	std::stringstream buffer(firstLine);
+	buffer >> std::hex >> hexSize;
+
+	return hexSize;
+}
+
+/*
+	this function checks whether the request contains 0 which means end of request
+*/
+
+size_t getZero(std::string &body) {
+	size_t zeroPos = body.rfind("\r\n0\r\n");
+	if (zeroPos == std::string::npos)
+		zeroPos = body.rfind("\n0\n");
+	return zeroPos;
+}
+
+/*
+	this is the main function to get chunks and it works using recursion
+*/
+
+void RequestParser::getChunkedData(std::string &body) {
+
+	// try {
+		if (this->chunkRemainder == 0) {
+		this->chunkRemainder = getChunkSize(body);
+		size_t pos = body.find("\r\n"); // removing chunk size from body
+		if (pos == std::string::npos) {
+			pos = body.find("\n");
+			pos += 1;
+		} else {
+			pos += 2;
+		}
+		body = body.substr(pos);
+	}
+
+	std::fstream myFile(File::getWorkingDir() + "/tmp1.mp4", std::ios::binary | std::ios::app);
+	if (!myFile.is_open()) {
+		this->parsingState.ok = false;
+		return ;
+	}
+
+	bool isZero = getZero(body) == std::string::npos ? false : true;
+
+	size_t bodyEnd = getChunkedRequestBodyEnd(body, this->chunkRemainder);
+
+	std::string chunkStr = body.substr(0, bodyEnd);
+
+	myFile << chunkStr;
+
+	this->chunkRemainder -= chunkStr.size();
+
+	body = body.substr(bodyEnd);
+
+	myFile.close();
+
+	if (isZero == true && this->chunkRemainder == 0) {
+		this->parsingState.bodyOk = true;
+		return ;
+	}
+
+	if (body.size() != 0) {
+
+		size_t pos = body.find("\r\n"); // removing chunk size from body
+		if (pos == std::string::npos) {
+			pos = body.find("\n");
+			pos += 1;
+		} else {
+			pos += 2;
+		}
+
+		body = body.substr(pos);
+
+		if (body.size() != 0)
+			getChunkedData(body);
+		else
+			return ;
+	}
+	// } catch (...) {
+	// 	std::cerr << "CATCHED!" << std::endl;
+	// 	exit(1);
+	// }
+}
+
+/*
     Last check by the request parser, stores the body if it exists.
 */
 void RequestParser::parseRequestBody(std::string &requestData){
     size_t found = requestData.rfind("\r\n\r\n");
-    this->body += requestData.substr(found + 4);
-    if(requestData.length() - found - 4 == String::to_size_t(getHeaders()["Content-Length"])) {
+
+	this->body += requestData.substr(found + 4);
+	if (!this->isChunked) {
+
+		if (Utils::isHeaderKeyExists(this->headers, "Transfer-Encoding")) {
+			std::string firstChunk = requestData.substr(found + 4);
+
+			getChunkedData(firstChunk);
+		}
+	} else if (Utils::isHeaderKeyExists(this->headers, "Transfer-Encoding"))
+		getChunkedData(requestData);
+    else if(!Utils::isHeaderKeyExists(this->headers, "Transfer-Encoding") && requestData.length() - found - 4 == String::to_size_t(getHeaders()["Content-Length"])) {
         parsingState.bodyOk = true;
     }
 }

@@ -122,6 +122,7 @@ int ServerInstance::recvRequest(int clientFd) {
     }
 
     ClientProfile *client = getClientProfile(clientFd);
+	client->connectionTime = std::time(0);
 	client->parser.setServerInformation((this->serverInformations));
 
     try {

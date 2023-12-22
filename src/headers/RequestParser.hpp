@@ -23,6 +23,9 @@ class RequestParser {
 		t_server *server;
         std::string requestResourcePath;
         t_route *route;
+
+		bool isChunked;
+		size_t chunkRemainder;
     public:
         RequestParser();
 
@@ -49,4 +52,7 @@ class RequestParser {
         bool isMethodAllowed();
         bool isHeaderLineValid();
 		bool parseContentType(); // add by abahsine
+
+
+		void getChunkedData(std::string &body);
 };
