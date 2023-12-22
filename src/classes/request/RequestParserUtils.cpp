@@ -3,11 +3,11 @@
 // getters
 
 t_route* RequestParser::getRoute() {
-    return((*this).route);
+    return(this->route);
 }
 
 std::string RequestParser::getRequestedResourcePath() {
-    return((*this).requestResourcePath);
+    return(this->requestResourcePath);
 }
 
 std::map<std::string, std::string>& RequestParser::getRequestLine() {
@@ -69,13 +69,13 @@ bool RequestParser::isPathAccessible() {
     }
     if(route == NULL) {
         if(slashRoute == true) {
-            (*this).route = slashR;
+            this->route = slashR;
             this->requestResourcePath.append(File::getWorkingDir());
             this->requestResourcePath.append(slashR->root);
             this->requestResourcePath.append(getRequestLine()["path"]);
         }
     } else {
-        (*this).route = route;
+        this->route = route;
         this->requestResourcePath.append(File::getWorkingDir());
         this->requestResourcePath.append(route->root);
         this->requestResourcePath.append(getRequestLine()["path"]);

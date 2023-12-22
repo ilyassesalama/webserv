@@ -9,8 +9,8 @@
 
 
 bool Response::isLocationHasCGI() {
-    if(!(*this).currentRoute->cgi_extension.empty() && !(*this).currentRoute->cgi_methods.empty()) {
-        if(std::find((*this).currentRoute->cgi_methods.begin(),(*this).currentRoute->cgi_methods.end(),(*this).methode) == (*this).currentRoute->cgi_methods.end()) {
+    if(!this->currentRoute->cgi_extension.empty() && !this->currentRoute->cgi_methods.empty()) {
+        if(std::find(this->currentRoute->cgi_methods.begin(),this->currentRoute->cgi_methods.end(),this->methode) == this->currentRoute->cgi_methods.end()) {
             Log::i("The CGI method is not supported at this location ...");
             return(false);
         } //abahsine will add more extentions to the config file 
@@ -27,14 +27,13 @@ bool Response::isLocationHasCGI() {
 
 
 void Response::setRequestMethode(std::string methode) {
-    (*this).methode = methode;
+    this->methode = methode;
 }
 
 
 std::vector<char>& Response::getResponse() {
-	return((*this).responseVector);
+	return(this->responseVector);
 }
-
 
 
 std::string Response::getStringStatus(){
@@ -91,19 +90,19 @@ std::string getPathLocation(std::string path) {
 
 
 void Response::setPath(std::string requestedResourcePath) {
-    (*this).path = requestedResourcePath;
+    this->path = requestedResourcePath;
 }
 
 void Response::setStatusCode(int code) {
-    (*this).statusCode = code;
+    this->statusCode = code;
 }
 
 void Response::setRequest(RequestParser &request) {
-    (*this).request = &request;
+    this->request = &request;
 }
 
 void Response::setServer(t_server &server) {
-    (*this).server = &server;
+    this->server = &server;
 }
 
 void Response::setResponseLine() {
@@ -142,7 +141,6 @@ void Response::setHeaders() {
 }
 
 void Response::setResponseBody() {
-    
 	if (File::isDirectory(this->path)) {
         this->handleDirectoryRequest();
     } else if (File::isFile(this->path)) {
@@ -153,7 +151,7 @@ void Response::setResponseBody() {
 }
 
 void Response::setRoute(t_route *route) {
-    (*this).currentRoute = route;
+    this->currentRoute = route;
 
 }
 
@@ -163,12 +161,12 @@ void Response::addDataToResponse(std::string data) {
 }
 
 bool Response::isServing() {
-    return((*this).servingState);
+    return(this->servingState);
 }
 
 void Response::setServingState(bool status) {
-    (*this).servingState = status;
+    this->servingState = status;
 }
 void Response::setBytesSent(size_t bytes) {
-    (*this).bytesSent = bytes;
+    this->bytesSent = bytes;
 }

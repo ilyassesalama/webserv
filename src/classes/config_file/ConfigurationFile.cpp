@@ -199,5 +199,5 @@ ConfigurationFile::ConfigurationFile( std::string file ) {
 }
 
 std::list<t_server>& ConfigurationFile::getConfigFileServers() {
-	return((*this).ConfigFileServers);
+	return(this->ConfigFileServers);
 }

@@ -48,8 +48,8 @@ void Response::POSTResponseBuilder() {
 		this->setResponseBody();
     this->setHeaders();
     this->setResponseLine();
-	addDataToResponse((*this).responseLine);
-    addDataToResponse((*this).responseHeaders);
-    addDataToResponse((*this).responseBody);
+	addDataToResponse(this->responseLine);
+    addDataToResponse(this->responseHeaders);
+    addDataToResponse(this->responseBody);
     setServingState(true);
 }

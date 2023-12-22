@@ -1,7 +1,7 @@
 #include "../../../webserv.hpp"
 
 ConnectionsManager::ConnectionsManager() {
-    (*this).serverCount = 0;
+    this->serverCount = 0;
 }
 
 ConnectionsManager::~ConnectionsManager() {
@@ -9,20 +9,20 @@ ConnectionsManager::~ConnectionsManager() {
 }
 
 void ConnectionsManager::addServerToTheSet(ServerInstance &serverInstance) {
-    (*this).serversSet.push_back(serverInstance);
-    (*this).serverCount++;
+    this->serversSet.push_back(serverInstance);
+    this->serverCount++;
 
     std::vector<struct pollfd> clientFdSet = serverInstance.getClientFdSet();
     std::vector<struct pollfd>::iterator it = clientFdSet.begin();
 
-    (*this).masterFdSet.push_back((*it));
+    this->masterFdSet.push_back((*it));
 
 }
 
 void ConnectionsManager::deleteFromFdSet(int clientFd) {
-    for(std::vector<struct pollfd>::iterator it = (*this).masterFdSet.begin(); it != (*this).masterFdSet.end(); it++) {
+    for(std::vector<struct pollfd>::iterator it = this->masterFdSet.begin(); it != this->masterFdSet.end(); it++) {
         if(it->fd == clientFd) {
-            (*this).masterFdSet.erase(it);
+            this->masterFdSet.erase(it);
             // close(clientFd);
             break;
         }
@@ -38,7 +38,7 @@ void ConnectionsManager::addFdToTheSet(int clientFd) {
     client.fd = clientFd;
     client.events = POLLIN;
     client.revents = 0;
-    (*this).masterFdSet.push_back(client);
+    this->masterFdSet.push_back(client);
 }
 
 
@@ -54,13 +54,13 @@ void ConnectionsManager::checkClientTimeOut() {
     ClientProfile *client;
     ServerInstance *serverId;
     time_t currentTime = std::time(0);
-    std::vector<struct pollfd> tmp ((*this).masterFdSet.begin() + (*this).serverCount , (*this).masterFdSet.end());
+    std::vector<struct pollfd> tmp (this->masterFdSet.begin() + this->serverCount , this->masterFdSet.end());
     for(std::vector<struct pollfd>::iterator it = tmp.begin(); it != tmp.end(); ++it) {
         serverId = getFdServer(it->fd);
         client = serverId->getClientProfile(it->fd);
         if(isTimeOut(currentTime, client->connectionTime)) {
             serverId->dropClient(it->fd);
-            (*this).deleteFromFdSet(it->fd);
+            this->deleteFromFdSet(it->fd);
         }
     }
 }
@@ -96,7 +96,7 @@ ServerInstance* ConnectionsManager::getFdServer(int clientFd) {
 }
 
 void ConnectionsManager::changeClientMonitoringEvent(std::string event, int clientFd) {
-    for(std::vector<struct pollfd>::iterator it = (*this).masterFdSet.begin(); it != (*this).masterFdSet.end(); it++) {
+    for(std::vector<struct pollfd>::iterator it = this->masterFdSet.begin(); it != this->masterFdSet.end(); it++) {
         if(it->fd == clientFd) {
             if(event == "write") {
                 it->events = POLLOUT;
@@ -125,15 +125,15 @@ void ConnectionsManager::socketMonitore() {
             if (it->revents & POLLIN) {
                 if (it == masterFdSet.begin()) {
                     acceptNewIncommingConnections(getFdServer(it->fd));
-                    (*this).masterFdSet[0].events = POLLIN;
-                    (*this).masterFdSet[0].revents = 0;
+                    this->masterFdSet[0].events = POLLIN;
+                    this->masterFdSet[0].revents = 0;
                     break;
                 } else {
                     int requestState = getFdServer(it->fd)->recvRequest(it->fd);
                     if (requestState == FULL_REQUEST_RECEIVED) {
                         changeClientMonitoringEvent("write", it->fd);
                     } else if (requestState == DROP_CLIENT) {
-                        (*this).deleteFromFdSet(it->fd);
+                        this->deleteFromFdSet(it->fd);
                         break; 
                     }
                     it->revents = 0;

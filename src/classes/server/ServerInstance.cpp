@@ -3,55 +3,55 @@
 ServerInstance::ServerInstance(s_server &serverInfos): backLog(200) {
 
         setListenAdressPort(serverInfos); //check if the array is empty !!!!
-        (*this).serverName = serverInfos.server_names[0];
-        (*this).serverInformations = &serverInfos;
-        (*this).listenSocket = -1;
-        (*this).bindAddress = NULL;
-        std::memset(&(*this).hint,0,sizeof((*this).hint));
-        (*this).hint.ai_family = AF_INET;
-        (*this).hint.ai_socktype = SOCK_STREAM;
-        (*this).hint.ai_flags = AI_PASSIVE;
-        (*this).sendSize = 1000;
+        this->serverName = serverInfos.server_names[0];
+        this->serverInformations = &serverInfos;
+        this->listenSocket = -1;
+        this->bindAddress = NULL;
+        std::memset(&this->hint,0,sizeof(this->hint));
+        this->hint.ai_family = AF_INET;
+        this->hint.ai_socktype = SOCK_STREAM;
+        this->hint.ai_flags = AI_PASSIVE;
+        this->sendSize = 1000;
 
 
 }
 
 std::vector<struct pollfd>& ServerInstance::getClientFdSet() {
-    return((*this).serverPollFd);
+    return(this->serverPollFd);
 }
 
 std::vector<struct ClientProfile>& ServerInstance::getClientProfilesSet() {
-    return((*this).clientProfiles);
+    return(this->clientProfiles);
 }
 
 
 std::string ServerInstance::getServerName() {
-    return((*this).serverName);
+    return(this->serverName);
 }
 
 void ServerInstance::setListenAdressPort(t_server &serverInfos) {
-    (*this).serverPort =  serverInfos.listen[0].port;
-    (*this).listenAdress = serverInfos.listen[0].host;
+    this->serverPort =  serverInfos.listen[0].port;
+    this->listenAdress = serverInfos.listen[0].host;
 }
 
 void ServerInstance::setListenSocket(int SocketFd) {
-    (*this).listenSocket = SocketFd;
+    this->listenSocket = SocketFd;
 }
 
 std::string ServerInstance::getServerPort() {
     std::stringstream ss;
 
-    ss << (*this).serverPort;
+    ss << this->serverPort;
     std::string port = ss.str();
     return(port);
 }
 
 std::string ServerInstance::getListenAdress() {
-    return((*this).listenAdress);
+    return(this->listenAdress);
 }
 
 int ServerInstance::getListenSocketFd() {
-    return((*this).listenSocket);
+    return(this->listenSocket);
 }
 
 void ServerInstance::AddFdToPollFds(int clientFd) {
@@ -63,22 +63,22 @@ void ServerInstance::AddFdToPollFds(int clientFd) {
     client.fd = clientFd;
     client.events = POLLIN;
     client.revents = 0;
-    (*this).serverPollFd.push_back(client);
+    this->serverPollFd.push_back(client);
 }
 
 void ServerInstance::AddToClientProfiles(ClientProfile &client) {
-    (*this).clientProfiles.push_back(client);
+    this->clientProfiles.push_back(client);
 }
 
 void ServerInstance::setupServerConfiguration() {
     int opt = 1;
     
     Log::i("Configuring local network...");
-    getaddrinfo(getListenAdress().c_str(), getServerPort().c_str(), &(*this).hint, &(*this).bindAddress);
+    getaddrinfo(getListenAdress().c_str(), getServerPort().c_str(), &this->hint, &this->bindAddress);
     Log::i("Created a listening socket on port " + getServerPort());
-    (*this).listenSocket = socket((*this).bindAddress->ai_family, (*this).bindAddress->ai_socktype, (*this).bindAddress->ai_protocol);
-    setSocketNonBlocking((*this).listenSocket);
-    if((*this).listenSocket < 0) {
+    this->listenSocket = socket(this->bindAddress->ai_family, this->bindAddress->ai_socktype, this->bindAddress->ai_protocol);
+    setSocketNonBlocking(this->listenSocket);
+    if(this->listenSocket < 0) {
         Log::e("Failed to create a listening socket due to: " + std::string(strerror(errno)));
         exit(1);
     }
@@ -87,13 +87,13 @@ void ServerInstance::setupServerConfiguration() {
         exit(1);
     }
     Log::i("Binding socket to local address...");
-    if(bind(getListenSocketFd(), (*this).bindAddress->ai_addr, (*this).bindAddress->ai_addrlen)) {
+    if(bind(getListenSocketFd(), this->bindAddress->ai_addr, this->bindAddress->ai_addrlen)) {
         Log::e("Failed to bind socket to local address due to: " + std::string(strerror(errno)));
         exit(1);
     }
-    freeaddrinfo((*this).bindAddress);
+    freeaddrinfo(this->bindAddress);
     Log::i("Listening for incoming connections on port " + getServerPort());
-    if(listen(getListenSocketFd(),(*this).backLog) < 0) {
+    if(listen(getListenSocketFd(),this->backLog) < 0) {
         Log::e("Failed Listening for incoming connections");
         exit(1);
     }
@@ -112,17 +112,17 @@ int ServerInstance::recvRequest(int clientFd) {
     if(bytesRead > 0) receivedRequest.append(buffer, bytesRead);
     if(bytesRead == 0) {
         Log::e("client closed the connection ...");
-        (*this).dropClient(clientFd);
+        this->dropClient(clientFd);
         return(DROP_CLIENT);
     }
     if(bytesRead < 0) {
         Log::e("recv failed ...");
-        (*this).dropClient(clientFd);
+        this->dropClient(clientFd);
         return(DROP_CLIENT);
     }
 
     ClientProfile *client = getClientProfile(clientFd);
-	client->parser.setServerInformation(((*this).serverInformations));
+	client->parser.setServerInformation((this->serverInformations));
 
     try {
         client->parser.mergeRequestChunks(receivedRequest);
@@ -135,7 +135,7 @@ int ServerInstance::recvRequest(int clientFd) {
 		client->response.setStatusCode(client->parser.getParsingState().failCode);
         client->response.setPath(client->parser.getRequestedResourcePath());
 		client->response.setRequest(client->parser);
-		client->response.setServer(*((*this).serverInformations));
+		client->response.setServer(*(this->serverInformations));
         client->response.setRoute(client->parser.getRoute());
 		client->response.responseBuilder();
         client->request.clear();
@@ -147,23 +147,23 @@ int ServerInstance::recvRequest(int clientFd) {
 }
 
 void ServerInstance::dropClient(int clientFd) {
-    for(std::vector<struct pollfd>::iterator it = (*this).serverPollFd.begin(); it != (*this).serverPollFd.end(); it++) {
+    for(std::vector<struct pollfd>::iterator it = this->serverPollFd.begin(); it != this->serverPollFd.end(); it++) {
         if(it->fd == clientFd) {
-            (*this).serverPollFd.erase(it);
+            this->serverPollFd.erase(it);
             close(clientFd);
             break;
         }
     }
-    for(std::vector<struct ClientProfile>::iterator it = (*this).clientProfiles.begin(); it != (*this).clientProfiles.end(); it++) {
+    for(std::vector<struct ClientProfile>::iterator it = this->clientProfiles.begin(); it != this->clientProfiles.end(); it++) {
         if(it->SocketFD == clientFd) {
-            (*this).clientProfiles.erase(it);
+            this->clientProfiles.erase(it);
             break;
         }
     }   
 }
 
 bool ServerInstance::isClientFdInPollFd(int clientFd) {
-    for (std::vector<struct pollfd>::iterator it = (*this).serverPollFd.begin(); it != (*this).serverPollFd.end(); it++) {
+    for (std::vector<struct pollfd>::iterator it = this->serverPollFd.begin(); it != this->serverPollFd.end(); it++) {
         if (it->fd == clientFd) {
             return true; 
         }
@@ -172,7 +172,7 @@ bool ServerInstance::isClientFdInPollFd(int clientFd) {
 }
 
 ClientProfile *ServerInstance::getClientProfile(int clientFd) {
-    for (std::vector<struct ClientProfile>::iterator it = (*this).clientProfiles.begin(); it != (*this).clientProfiles.end(); it++)  {
+    for (std::vector<struct ClientProfile>::iterator it = this->clientProfiles.begin(); it != this->clientProfiles.end(); it++)  {
         if(it->SocketFD == clientFd) {
             return(&(*it));
         }
