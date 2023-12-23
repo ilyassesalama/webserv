@@ -164,12 +164,8 @@ std::string Response::readFileByOffset() {
 void Response::CGIhandler() {
     this->fileOffset = -2;
 
-    // this class needs to be refactored [later]
     CGInstance cgiHandler(*this->request);
-    cgiHandler.setFilePath(this->path);
-    cgiHandler.setEnvironnementVariables();
-    cgiHandler.setCGIPath(File::getCGIbinary(this->path));
-    cgiHandler.executeScript(); // start the party
+    cgiHandler.initCGInstance(); // start the party
 
     // GCI finished doing the cool stuff
     this->responseBody = cgiHandler.getCGIResponse();
