@@ -106,3 +106,15 @@ void File::deleteFile(std::string path) {
         throw(Utils::WebservException("Can't delete \"" + path + "\" due to " + std::string(strerror(errno))));
     }
 }
+
+std::string File::generateFileName(std::string name) {
+
+	timeval currentTime;
+    gettimeofday(&currentTime, 0);
+	
+	long long microseconds = static_cast<long long>(currentTime.tv_sec) * 1000000LL + currentTime.tv_usec;
+
+	std::string fileName = "file_" + std::to_string(microseconds) + "_" + name;
+
+	return fileName;
+}

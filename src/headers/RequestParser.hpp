@@ -27,6 +27,7 @@ class RequestParser {
 
 		std::string boundary;
 		bool isChunked;
+		std::string fileName;
     public:
         RequestParser();
 

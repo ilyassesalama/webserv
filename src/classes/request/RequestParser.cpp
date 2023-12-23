@@ -203,6 +203,7 @@ void RequestParser::parseRequestBody(std::string &requestData){
 
 		if (Utils::isHeaderKeyExists(this->headers, "Content-Type") && this->headers["Content-Type"].find("multipart/form-data") != std::string::npos) {
 			getBoundary(this->headers["Content-Type"]);
+			this->fileName = File::generateFileName("boundary");
 			getBoundaryContent(firstRequestBody);
 
 		} else if (Utils::isHeaderKeyExists(this->headers, "Transfer-Encoding")) {

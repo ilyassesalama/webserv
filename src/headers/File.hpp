@@ -12,6 +12,7 @@ class File {
         static size_t getFileSize(std::string path);
         static void deleteFile(std::string path);
         static std::string getCGIbinary(std::string path);
+		static std::string generateFileName(std::string name);
 };
 
 
