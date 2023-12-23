@@ -26,6 +26,8 @@ class RequestParser {
 
 		bool isChunked;
 		size_t chunkRemainder;
+
+		std::string boundary;
     public:
         RequestParser();
 
@@ -55,4 +57,6 @@ class RequestParser {
 
 
 		void getChunkedData(std::string &body);
+		void getBoundary(std::string contentType);
+		void getBoundaryContent(std::string &body);
 };

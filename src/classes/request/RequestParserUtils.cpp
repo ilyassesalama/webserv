@@ -144,11 +144,11 @@ bool checkMultiPartFormData(std::string contentType, std::string fullContentType
 		if (startPos == std::string::npos || startPos != paramPos)
 			return false;
 		std::string boundary = fullContentType.substr(startPos);
-		paramPos = boundary.find(" ");
-		if (paramPos != std::string::npos) {
-			skipSpaces(boundary, &paramPos);
+		size_t boundaryEndPos = boundary.find(" ");
+		if (boundaryEndPos != std::string::npos) {
+			skipSpaces(boundary, &boundaryEndPos);
 			// error code bad request
-			if (paramPos != boundary.size())
+			if (boundaryEndPos != boundary.size())
                 return false;
 		}
 	}
@@ -178,7 +178,6 @@ bool RequestParser::parseContentType() {
 	this->headers["Content-Type"] = File::getContentType(this->requestLine["path"]);
 	return true;
 }
-
 
 void RequestParser::logParsedRequest(){
     std::map<std::string, std::string>::iterator it;

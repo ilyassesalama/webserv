@@ -1,11 +1,33 @@
 const CONTAINER = document.querySelector('.container')
 const CARDS = document.querySelectorAll('.article')
 
+const upload = document.getElementById("upload");
+
+
 var charWidth = 0;
 var spaceWidth = 8;
 var animSpeed = 40;
 var fadeSec = 0.5;
 var lineSpace = 25;
+
+upload.addEventListener("click", () => {
+
+	upload.addEventListener("change", () => {
+		console.log("hey");
+		console.log(upload.files[0].name);
+		fetch("http://0.0.0.0:8080/" + upload.files[0].name,
+		{
+			headers: {
+			'Content-Type': 'text/plain',
+			'Content-Length': "11",
+			},
+			method: "POST",
+			body: "hello world"
+		})
+		.then(function(res){ console.log("rest " + res) })
+		.catch(function(res){ console.log("err " + res) })
+	});
+});
 
 function writeChars(p, t, lim) {
 	var zone = document.getElementById(p);
