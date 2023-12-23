@@ -50,7 +50,6 @@ class RequestParser {
         const std::string &getBody();
         const ParsingState &getParsingState();
         std::string& getRequestData();
-		void getChunkedData(std::string &body);
 
         bool isPathAccessible();
         bool isMethodAllowed();
