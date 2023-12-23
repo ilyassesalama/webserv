@@ -53,7 +53,6 @@ void RequestParser::mergeRequestChunks(std::string &requestInput) {
     	this->parsingState.ok = parsingState.headLineOk && parsingState.headsOk && parsingState.bodyOk; // don't care about the body since it's optional
     Log::d("Request parsing finished with status: " + String::to_string(parsingState.ok));
     if (parsingState.ok && FULL_LOGGING_ENABLED) {
-		std::cout << "parsing state ok" << std::endl;
         logParsedRequest();
     }
 }
@@ -300,7 +299,6 @@ void RequestParser::getChunkedData(std::string &body) {
 	myFile.close();
 
 	if (isZero == true && this->chunkRemainder == 0) {
-		std::cout << "parsing state ok my function" << std::endl;
 		this->parsingState.bodyOk = true;
 		this->parsingState.failCode = 201;
 		return ;
@@ -352,7 +350,6 @@ void RequestParser::parseRequestBody(std::string &requestData){
 			getChunkedData(requestData);
 	}
     else if(!Utils::isHeaderKeyExists(this->headers, "Transfer-Encoding") && requestData.length() - found - 4 == String::to_size_t(getHeaders()["Content-Length"])) {
-		std::cout << "parsing state ok salama function" << std::endl;
         parsingState.bodyOk = true;
     }
 }
