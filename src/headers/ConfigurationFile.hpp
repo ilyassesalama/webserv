@@ -26,7 +26,6 @@ typedef struct s_route {
 
 	// cgi specific
 	std::string cgi_extension;
-	std::vector<std::string>cgi_methods;
 
 	bool is_allowed_methods;
 	bool is_redirection;
@@ -34,7 +33,6 @@ typedef struct s_route {
 	bool is_directory_listing;
 	bool is_is_directory;
 	bool is_cgi_extension;
-	bool is_cgi_methods;
 	bool is_upload;
 
 } t_route;
@@ -107,7 +105,6 @@ size_t getLocationEnd( std::string file );
 void initRouteBooleans(t_route *route);
 bool isRouteAlreadyExist(t_server server, std::string path);
 void skipRoute(std::string file, size_t *startIndex);
-void checkCGIMethod( std::vector<std::string> values );
 void checkAllowedMethods(std::vector<std::string>allowed_methods);
 std::string getRouteDirectiveValue(std::string key, std::string file, size_t *startIndex);
 bool boolParser(std::string &value);

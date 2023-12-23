@@ -29,23 +29,6 @@ std::string getBody(const std::string &body) {
 
 void Response::POSTResponseBuilder() {
 
-	// bool isRequestFinished = false; // should be in class with false as default
-	// bool isTransferEncoding = this->request->getHeaders().find("Transfer-Encoding") != this->request->getHeaders().end() ? true : false;
-
-	// std::string body; // this should be in class
-
-	// if (!isRequestFinished && isTransferEncoding) {
-	// 	std::cout << "HEEY" << std::endl;
-	// 	this->setResponseBody();
-	// 	// collect in a buffer
-	// 	body += getBody(this->request->getBody());
-	// }
-	// if (isRequestFinished) {
-	// 	// save file
-	// }
-
-	// if (!isTransferEncoding)
-		// this->setResponseBody();
 	this->responseBody = "";
     this->setHeaders();
     this->setResponseLine();

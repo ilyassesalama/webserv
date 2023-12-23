@@ -48,9 +48,6 @@ void printServers(ConfigurationFile &cFile) {
 			for (serverNameIt = routeIt->allowed_methods.begin(); serverNameIt != routeIt->allowed_methods.end(); serverNameIt++)
 				std::cout << "allowed_method: " << *serverNameIt << std::endl;
 
-			for (serverNameIt = routeIt->cgi_methods.begin(); serverNameIt != routeIt->cgi_methods.end(); serverNameIt++)
-				std::cout << "cgi_method: " << *serverNameIt << std::endl;
-
 			std::cout << "root: " << routeIt->root << std::endl;
 			std::cout << "redirection: " << routeIt->redirection << std::endl;
 			std::cout << "is_directory: " << routeIt->is_directory << std::endl;

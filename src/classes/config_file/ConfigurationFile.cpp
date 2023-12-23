@@ -53,17 +53,13 @@ void ConfigurationFile::parseRouteValue( std::string key, std::string value, t_r
 		route->allowed_methods = multipleValuesParser(value);
 		checkAllowedMethods(route->allowed_methods);
 		route->is_allowed_methods = true;
-	} else if (key == "cgi_methods" && !route->is_cgi_methods) {
-		route->cgi_methods = multipleValuesParser(value);
-		checkCGIMethod(route->cgi_methods);
-		route->is_cgi_methods = true;
 	} else if (key == "redirection" && !route->is_redirection) {
 		route->redirection = singleValueParser(value);
 		route->is_redirection = true;
 	} else if (key == "upload_support" && !route->is_upload) {
 		route->upload_support = boolParser(value);
 		route->is_upload = true;
-	} else if (key != "root" && key != "directory_listing" && key != "is_directory" && key != "cgi_extension" && key != "allowed_methods" && key != "cgi_methods" && key != "upload_support") {
+	} else if (key != "root" && key != "directory_listing" && key != "is_directory" && key != "cgi_extension" && key != "allowed_methods" && key != "upload_support") {
 		throw (Utils::WebservException ("Error, directive not allowed"));
 	}
 }

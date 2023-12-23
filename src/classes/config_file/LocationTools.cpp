@@ -36,7 +36,6 @@ void initRouteBooleans(t_route *route) {
 	route->is_directory_listing = false;
 	route->is_is_directory = false;
 	route->is_cgi_extension = false;
-	route->is_cgi_methods = false;
 	route->is_upload = false;
 }
 
@@ -53,19 +52,6 @@ void skipRoute(std::string file, size_t *startIndex) {
 	size_t i = file.find("}");
 	if (i == std::string::npos) throw(Utils::WebservException("Error, there is a syntax error"));
 	*startIndex += ++i;
-}
-
-void checkCGIMethod( std::vector<std::string> values ) {
-	bool is_GET = false;
-	bool is_POST = false;
-
-	std::vector<std::string>::iterator it;
-
-	for (it = values.begin(); it != values.end(); it++ ) {
-		if (*it == "GET" && !is_GET) is_GET = true;
-		else if (*it == "POST" && !is_POST) is_POST = true;
-		else throw(Utils::WebservException("Error, (cgi_methods): method either not allowed or duplicated"));
-	}
 }
 
 void checkAllowedMethods(std::vector<std::string>allowed_methods) {
@@ -86,7 +72,7 @@ void checkAllowedMethods(std::vector<std::string>allowed_methods) {
 
 std::string getRouteDirectiveValue(std::string key, std::string file, size_t *startIndex)
 {
-	return key != "allowed_methods" && key != "cgi_methods" ? getSingleValue(file, startIndex) : getMultipleValues(file, startIndex);
+	return key != "allowed_methods" ? getSingleValue(file, startIndex) : getMultipleValues(file, startIndex);
 }
 
 bool boolParser(std::string &value) {

@@ -205,5 +205,3 @@ void Response::buildResourcePath(t_route *route) {
     requestedResource.append(this->path);
     this->path = requestedResource;
 }
-
-
