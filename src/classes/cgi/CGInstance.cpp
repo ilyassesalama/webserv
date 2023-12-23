@@ -1,6 +1,13 @@
 #include "../../../webserv.hpp"
 
-CGInstance::CGInstance(RequestParser &request) : request(request) {
+CGInstance::CGInstance(RequestParser &request) : request(request) {}
+
+void CGInstance::initCGInstance() {
+    setFilePath(request.getRequestedResourcePath());
+    setCGIPath(File::getCGIbinary(this->filePath));
+    setCGIServer();
+    setEnvironnementVariables();
+    executeScript();
 }
 
 void CGInstance::setEnvironnementVariables() {
@@ -11,7 +18,7 @@ void CGInstance::setEnvironnementVariables() {
     std::map<std::string, std::string> env_map;
     env_map["REQUEST_METHOD"] = request.getRequestLine()["method"];
     env_map["QUERY_STRING"] = "";
-    env_map["SCRIPT_FILENAME"] = this->filePath;
+    env_map["SCRIPT_FILENAME"] = this->filePath;    
     env_map["SCRIPT_NAME"] = scriptName;
     env_map["DOCUMENT_ROOT"] = documentRoot;
     env_map["SERVER_NAME"] = "localhost";
@@ -27,17 +34,20 @@ void CGInstance::executeScript() {
 
     pid_t pid = fork();
     if (pid == 0) {
-        // Child process
+        // child process
         dup2(fd_in, STDIN_FILENO);
         dup2(fd_out, STDOUT_FILENO);
-        if (execve(this->cgiPath.c_str(), NULL, this->cgiEnv) == -1) {
-            throw Utils::WebservException("Cannot execute the script");
-        }
+
+        char *args[] = {(char *)this->cgiPath.c_str(), (char *)this->filePath.c_str(), NULL};
+
+        execve(args[0], args, this->cgiEnv);
+        throw Utils::WebservException("Cannot execute the script");
+
     } else if (pid == -1) {
-        // Fork failed
+        // fork failed
         throw Utils::WebservException("Cannot fork a new child process to execute the script");
     } else {
-        // Parent process
+        // parent process
         char buffer[1024];
         waitpid(pid, NULL, 0);
         lseek(fd_out, 0, SEEK_SET);
@@ -59,6 +69,7 @@ void CGInstance::executeScript() {
 }
 
 void CGInstance::parseResponseHeaders() {
+    if(this->cgiServer != "php") return;
     std::map<std::string, std::string> keyValuePairs;
     std::string line;
 
@@ -68,14 +79,22 @@ void CGInstance::parseResponseHeaders() {
         line = line.substr(0, line.find("\r"));
         std::string key = line.substr(0, line.find(":"));
         std::string value = line.substr(line.find(":") + 2);
-
         keyValuePairs[key] = value;
     }
     this->cgiResponseHeadersMap = keyValuePairs;
 }
 
 void CGInstance::parseResponseBody() {
-    cgiResponse = cgiResponse.substr(cgiResponse.find("\r\n\r\n") + 4);
+    if(this->cgiResponse.find("\r\n\r\n") != std::string::npos)
+        cgiResponse = cgiResponse.substr(cgiResponse.find("\r\n\r\n") + 4);
+}
+
+void CGInstance::setCGIServer() {
+    if(String::endsWith(this->cgiPath, "php-cgi")) {
+        this->cgiServer = "php";
+    } else if (String::endsWith(this->cgiPath, "py-cgi")) {
+        this->cgiServer = "python";
+    }
 }
 
 void CGInstance::setFilePath(std::string filePath) {
@@ -91,6 +110,7 @@ std::string CGInstance::getCGIResponse() {
 }
 
 std::string CGInstance::getCGIContentType() {
+    if(!Utils::isHeaderKeyExists(this->cgiResponseHeadersMap, "Content-Type")) return "text/html charset=UTF-8";
     return this->cgiResponseHeadersMap["Content-Type"];
 }
 

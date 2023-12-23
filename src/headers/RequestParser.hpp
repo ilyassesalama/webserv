@@ -14,20 +14,19 @@ typedef struct ParsingState {
 
 class RequestParser {
     private:
-        std::string requestData;
         ParsingState parsingState;
+        std::string requestResourcePath;
+        std::string requestData;
+        std::string body;
         std::map<std::string, std::string> requestLine;
         std::map<std::string, std::string> headers;
         std::map<std::string, std::string> params;
-        std::string body;
 		t_server *server;
-        std::string requestResourcePath;
         t_route *route;
-
-		bool isChunked;
 		size_t chunkRemainder;
 
 		std::string boundary;
+		bool isChunked;
     public:
         RequestParser();
 
@@ -41,8 +40,9 @@ class RequestParser {
         void parseRequestBody(std::string &requestData);
         void verifyIfRequestIsSafe();
 
-        t_route *getRoute();
 		void setServerInformation(t_server *server);
+
+        t_route *getRoute();
         std::map<std::string, std::string> &getRequestLine();
         std::string getRequestedResourcePath();
         std::map<std::string, std::string> &getHeaders();
@@ -50,13 +50,14 @@ class RequestParser {
         const std::string &getBody();
         const ParsingState &getParsingState();
         std::string& getRequestData();
+		void getChunkedData(std::string &body);
+
         bool isPathAccessible();
         bool isMethodAllowed();
         bool isHeaderLineValid();
-		bool parseContentType(); // add by abahsine
-
 
 		void getChunkedData(std::string &body);
 		void getBoundary(std::string contentType);
 		void getBoundaryContent(std::string &body);
+		bool parseContentType(); // add by abahsine
 };

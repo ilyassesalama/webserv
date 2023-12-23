@@ -171,6 +171,9 @@ void RequestParser::parseRequestParams(std::string &requestData){
     size_t start = requestData.find("?"); // look for the first param
     if (start == std::string::npos) return; // no parameters found! get out!!!
 
+	// clear all after '?'
+	requestLine["path"] = requestLine["path"].substr(0, start);
+	
     std::map<std::string, std::string> keyValuePairs;
     std::string token;
     std::istringstream tokenStream(requestData.substr(start + 1)); // start from the first param
@@ -189,7 +192,6 @@ void RequestParser::parseRequestParams(std::string &requestData){
 	returns remaining chunk size of previous request
 	if chunk size is not less than request size it returns request size
 */
-
 size_t getChunkEnd(std::string body, size_t chunkRemainder) {
 
 	size_t i;
@@ -204,7 +206,6 @@ size_t getChunkEnd(std::string body, size_t chunkRemainder) {
 /*
 	returns chunk end because there may be two chunks in one request or this request ends with 0
 */
-
 size_t getChunkedRequestBodyEnd(std::string &body, size_t chunkRemainder) {
 
 	size_t endPos = body.rfind("\r\n0\r\n\r\n");
@@ -225,7 +226,6 @@ size_t getChunkedRequestBodyEnd(std::string &body, size_t chunkRemainder) {
 	this function subtracts the size of the next chunk from the request body
 	the main function only calls this when chunk remainder is zero
 */
-
 size_t getChunkSize(std::string body) {
 
 	size_t pos = body.find("\r\n");
@@ -245,7 +245,6 @@ size_t getChunkSize(std::string body) {
 /*
 	this function checks whether the request contains 0 which means end of request
 */
-
 size_t getZero(std::string &body) {
 	size_t zeroPos = body.rfind("\r\n0\r\n\r\n");
 	if (zeroPos == std::string::npos) {
@@ -266,7 +265,6 @@ size_t getZero(std::string &body) {
 /*
 	this is the main function to get chunks and it works using recursion
 */
-
 void RequestParser::getChunkedData(std::string &body) {
 
 	// try {
@@ -303,7 +301,6 @@ void RequestParser::getChunkedData(std::string &body) {
 	myFile.close();
 
 	if (isZero == true && this->chunkRemainder == 0) {
-		std::cout << "parsing state ok my function" << std::endl;
 		this->parsingState.bodyOk = true;
 		this->parsingState.failCode = 201;
 		return ;

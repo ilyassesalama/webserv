@@ -11,7 +11,9 @@ class CGInstance {
         void setFilePath(std::string filePath);
         void setCGIPath(std::string cgiPath);
         void setEnvironnementVariables();
+        void setCGIServer();
 
+        void initCGInstance();
         void executeScript();
         void parseResponseHeaders();
         void parseResponseBody();
@@ -29,6 +31,7 @@ class CGInstance {
         std::string cgiResponseHeaders;
         std::string cgiContentType;
         std::string cgiStatusCode;
+        std::string cgiServer;
         std::map<std::string, std::string> cgiResponseHeadersMap;
         char **cgiEnv;
 };
