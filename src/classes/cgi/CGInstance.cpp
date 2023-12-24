@@ -17,7 +17,7 @@ void CGInstance::setEnvironnementVariables() {
 
     std::map<std::string, std::string> env_map;
     env_map["REQUEST_METHOD"] = request.getRequestLine()["method"];
-    env_map["QUERY_STRING"] = "";
+    env_map["QUERY_STRING"] = this->getQueryString(request.getParams());
     env_map["SCRIPT_FILENAME"] = this->filePath;    
     env_map["SCRIPT_NAME"] = scriptName;
     env_map["DOCUMENT_ROOT"] = documentRoot;
@@ -57,7 +57,7 @@ void CGInstance::executeScript() {
             cgiResponse += buffer;
         }
     }
-
+    Utils::freeArray(this->cgiEnv);
     fclose(file_in);
     fclose(file_out);
     close(fd_in);
@@ -95,45 +95,4 @@ void CGInstance::setCGIServer() {
     } else if (String::endsWith(this->cgiPath, "py-cgi")) {
         this->cgiServer = "python";
     }
-}
-
-void CGInstance::setFilePath(std::string filePath) {
-    this->filePath = filePath;
-}
-
-void CGInstance::setCGIPath(std::string cgiPath) {
-    this->cgiPath = cgiPath;
-}
-
-std::string CGInstance::getCGIResponse() {
-    return this->cgiResponse;
-}
-
-std::string CGInstance::getCGIContentType() {
-    if(!Utils::isHeaderKeyExists(this->cgiResponseHeadersMap, "Content-Type")) return "text/html charset=UTF-8";
-    return this->cgiResponseHeadersMap["Content-Type"];
-}
-
-int CGInstance::getCGIStatusCode() {
-    if(!Utils::isHeaderKeyExists(this->cgiResponseHeadersMap, "Status")) return 200;
-    return String::to_int(this->cgiResponseHeadersMap["Status"]);
-}
-
-size_t CGInstance::getCGIContentLength() {
-    size_t contentLength = 0;
-    if(Utils::isHeaderKeyExists(this->cgiResponseHeadersMap, "Content-Length")) {
-        contentLength = String::to_size_t(this->cgiResponseHeadersMap["Content-Length"]);
-    } else {
-        contentLength = this->cgiResponse.size();
-    }
-    return contentLength;
-}
-
-void CGInstance::printCGIResponse() {
-    Log::v("CGI Response: Parsed headers:");
-    for (std::map<std::string, std::string>::iterator it = this->cgiResponseHeadersMap.begin(); it != this->cgiResponseHeadersMap.end(); it++) {
-        std::cout << "- " << it->first << ": " << it->second << std::endl;
-    }
-    Log::v("Body: ");
-    std::cout << this->cgiResponse << std::endl;
 }
