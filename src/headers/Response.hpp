@@ -46,6 +46,9 @@ class Response {
         bool isLocationHasCGI();
         void CGIhandler();
 
+        void uploadFile();
+        void skipHeaders(std::ifstream inputFile);
+
     private:
         std::string path;
         RequestParser *request;
@@ -63,11 +66,12 @@ class Response {
 		t_route *currentRoute;
         size_t bytesToRead;
         std::streampos fileOffset;
-
         bool servingState;
         size_t bytesSent;
         std::string method;
         bool isCGI;
+
+        std::streampos uploadFileOffset;
 
 };
 

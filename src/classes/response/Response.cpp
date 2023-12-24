@@ -14,6 +14,7 @@ Response::Response() {
     this->fileOffset = 0;
     this->bytesSent = 0;
     this->servingState = false;
+    this->uploadFileOffset = 0;
 }
 
 

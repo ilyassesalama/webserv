@@ -173,3 +173,41 @@ void Response::setServingState(bool status) {
 void Response::setBytesSent(size_t bytes) {
     this->bytesSent = bytes;
 }
+
+std::string fileToUpload = "/Users/bel-kala/Desktop/webserv/file_1703410552468188_boundary";
+std::string boundaryStart = "--------------------------e724ea100db92128\r";
+std::string boundaryEnd = "--------------------------e724ea100db92128--\r";
+int lineCount = 500;
+
+void Response::uploadFile() {
+    std::ifstream inputFile(fileToUpload.c_str(), std::ios::binary);
+    std::ofstream outputFile("output.mp4", std::ios::binary);
+    std::string line;   
+    int count = 0;
+    
+    inputFile.seekg((*this).uploadFileOffset);
+    if(!inputFile.is_open() || !outputFile.is_open()) {
+        Log::e("Error Opening The File FAKYO");
+        throw(Utils::WebservException("halaloya"));
+    }
+
+    while(count < lineCount && std::getline(inputFile,line)) {
+        if(line == boundaryStart) {
+            while(std::getline(inputFile, line)) {
+                if(line == "\r")
+                    break;
+            }
+        }
+        else if(line == boundaryEnd) {
+            Log::d("Upload Finished");
+            break;
+        }
+        else {
+            outputFile << line + '\n';
+            count++;
+        }
+    }
+
+    (*this).uploadFileOffset = inputFile.tellg();
+
+}
