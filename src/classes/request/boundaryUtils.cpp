@@ -3,7 +3,6 @@
 /*
 	this function stores the boundary of contentType multipart/form-data in an attribute
 */
-
 void RequestParser::getBoundary(std::string contentType) {
 
 	size_t startPos = contentType.find("boundary=");
@@ -16,7 +15,6 @@ void RequestParser::getBoundary(std::string contentType) {
 /*
 	this functions checks whether this request contains boundary end
 */
-
 bool isEndBoundary(std::string &body, std::string boundary) {
 	boundary = "--" + boundary + "--";
 	size_t endPos = body.rfind(boundary);
@@ -43,7 +41,6 @@ bool isEndBoundary(std::string &body, std::string boundary) {
 /*
 	this function saves the content of contentType multipart/form-data in a file temporarily
 */
-
 void RequestParser::getBoundaryContent(std::string &body) {
 
 	std::fstream buffer("/tmp/" + this->fileName, std::ios::app);

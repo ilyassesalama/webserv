@@ -170,7 +170,7 @@ bool checkContentType(std::string fullContentType) {
 }
 
 bool RequestParser::parseContentType() {
-    bool isExist = Utils::isHeaderKeyExists(this->headers, "Content-Type");
+    bool isExist = Utils::isMapKeyExists(this->headers, "Content-Type");
 
 	if (isExist) {
 		return checkContentType(this->headers["Content-Type"]);
