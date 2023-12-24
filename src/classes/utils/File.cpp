@@ -48,8 +48,7 @@ std::string File::getContentType(std::string path) {
 }
 
 std::string File::getCGIbinary(std::string path) {
-    std::string cgiBinPath = getcwd(NULL, 0);
-    cgiBinPath.append("/src/classes/cgi/bin");
+	std::string cgiBinPath = getCurrentDir() + "/src/classes/cgi/bin";
     if(String::endsWith(path, ".php")) {
         return cgiBinPath.append("/php-cgi");
     } else if (String::endsWith(path, ".py")) {
@@ -80,11 +79,7 @@ bool File::isDirectory(const std::string& path) {
 }
 
 std::string File::getWorkingDir(){
-	char cwd[PATH_MAX];
-	std::string path = "";
-    getcwd(cwd, sizeof(cwd));
-    path.append(cwd).append("/src/client-side");
-	return path;
+	return getCurrentDir() + "/src/client-side";
 }
 
 size_t File::getFileSize(std::string path) {
@@ -108,13 +103,17 @@ void File::deleteFile(std::string path) {
 }
 
 std::string File::generateFileName(std::string name) {
-
 	timeval currentTime;
     gettimeofday(&currentTime, 0);
-	
 	long long microseconds = static_cast<long long>(currentTime.tv_sec) * 1000000LL + currentTime.tv_usec;
-
 	std::string fileName = "file_" + std::to_string(microseconds) + "_" + name;
-
 	return fileName;
+}
+
+std::string File::getCurrentDir() {
+    char cwd[PATH_MAX];
+    std::string path = "";
+    getcwd(cwd, sizeof(cwd));
+    path.append(cwd);
+    return path;
 }

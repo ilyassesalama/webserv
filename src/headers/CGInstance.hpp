@@ -21,6 +21,7 @@ class CGInstance {
 
         std::string getCGIResponse();
         std::string getCGIContentType();
+        std::string getQueryString(std::map<std::string, std::string> queries);
         size_t getCGIContentLength();
         int getCGIStatusCode();
     private:

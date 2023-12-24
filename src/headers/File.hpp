@@ -13,7 +13,5 @@ class File {
         static void deleteFile(std::string path);
         static std::string getCGIbinary(std::string path);
 		static std::string generateFileName(std::string name);
+        static std::string getCurrentDir();
 };
-
-
-
