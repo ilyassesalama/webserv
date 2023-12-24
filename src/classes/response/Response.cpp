@@ -160,10 +160,7 @@ std::string Response::readFileByOffset() {
     return(content);
 }
 
-
 void Response::CGIhandler() {
-    this->fileOffset = -2;
-
     CGInstance cgiHandler(*this->request);
     cgiHandler.initCGInstance(); // start the party
 
