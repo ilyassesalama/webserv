@@ -1,22 +1,22 @@
 #include "../../../webserv.hpp"
 
-bool Utils::isMapKeyExists(std::map<std::string, std::string> headers, std::string key){
-    return headers.find(key) != headers.end();
+bool Utils::isMapKeyExists(std::map<std::string, std::string> map, std::string key){
+    return map.find(key) != map.end();
 }
 
-char **Utils::mapToEnv(std::map<std::string, std::string> env_map){
-    char **env = new char*[env_map.size() + 1];
+char **Utils::convertMapToChar2D(std::map<std::string, std::string> map){
+    char **arr = new char*[map.size() + 1];
     int i = 0;
-    for(std::map<std::string, std::string>::iterator it = env_map.begin(); it != env_map.end(); it++){
+    for(std::map<std::string, std::string>::iterator it = map.begin(); it != map.end(); it++){
         std::string key = it->first;
         std::string value = it->second;
-        std::string env_var = key + "=" + value;
-        env[i] = new char[env_var.length() + 1];
-        strcpy(env[i], env_var.c_str());
+        std::string arr_var = key + "=" + value;
+        arr[i] = new char[arr_var.length() + 1];
+        strcpy(arr[i], arr_var.c_str());
         i++;
     }
-    env[i] = NULL;
-    return env;
+    arr[i] = NULL;
+    return arr;
 }
 
 void Utils::freeArray(char **arr){

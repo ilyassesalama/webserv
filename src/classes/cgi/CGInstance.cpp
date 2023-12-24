@@ -24,7 +24,7 @@ void CGInstance::setEnvironnementVariables() {
     env_map["SERVER_NAME"] = "localhost";
     env_map["SERVER_PORT"] = "8080";
     env_map["REDIRECT_STATUS"] = "1";
-    this->cgiEnv = Utils::mapToEnv(env_map);
+    this->cgiEnv = Utils::convertMapToChar2D(env_map);
 }
 
 void CGInstance::executeScript() {

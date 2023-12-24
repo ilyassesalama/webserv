@@ -2,7 +2,7 @@
 
 void Response::DELETEResponseBuilder() {
     if(FULL_LOGGING_ENABLED)
-        Log::v("DELETE method is request, we're trying to delete: " + this->path + "...");
+        Log::v("DELETE method is requested, we're trying to delete: " + this->path + "...");
     try {
         File::deleteFile(this->path);
         if(FULL_LOGGING_ENABLED) Log::v("Requested file has been deleted successfully!");
