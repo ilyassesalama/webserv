@@ -204,7 +204,7 @@ void RequestParser::parseRequestBody(std::string &requestData){
 			getBoundaryContent(firstRequestBody);
 
 		} else if (Utils::isMapKeyExists(this->headers, "Transfer-Encoding")) {
-
+			this->fileName = getContentDisposition(this->headers);
 			getChunkedData(firstRequestBody);
 		}
 	} else if (Utils::isMapKeyExists(this->headers, "Transfer-Encoding") || (Utils::isMapKeyExists(this->headers, "Content-Type") && this->headers["Content-Type"].find("multipart/form-data") != std::string::npos)) {
