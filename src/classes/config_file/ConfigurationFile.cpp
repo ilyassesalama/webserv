@@ -26,9 +26,14 @@ void ConfigurationFile::parseValue( std::string key, std::string value, t_server
 
 		std::vector<t_error_page>::iterator it;
 		for (it = errors.begin(); it != errors.end(); it++) {
-			if (!findVal(server->error_pages, it->error_code)) server->error_pages.push_back(*it);
+			if (!findVal(server->error_pages, it->error_code)) {
+				if(access(it->error_page.c_str(), R_OK) == -1) {
+					Log::e("The custom error page " + String::to_string(it->error_code) + " you specified in the config file isn't accessible. We'll use our own error page.");
+				} else {
+					server->error_pages.push_back(*it);
+				}
+			}
 		}
-
 	}
 	else if (key != "listen" && key != "server_name" && key != "client_body_size" && key != "error_page") {
 		throw (Utils::WebservException("Error, directive not allowed"));
