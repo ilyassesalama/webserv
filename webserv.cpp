@@ -71,8 +71,12 @@ void startTheParty(ConfigurationFile &obj) {
 			master.addServerToTheSet(s);
 		}
     }
-	//at least one working server 
-	master.socketMonitore();
+	if(master.getServerCount() > 0)
+		master.socketMonitore();
+	else {
+		Log::e("No Valid Server To Monitor ...");
+		exit(1);
+	}
 
 }
 

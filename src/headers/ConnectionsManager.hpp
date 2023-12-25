@@ -19,6 +19,8 @@ class ConnectionsManager {
         void deleteFromFdSet(int clientFd);
         bool isTimeOut(time_t currentTime,  time_t time);
         void checkClientTimeOut();
+        size_t getServerCount();
+        bool isaListeningSocket(int fd);
     private:
         std::vector<ServerInstance> serversSet;
         std::vector<struct pollfd> masterFdSet;

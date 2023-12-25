@@ -111,6 +111,13 @@ void ConnectionsManager::changeClientMonitoringEvent(std::string event, int clie
     }
 }
 
+bool ConnectionsManager::isaListeningSocket(int fd) {
+    for(std::vector<ServerInstance>::iterator it = this->serversSet.begin(); it != this->serversSet.end(); it++) {
+        if(fd == it->getListenSocketFd())
+            return(true);
+    }
+    return(false);
+}
 
 void ConnectionsManager::socketMonitore() {
     int pollResult;
@@ -123,7 +130,7 @@ void ConnectionsManager::socketMonitore() {
         }
         for (std::vector<struct pollfd>::iterator it = masterFdSet.begin(); it != masterFdSet.end(); ++it) {
             if (it->revents & POLLIN) {
-                if (it == masterFdSet.begin()) {
+                if (isaListeningSocket(it->fd) == true) {
                     acceptNewIncommingConnections(getFdServer(it->fd));
                     this->masterFdSet[0].events = POLLIN;
                     this->masterFdSet[0].revents = 0;
@@ -146,6 +153,10 @@ void ConnectionsManager::socketMonitore() {
             }
         }
     }
+}
+
+size_t ConnectionsManager::getServerCount() {
+    return((*this).serverCount);
 }
 
 

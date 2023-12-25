@@ -30,14 +30,14 @@ std::string ServerInstance::getServerName() {
 void ServerInstance::setListenAdressPort(t_server &serverInfos) {
     this->serverPort =  serverInfos.listen[0].port;
     if(this->serverPort > 65535) {
-        Log::e("Port Out Of Range ... ");
+        Log::e("Port Out Of Range " + String::to_string(serverInfos.listen[0].port) + " ... ");
         (*this).initialized = false;
         return;
     }
     this->listenAdress = serverInfos.listen[0].host;
     if(String::isIpFormCorrect(this->listenAdress) != true) {
         (*this).initialized = false;
-        Log::e("Invalid Host Address ... ");
+        Log::e("Invalid Host Address " + serverInfos.listen[0].host + " ... ");
     }
 }
 
@@ -83,7 +83,6 @@ void ServerInstance::setupServerConfiguration() {
     Log::i("Configuring local network...");
     getaddrinfo(getListenAdress().c_str(), getServerPort().c_str(), &this->hint, &this->bindAddress);
     Log::i("Created a listening socket on port " + getServerPort());
-    // std::cout << getListenAdress() << std::endl;
     this->listenSocket = socket(this->bindAddress->ai_family, this->bindAddress->ai_socktype, this->bindAddress->ai_protocol);
     if(this->listenSocket < 0) {
         Log::e("Failed to create a listening socket due to: " + std::string(strerror(errno)));
