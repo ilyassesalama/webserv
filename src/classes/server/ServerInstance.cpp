@@ -107,23 +107,21 @@ void ServerInstance::setupServerConfiguration() {
     AddFdToPollFds(getListenSocketFd());
 }
 
-std::string bufferRequest = "";
-
-int ServerInstance::recvRequest(int clientFd) {
-    int bytesRead;
+int ServerInstance::receiveRequest(int clientFd) {
     std::string receivedRequest;
+    int bytesRead;
     char buffer[10000];
 
     memset(buffer, 0, sizeof(buffer));
     bytesRead = recv(clientFd, buffer, sizeof(buffer), 0);
     if(bytesRead > 0) receivedRequest.append(buffer, bytesRead);
     if(bytesRead == 0) {
-        Log::e("client closed the connection ...");
+        Log::e("Client closed the connection");
         this->dropClient(clientFd);
         return(DROP_CLIENT);
     }
     if(bytesRead < 0) {
-        Log::e("recv failed ...");
+        Log::e("Failed to receive data from client due to: " + std::string(strerror(errno)));
         this->dropClient(clientFd);
         return(DROP_CLIENT);
     }
@@ -140,7 +138,7 @@ int ServerInstance::recvRequest(int clientFd) {
     }
     if(client->parser.getParsingState().ok) {
         client->request = client->parser.getRequestData();
-		client->response.setStatusCode(client->parser.getParsingState().failCode);
+		client->response.setStatusCode(client->parser.getParsingState().statusCode);
         client->response.setPath(client->parser.getRequestedResourcePath());
 		client->response.setRequest(client->parser);
 		client->response.setServer(*(this->serverInformations));
@@ -214,13 +212,6 @@ int ServerInstance::sendResponse(int clientFd) {
 
 	return 1;
 }
-
-
-ServerInstance::~ServerInstance () {
-
-}
-
-
 
 bool ServerInstance::isInitialized() {
     return(initialized);

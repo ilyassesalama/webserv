@@ -5,7 +5,6 @@
 class ServerInstance {
     public:
         ServerInstance(s_server &serverInfos);
-        ~ServerInstance();
         
         //SETTERS
         void setListenAdressPort(t_server &serverInfo);
@@ -26,7 +25,7 @@ class ServerInstance {
         void setupServerConfiguration();
         void dropClient(int clientFd);
         bool isClientFdInPollFd(int clientFd);
-        int recvRequest(int clientFd);
+        int receiveRequest(int clientFd);
         int sendResponse(int clientFd);
         ClientProfile *getClientProfile(int clientFd);
         // bool checkListeningInfos();

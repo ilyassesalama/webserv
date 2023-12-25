@@ -48,23 +48,27 @@ void Response::feedDataToTheSender() {
 
 void Response::responseBuilder() {
    try {
-        //check if the parser failed
-        if(this->statusCode != 200 && this->statusCode != 201)
+        // check if the parser failed
+        if(this->statusCode != 200 && this->statusCode != 201){
 			throw(Utils::WebservException("ResponseBuilder: Parser failed to parse the request"));
-        else {
-            if (this->request->getRequestLine()["method"] == "GET") {
-                GETResponseBuilder();
-            } else if (this->request->getRequestLine()["method"] == "DELETE") {
-                DELETEResponseBuilder();
-            } else if (this->request->getRequestLine()["method"] == "POST") {
-                POSTResponseBuilder();
-            }
+            return;
+        }
+        if (this->request->getRequestLine()["method"] == "GET") {
+            GETResponseBuilder();
+            return;
+        }
+        if (this->request->getRequestLine()["method"] == "DELETE") {
+            DELETEResponseBuilder();
+            return;
+        }
+        if (this->request->getRequestLine()["method"] == "POST") {
+            POSTResponseBuilder();
+            return;
         }
     } catch(Utils::WebservException &ex) {
-        //build error Response based on the error code
         buildErrorResponse();
     }
-} 
+}
 
 
 /*

@@ -136,7 +136,7 @@ void ConnectionsManager::socketMonitore() {
                     this->masterFdSet[0].revents = 0;
                     break;
                 } else {
-                    int requestState = getFdServer(it->fd)->recvRequest(it->fd);
+                    int requestState = getFdServer(it->fd)->receiveRequest(it->fd);
                     if (requestState == FULL_REQUEST_RECEIVED) {
                         changeClientMonitoringEvent("write", it->fd);
                     } else if (requestState == DROP_CLIENT) {
