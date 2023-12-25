@@ -59,5 +59,6 @@ class RequestParser {
 		void getChunkedData(std::string &body);
 		void getBoundary(std::string contentType);
 		void getBoundaryContent(std::string &body);
-		bool parseContentType(); // add by abahsine
+		bool parseContentType();
+		std::string getContentDisposition(std::map<std::string, std::string> &headers);
 };

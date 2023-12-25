@@ -131,6 +131,7 @@ std::vector<std::string> getAllowedTypes() {
 	allowedTypes.push_back("image/svg+xml");
 	allowedTypes.push_back("image/x-icon");
 	allowedTypes.push_back("font/ttf");
+	allowedTypes.push_back("video/mp4");
 	allowedTypes.push_back("text/plain");
 
 	return allowedTypes;
@@ -158,7 +159,7 @@ bool checkMultiPartFormData(std::string contentType, std::string fullContentType
 bool checkContentType(std::string fullContentType) {
 	size_t endPos = fullContentType.find(";");
 	if (endPos == std::string::npos) {
-		endPos = fullContentType.size() - 1;
+		endPos = fullContentType.size();
 	}
 
 	std::string contentType = fullContentType.substr(0, endPos);

@@ -74,6 +74,46 @@ size_t getZero(std::string &body) {
 	return zeroPos;
 }
 
+std::string getExtension(std::map<std::string, std::string> &headers) {
+	bool isContentType = Utils::isMapKeyExists(headers, "Content-Type");
+	if (!isContentType)	return "";
+
+    if (headers["Content-Type"] == "text/css") {
+        return ".css";
+    } else if(headers["Content-Type"] == "video/mp4") {
+        return ".mp4";
+    }else if(headers["Content-Type"] == "application/pdf") {
+        return ".pdf";
+    } else if (headers["Content-Type"] == "application/javascript") {
+        return ".js";
+    } else if (headers["Content-Type"] == "text/html") {
+        return ".html";
+    } else if (headers["Content-Type"] == "image/jpeg") {
+        return ".jpeg";
+    } else if (headers["Content-Type"] == "image/png") {
+        return ".png";
+    } else if (headers["Content-Type"] == "image/gif") {
+        return ".gif";
+    } else if (headers["Content-Type"] == "image/svg+xml") {
+        return ".svg";
+    } else if (headers["Content-Type"] == "image/x-icon") {
+        return ".ico";
+    } else if (headers["Content-Type"] == "font/ttf") {
+        return ".ttf";
+    } else {
+        return "";  // default
+    }
+}
+
+std::string RequestParser::getContentDisposition(std::map<std::string, std::string> &headers) {
+	bool isContentDisposition = Utils::isMapKeyExists(headers, "Content-Disposition");
+
+	if (isContentDisposition == true)
+		return "";
+
+	return File::generateFileName("uploaded") + getExtension(headers);
+}
+
 /*
 	this is the main function to get chunks and it works using recursion
 */
@@ -82,6 +122,16 @@ void RequestParser::getChunkedData(std::string &body) {
 	// try {
 		if (this->chunkRemainder == 0) {
 		this->chunkRemainder = getChunkSize(body);
+		if (this->chunkRemainder == 0) {
+			std::fstream myFile(File::getWorkingDir() + "/uploads/" + this->fileName, std::ios::binary | std::ios::app);
+			if (!myFile.is_open()) {
+				this->parsingState.ok = false;
+				return ;
+			}
+			this->parsingState.bodyOk = true;
+			this->parsingState.failCode = 201;
+			return ;
+		}
 		size_t pos = body.find("\r\n"); // removing chunk size from body
 		if (pos == std::string::npos) {
 			pos = body.find("\n");
@@ -92,7 +142,7 @@ void RequestParser::getChunkedData(std::string &body) {
 		body = body.substr(pos);
 	}
 
-	std::fstream myFile(File::getWorkingDir() + "/tmp1.mp4", std::ios::binary | std::ios::app);
+	std::fstream myFile(File::getWorkingDir() + "/uploads/" + this->fileName, std::ios::binary | std::ios::app);
 	if (!myFile.is_open()) {
 		this->parsingState.ok = false;
 		return ;
