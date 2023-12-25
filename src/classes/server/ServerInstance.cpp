@@ -115,13 +115,8 @@ int ServerInstance::receiveRequest(int clientFd) {
     memset(buffer, 0, sizeof(buffer));
     bytesRead = recv(clientFd, buffer, sizeof(buffer), 0);
     if(bytesRead > 0) receivedRequest.append(buffer, bytesRead);
-    if(bytesRead == 0) {
-        Log::e("Client closed the connection");
-        this->dropClient(clientFd);
-        return(DROP_CLIENT);
-    }
-    if(bytesRead < 0) {
-        Log::e("Failed to receive data from client due to: " + std::string(strerror(errno)));
+    if(bytesRead <= 0) {
+        Log::e("Client " + String::to_string(clientFd) + " closed the connection, in other words: " + std::string(strerror(errno)));
         this->dropClient(clientFd);
         return(DROP_CLIENT);
     }
