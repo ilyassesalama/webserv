@@ -72,16 +72,12 @@ bool RequestParser::isPathAccessible() {
             this->route = slashR;
             this->requestResourcePath.append(File::getWorkingDir());
             this->requestResourcePath.append(slashR->root);
-            if(getRequestLine()["method"] == "DELETE")
-                this->requestResourcePath.append("/UPLOADS");
             this->requestResourcePath.append(getRequestLine()["path"]);
         }
     } else {
         this->route = route;
         this->requestResourcePath.append(File::getWorkingDir());
         this->requestResourcePath.append(route->root);
-        if(getRequestLine()["method"] == "DELETE")
-            this->requestResourcePath.append("/UPLOADS");
         this->requestResourcePath.append(getRequestLine()["path"]);
     }
     if(FULL_LOGGING_ENABLED)
