@@ -76,9 +76,9 @@ void Response::responseBuilder() {
     to the response verctor to get ready for sending as a response.
 */
 void Response::buildErrorResponse() {
+    this->setHeaders();
     this->responseBody = getErrorPageHTML();
     this->setResponseLine();
-    this->setHeaders();
     this->response.append(this->responseLine);
     this->response.append(this->responseHeaders);
     this->response.append(this->responseBody);
