@@ -118,8 +118,12 @@ std::string Response::getErrorPageHTML(){
     try {
         responseBody = File::getFileContent(this->path);
     } catch (std::exception &e) {
-        responseBody = "<html><body><h1>ERROR 403</h1><p>Forbidden</p></body></html>";
-        Log::e("Error page not found, who edited the permissions MFs!");
+        Log::e("Specified error page not found, falling back to 500 error page");
+        try {
+            responseBody = File::getFileContent("src/client-side/error_pages/500.html");
+        } catch (std::exception &e) {
+            responseBody = "<html><body><h1>500 | Server Internal Error</h1><p>It seems like our awesome webserv couldn't handle your request. Falling back to error 500 since no solution can be proposed in this case.</p></body></html>";
+        }
     }
     return responseBody;
 }

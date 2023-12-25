@@ -86,13 +86,16 @@ size_t File::getFileSize(std::string path) {
     std::ifstream file(path.c_str());
 
     if(!file.is_open()) {
-        throw(Utils::WebservException("getFileSize: Can't open \"" + path + "\" due to " + std::string(strerror(errno))));
+        Log::e("getFileSize: Fallback to 0 because can't get the size of \"" + path + "\" due to " + std::string(strerror(errno)));
+        return 0;
     }
     file.seekg(0, std::ios::end);
     std::streampos size = file.tellg();
     file.close();
-    if(size == -1)
-        throw(Utils::WebservException("getFileSize: Can't get size of \"" + path + "\" due to " + std::string(strerror(errno))));
+    if(size == -1){
+        Log::e("getFileSize: Fallback to 0 because can't get the size of \"" + path + "\" due to " + std::string(strerror(errno)));
+        return 0;
+    }
     return static_cast<size_t>(size);
 }
 
