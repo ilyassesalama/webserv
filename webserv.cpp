@@ -66,9 +66,12 @@ void startTheParty(ConfigurationFile &obj) {
 
     for (std::list<t_server>::iterator it = obj.getConfigFileServers().begin(); it != obj.getConfigFileServers().end(); ++it) {
         ServerInstance s((*it));
-		s.setupServerConfiguration();
-		master.addServerToTheSet(s);
+		if(s.isInitialized()) {
+			s.setupServerConfiguration();
+			master.addServerToTheSet(s);
+		}
     }
+	//at least one working server 
 	master.socketMonitore();
 
 }

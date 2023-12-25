@@ -9,4 +9,6 @@ class String {
         static int to_int(const std::string &str);
         static size_t to_size_t(const std::string &str);
         static std::string to_string(int num);
+        static bool is_a_num(std::string str);
+        static bool isIpFormCorrect(std::string ip);
 };

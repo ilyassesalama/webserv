@@ -1,7 +1,7 @@
 #include "../../../webserv.hpp"
 
 ServerInstance::ServerInstance(s_server &serverInfos): backLog(200) {
-
+        (*this).initialized = true;
         setListenAdressPort(serverInfos); //check if the array is empty !!!!
         this->serverName = serverInfos.server_names[0];
         this->serverInformations = &serverInfos;
@@ -11,9 +11,6 @@ ServerInstance::ServerInstance(s_server &serverInfos): backLog(200) {
         this->hint.ai_family = AF_INET;
         this->hint.ai_socktype = SOCK_STREAM;
         this->hint.ai_flags = AI_PASSIVE;
-        this->sendSize = 1000;
-
-
 }
 
 std::vector<struct pollfd>& ServerInstance::getClientFdSet() {
@@ -29,9 +26,19 @@ std::string ServerInstance::getServerName() {
     return(this->serverName);
 }
 
+
 void ServerInstance::setListenAdressPort(t_server &serverInfos) {
     this->serverPort =  serverInfos.listen[0].port;
+    if(this->serverPort > 65535) {
+        Log::e("Port Out Of Range ... ");
+        (*this).initialized = false;
+        return;
+    }
     this->listenAdress = serverInfos.listen[0].host;
+    if(String::isIpFormCorrect(this->listenAdress) != true) {
+        (*this).initialized = false;
+        Log::e("Invalid Host Address ... ");
+    }
 }
 
 void ServerInstance::setListenSocket(int SocketFd) {
@@ -76,12 +83,13 @@ void ServerInstance::setupServerConfiguration() {
     Log::i("Configuring local network...");
     getaddrinfo(getListenAdress().c_str(), getServerPort().c_str(), &this->hint, &this->bindAddress);
     Log::i("Created a listening socket on port " + getServerPort());
+    // std::cout << getListenAdress() << std::endl;
     this->listenSocket = socket(this->bindAddress->ai_family, this->bindAddress->ai_socktype, this->bindAddress->ai_protocol);
-    setSocketNonBlocking(this->listenSocket);
     if(this->listenSocket < 0) {
         Log::e("Failed to create a listening socket due to: " + std::string(strerror(errno)));
         exit(1);
     }
+    setSocketNonBlocking(this->listenSocket);
     if (setsockopt(getListenSocketFd(), SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
         Log::e("Failed to set socket options: " + std::string(strerror(errno)));
         exit(1);
@@ -213,3 +221,8 @@ ServerInstance::~ServerInstance () {
 
 }
 
+
+
+bool ServerInstance::isInitialized() {
+    return(initialized);
+}

@@ -20,6 +20,7 @@ class ServerInstance {
         std::string getListenAdress();
         std::vector<struct ClientProfile>& getClientProfilesSet();
         std::vector<struct pollfd>& getClientFdSet();
+        bool isInitialized();
 
         //OTHER MEMBERS FUNCTIONS
         void setupServerConfiguration();
@@ -42,5 +43,6 @@ class ServerInstance {
         std::vector<struct ClientProfile> clientProfiles;
         const int backLog;
         std::vector<t_listen> listenDirectives;
-        size_t sendSize;
+
+        bool initialized;
 };

@@ -31,3 +31,57 @@ std::string String::to_string(int num){
     ss << num;
     return ss.str();
 }
+
+bool String::is_a_num(std::string str) {
+    for (size_t i = 0; i < str.length(); i++) {
+        if (!isdigit(str[i])) {
+            throw(Utils::WebservException("Is Not A Number"));
+        }
+    }
+    return true;
+}
+
+bool String::isIpFormCorrect(std::string ip) {
+    int dotCount = 0;
+	while(ip.find(".") != std::string::npos) {
+		size_t dotPosition = ip.find(".");
+        if(dotPosition != std::string::npos)
+            dotCount++;
+		try {
+            String::is_a_num(ip.substr(0,dotPosition));
+		}
+		catch(...) {
+			return(false);
+		}
+        ip = ip.substr(dotPosition + 1);
+	}
+    if(dotCount == 3) {
+        try {
+            String::is_a_num(ip);
+        }
+        catch(...) {
+            return(false);
+        }
+    } 
+    else
+        return false;
+    return(true);
+}
+
+// bool String::isIpFormCorrect(std::string ip) {
+//     std::istringstream ss(ip);
+//     std::string segment;
+//     int dotCount = 0;
+
+//     while (std::getline(ss, segment, '.')) {
+//         if (++dotCount > 3) {
+//             return false; // Too many segments
+//         }
+
+//         if (!is_a_num(segment)) {
+//             return false;
+//         }
+//     }
+
+//     return dotCount == 3;
+// }
