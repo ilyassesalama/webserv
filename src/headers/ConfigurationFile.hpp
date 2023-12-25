@@ -21,8 +21,9 @@ typedef struct s_route {
 	std::string redirection;
 	std::vector<std::string>allowed_methods;
 	std::string is_directory;
+	std::string upload_path;
 	bool directory_listing;
-	bool upload_support;
+	bool upload;
 
 	// cgi specific
 	std::string cgi_extension;
@@ -34,6 +35,7 @@ typedef struct s_route {
 	bool is_is_directory;
 	bool is_cgi_extension;
 	bool is_upload;
+	bool is_upload_path;
 
 } t_route;
 

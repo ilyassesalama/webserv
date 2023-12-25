@@ -132,6 +132,7 @@ std::vector<std::string> getAllowedTypes() {
 	allowedTypes.push_back("image/x-icon");
 	allowedTypes.push_back("font/ttf");
 	allowedTypes.push_back("video/mp4");
+	allowedTypes.push_back("application/octet-stream");
 	allowedTypes.push_back("text/plain");
 
 	return allowedTypes;

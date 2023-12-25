@@ -37,6 +37,7 @@ void initRouteBooleans(t_route *route) {
 	route->is_is_directory = false;
 	route->is_cgi_extension = false;
 	route->is_upload = false;
+	route->is_upload_path = false;
 }
 
 bool isRouteAlreadyExist(t_server server, std::string path) {
@@ -77,7 +78,7 @@ std::string getRouteDirectiveValue(std::string key, std::string file, size_t *st
 
 bool boolParser(std::string &value) {
 	std::string boolean = singleValueParser(value);
-	if (boolean != "true" && boolean != "false") throw (Utils::WebservException("Error, directory_listing can only be true or false"));
+	if (boolean != "on" && boolean != "off") throw (Utils::WebservException("Error, directory_listing can only be on or off"));
 	else if (boolean == "true") return true;
 	return false;
 }

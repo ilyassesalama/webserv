@@ -56,10 +56,13 @@ void ConfigurationFile::parseRouteValue( std::string key, std::string value, t_r
 	} else if (key == "redirection" && !route->is_redirection) {
 		route->redirection = singleValueParser(value);
 		route->is_redirection = true;
-	} else if (key == "upload_support" && !route->is_upload) {
-		route->upload_support = boolParser(value);
+	} else if (key == "upload" && !route->is_upload) {
+		route->upload = boolParser(value);
 		route->is_upload = true;
-	} else if (key != "root" && key != "directory_listing" && key != "is_directory" && key != "cgi_extension" && key != "allowed_methods" && key != "upload_support") {
+	} else if (key == "upload_path" && !route->is_upload_path) {
+		route->upload_path = singleValueParser(value);
+		route->is_upload_path = true;
+	} else if (key != "root" && key != "directory_listing" && key != "is_directory" && key != "cgi_extension" && key != "allowed_methods" && key != "redirection" && key != "upload_path" && key != "upload") {
 		throw (Utils::WebservException ("Error, directive not allowed"));
 	}
 }
@@ -77,7 +80,8 @@ void ConfigurationFile::handleLocation( std::string file, size_t *startIndex, st
 
 	route.path = path;
 	route.directory_listing = false;
-	route.upload_support = false;
+	route.is_upload = false;
+	route.is_upload_path = false;
 
 	initRouteBooleans(&route);
 	for (i = 0; i < endIndex && file[i] != '}'; i++) {

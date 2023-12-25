@@ -50,15 +50,13 @@ void Response::responseBuilder() {
    try {
         //check if the parser failed
         if(this->statusCode != 200 && this->statusCode != 201)
-            throw(Utils::WebservException(String::to_string(this->statusCode)));
+			throw(Utils::WebservException("ResponseBuilder: Parser failed to parse the request"));
         else {
             if (this->request->getRequestLine()["method"] == "GET") {
-                this->setRequestMethod("GET");
                 GETResponseBuilder();
             } else if (this->request->getRequestLine()["method"] == "DELETE") {
                 DELETEResponseBuilder();
-            }
-            else if (this->request->getRequestLine()["method"] == "POST") {
+            } else if (this->request->getRequestLine()["method"] == "POST") {
                 POSTResponseBuilder();
             }
         }

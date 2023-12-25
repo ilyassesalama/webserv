@@ -105,7 +105,6 @@ void RequestParser::verifyIfRequestIsSafe(){
         return;
     }
 	if (!parseContentType()) {
-		std::cout << "Hello !" << std::endl;
 		this->parsingState.failCode = 400;
 		this->parsingState.failReason = "Bad Request";
 		return;

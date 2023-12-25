@@ -9,7 +9,7 @@ void Response::GETResponseBuilder() {
     // if (this->request->getRequestLine()["method"] == "POST" && uploadSupport) {
 		
 	// }
-    
+    this->setRequestMethod("GET");
     this->setResponseBody();
     this->setHeaders();
     this->setResponseLine();

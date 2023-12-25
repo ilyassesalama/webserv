@@ -25,12 +25,7 @@ std::string getDirectiveKey(std::string file, size_t *startIndex)
 std::string getSingleValue(std::string value, size_t *startPos)
 {
 
-	if (value.empty()) throw (Utils::WebservException(Utils::WebservException("Error, there is a syntax error1")));
-
-	// size_t i = 0;
-
-	// skipSpaces(value, &i);
-
+	if (value.empty()) throw (Utils::WebservException(Utils::WebservException("Error, there is a syntax error")));
 
 	size_t end;
 
@@ -209,29 +204,28 @@ std::vector<t_error_page> parseErrorPage(std::string value)
 	std::string error_page;
 
 	size_t pos = value.find(" ");
-	if (pos == std::string::npos) throw(Utils::WebservException("Error, error_page syntax error"));
+	if (pos == std::string::npos || onlySpaces(value.substr(pos))) throw(Utils::WebservException("Error, error_page syntax error"));
 
 	while (pos != std::string::npos) {
 		if (!isDigits(value.substr(0, pos))) throw(Utils::WebservException("Error, error_page syntax error"));
-		std::stringstream buffer(value.substr(0, pos));
-		int errorCode;
-		buffer >> errorCode;
-		if (buffer.fail()) throw(Utils::WebservException("Error, stringstream"));
+		
+		int errorCode = String::to_int(value.substr(0, pos));
+
 		if (!checkErrorCode(errorCode)) throw(Utils::WebservException("Error, error_code not allowed"));
 		err.error_code = errorCode;
 
 		value = value.substr(pos);
-
-		pos = value.find(" ");
+		pos = 0;
 		skipSpaces(value, &pos);
-
 		value = value.substr(pos);
-		pos = value.find(" ");
 
 		errors.push_back(err);
 
-		if ((pos == std::string::npos && value.substr(0, pos).empty())) throw(Utils::WebservException("Error, error_page syntax error"));
-		else if (pos == std::string::npos || (pos != std::string::npos && onlySpaces(value.substr(pos)))) {
+		if (value.empty()) throw(Utils::WebservException("Error, error_page syntax error"));
+
+		pos = value.find(" ");
+
+		if (pos == std::string::npos || onlySpaces(value.substr(pos))) {
 			error_page = value.substr(0, pos);
 			break ;
 		}

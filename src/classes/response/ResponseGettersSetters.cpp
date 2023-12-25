@@ -126,8 +126,8 @@ std::string addHeaders(std::string key, std::string value) {
 */
 void Response::setHeaders() {
     if(!this->isCGI){
-        if(statusCode != 204 && statusCode != 201 && statusCode != 201){
-            this->responseHeadersMap["Content-Length"] = String::to_string(File::getFileSize(this->path));
+        if(statusCode != 204 && statusCode != 201){
+			this->responseHeadersMap["Content-Length"] = String::to_string(File::getFileSize(this->path));
             this->responseHeadersMap["Content-Type"] = File::getContentType(this->path);
         } else if (statusCode == 201)
             this->responseHeadersMap["Content-Length"] = "0";
