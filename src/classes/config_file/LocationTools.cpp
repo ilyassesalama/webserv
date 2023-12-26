@@ -11,7 +11,7 @@ std::string getLocationPath( std::string file, size_t *startIndex ) {
 	}
 
 
-	if (!isspace(file[i]) && file[i] != '{') throw(Utils::WebservException("Error, there is a syntax error"));
+	if (!isspace(file[i]) && file[i] != '{') throw(Utils::WebservException("Error, there is no opening brace after location directive"));
 	
 	path = file.substr(0, i);
 
@@ -24,7 +24,7 @@ size_t getLocationEnd( std::string file ) {
 
 	size_t endPos = file.find("}");
 
-	if (endPos == std::string::npos) throw(Utils::WebservException("Error, there is a syntax error"));
+	if (endPos == std::string::npos) throw(Utils::WebservException("Error, there is no location closing brace"));
 
 	return endPos;
 }

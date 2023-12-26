@@ -142,7 +142,7 @@ void ConfigurationFile::handleDirectives( std::string file, t_server server ) {
 			} else {
 				skipSpaces(file, &i);
 
-				if (file[i] != '{') throw (Utils::WebservException ("Error, there is a syntax error"));
+				if (file[i] != '{') throw (Utils::WebservException ("Error, there is no opening brace after location directive"));
 
 				i++;
 
