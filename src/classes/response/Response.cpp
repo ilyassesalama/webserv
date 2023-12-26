@@ -76,8 +76,8 @@ void Response::responseBuilder() {
     to the response verctor to get ready for sending as a response.
 */
 void Response::buildErrorResponse() {
-    this->setHeaders();
     this->responseBody = getErrorPageHTML();
+    this->setHeaders();
     this->setResponseLine();
     this->response.append(this->responseLine);
     this->response.append(this->responseHeaders);
@@ -115,15 +115,11 @@ std::string Response::getErrorPageHTML(){
 	std::string error_page;
 
     this->path = getErrorPagePath(this->server->error_pages, this->statusCode);
+
     try {
         responseBody = File::getFileContent(this->path);
     } catch (std::exception &e) {
-        Log::e("Specified error page not found, falling back to 500 error page");
-        try {
-            responseBody = File::getFileContent("src/client-side/error_pages/500.html");
-        } catch (std::exception &e) {
-            responseBody = "<html><body><h1>500 | Server Internal Error</h1><p>It seems like our awesome webserv couldn't handle your request. Falling back to error 500 since no solution can be proposed in this case.</p></body></html>";
-        }
+        responseBody = "<html><body><h1>500 | Server Internal Error</h1><p>It seems like our awesome webserv couldn't handle your request. Falling back to error 500 since no solution can be proposed in this case.</p></body></html>";
     }
     return responseBody;
 }

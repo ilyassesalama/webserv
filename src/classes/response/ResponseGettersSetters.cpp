@@ -152,13 +152,9 @@ std::string addHeaders(std::string key, std::string value) {
 
 /*
     Add headers to the response headers accrordingly depending on the status code.
-    BODY LENGTH WILL CHANGE BASED WHETHER THE SOURCE FILE EXISTS OR NOT.
 */
 void Response::setHeaders() {
     if(!this->isCGI){
-        size_t contentLength = File::getFileSize(this->path);
-        if(contentLength == 0) contentLength = this->responseBody.size();
-
         if(statusCode != 200) {
             this->responseHeadersMap["Connection"] = "close";
         }
@@ -169,6 +165,7 @@ void Response::setHeaders() {
             this->responseHeadersMap["Location"] = this->request->getRequestLine()["path"] + "/";
         }
         if(statusCode != 204 && statusCode != 201){
+            size_t contentLength = File::getFileSize(this->path);
 			this->responseHeadersMap["Content-Length"] = String::to_string(contentLength);
             this->responseHeadersMap["Content-Type"] = File::getContentType(this->path);
         }
