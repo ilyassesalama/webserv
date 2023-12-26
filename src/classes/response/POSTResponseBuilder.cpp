@@ -28,7 +28,6 @@ std::string getBody(const std::string &body) {
 }
 
 void Response::POSTResponseBuilder() {
-
 	this->responseBody = "";
     this->setHeaders();
     this->setResponseLine();

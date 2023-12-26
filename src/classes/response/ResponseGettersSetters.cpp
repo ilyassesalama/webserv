@@ -1,40 +1,85 @@
 #include "../../../webserv.hpp"
 
+// REVIEW: THE FOLLOWING VARIABLES ARE SUPPOSED FOR TESTING PURPOSES ONLY (?)
+// MUST BE CHANGED LATER
 
+std::string fileToUpload = "/Users/bel-kala/Desktop/webserv/file_1703410552468188_boundary";
+std::string boundaryStart = "--------------------------e724ea100db92128\r";
+std::string boundaryEnd = "--------------------------e724ea100db92128--\r";
+int lineCount = 500;
 
-/*
-	GETTER FUNCTIONS
-*/
+void Response::uploadFile() {
+    std::ifstream inputFile(fileToUpload.c_str(), std::ios::binary);
+    std::ofstream outputFile("output.mp4", std::ios::binary);
+    std::string line;   
+    int count = 0;
+    
+    inputFile.seekg((*this).uploadFileOffset);
+    if(!inputFile.is_open() || !outputFile.is_open()) {
+        Log::e("Error Opening The File FAKYO");
+        throw(Utils::WebservException("halaloya"));
+    }
 
+    while(count < lineCount && std::getline(inputFile,line)) {
+        if(line == boundaryStart) {
+            while(std::getline(inputFile, line)) {
+                if(line == "\r")
+                    break;
+            }
+        }
+        else if(line == boundaryEnd) {
+            Log::d("Upload Finished");
+            break;
+        }
+        else {
+            outputFile << line + '\n';
+            count++;
+        }
+    }
 
+    this->uploadFileOffset = inputFile.tellg();
+}
 
 bool Response::isLocationHasCGI() {
     if(!this->currentRoute->cgi_extension.empty()) {
         if(std::find(this->currentRoute->allowed_methods.begin(),this->currentRoute->allowed_methods.end(),this->method) == this->currentRoute->allowed_methods.end()) {
-            Log::i("The CGI method is not supported at this location ...");
+            if(FULL_LOGGING_ENABLED)
+                Log::d("The CGI method is not supported at this location");
             return(false);
         } //abahsine will add more extentions to the config file 
         if(File::getCGIbinary(path) == "WALO") {
-            Log::i("The CGI extension is not supported at this location ...");
+            if(FULL_LOGGING_ENABLED)
+                Log::d("The CGI extension is not supported at this location");
             return(false);            
         }
-        Log::i("CGI is supported at this location ...");
+        if(FULL_LOGGING_ENABLED)
+            Log::d("CGI is supported at this location");
         return(true);
     }
-    Log::i("No supported CGI found at this location ...");
+    if(FULL_LOGGING_ENABLED)
+        Log::d("No supported CGI found at this location");
     return(false);
 }
 
-
-void Response::setRequestMethod(std::string method) {
-    this->method = method;
-}
-
+// getters
 
 std::vector<char>& Response::getResponse() {
 	return(this->responseVector);
 }
 
+std::string getPathLocation(std::string path) {
+    std::string location;
+
+    size_t firstSlash = path.find("/");
+
+    if(firstSlash != std::string::npos) {
+        size_t secondSlash = path.find("/", firstSlash + 1);
+        if(secondSlash != std::string::npos) {
+             return path.substr(0, secondSlash); 
+        }
+    }
+    return("/");
+}
 
 std::string Response::getStringStatus(){
     switch(this->statusCode){
@@ -63,31 +108,15 @@ std::string Response::getStringStatus(){
         case 501:
             return "501 Not Implemented";
         default:
-            return "500 Internal Server Error";
+            return "500 Internal Server Error"; // fallback
     }
 }
 
-std::string getPathLocation(std::string path) {
-    std::string location;
+// setters
 
-    size_t firstSlash = path.find("/");
-
-    if(firstSlash != std::string::npos) {
-        size_t secondSlash = path.find("/", firstSlash + 1);
-        if(secondSlash != std::string::npos) {
-             return path.substr(0, secondSlash); 
-        }
-    }
-    return("/");
+void Response::setRequestMethod(std::string method) {
+    this->method = method;
 }
-
-
-
-/*
-	SETTER FUNCTIONS
-*/
-
-
 
 void Response::setPath(std::string requestedResourcePath) {
     this->path = requestedResourcePath;
@@ -122,20 +151,23 @@ std::string addHeaders(std::string key, std::string value) {
 }
 
 /*
-    Add oheaders to the response headers accrordingly depending on the status code.
+    Add headers to the response headers accrordingly depending on the status code.
 */
 void Response::setHeaders() {
     if(!this->isCGI){
-        if(statusCode != 204 && statusCode != 201){
-			this->responseHeadersMap["Content-Length"] = String::to_string(File::getFileSize(this->path));
-            this->responseHeadersMap["Content-Type"] = File::getContentType(this->path);
-        } else if (statusCode == 201)
-            this->responseHeadersMap["Content-Length"] = "0";
         if(statusCode != 200) {
             this->responseHeadersMap["Connection"] = "close";
         }
+        if(statusCode == 201){
+            this->responseHeadersMap["Content-Length"] = "0";
+        }
         if(statusCode == 301) {
             this->responseHeadersMap["Location"] = this->request->getRequestLine()["path"] + "/";
+        }
+        if(statusCode != 204 && statusCode != 201){
+            size_t contentLength = File::getFileSize(this->path);
+			this->responseHeadersMap["Content-Length"] = String::to_string(contentLength);
+            this->responseHeadersMap["Content-Type"] = File::getContentType(this->path);
         }
     }
     // convert map to string headers
@@ -172,42 +204,4 @@ void Response::setServingState(bool status) {
 }
 void Response::setBytesSent(size_t bytes) {
     this->bytesSent = bytes;
-}
-
-std::string fileToUpload = "/Users/bel-kala/Desktop/webserv/file_1703410552468188_boundary";
-std::string boundaryStart = "--------------------------e724ea100db92128\r";
-std::string boundaryEnd = "--------------------------e724ea100db92128--\r";
-int lineCount = 500;
-
-void Response::uploadFile() {
-    std::ifstream inputFile(fileToUpload.c_str(), std::ios::binary);
-    std::ofstream outputFile("output.mp4", std::ios::binary);
-    std::string line;   
-    int count = 0;
-    
-    inputFile.seekg((*this).uploadFileOffset);
-    if(!inputFile.is_open() || !outputFile.is_open()) {
-        Log::e("Error Opening The File FAKYO");
-        throw(Utils::WebservException("halaloya"));
-    }
-
-    while(count < lineCount && std::getline(inputFile,line)) {
-        if(line == boundaryStart) {
-            while(std::getline(inputFile, line)) {
-                if(line == "\r")
-                    break;
-            }
-        }
-        else if(line == boundaryEnd) {
-            Log::d("Upload Finished");
-            break;
-        }
-        else {
-            outputFile << line + '\n';
-            count++;
-        }
-    }
-
-    (*this).uploadFileOffset = inputFile.tellg();
-
 }

@@ -8,8 +8,8 @@ typedef struct ParsingState {
     bool headsOk;
     bool bodyOk;
     bool ok;
-    int failCode;
-    std::string failReason;
+    int statusCode;
+    std::string statusMessage;
 } ParsingState;
 
 class RequestParser {

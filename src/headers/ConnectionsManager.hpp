@@ -11,7 +11,7 @@ class ConnectionsManager {
         
         void socketMonitore();
         void acceptNewIncommingConnections(ServerInstance *serverId);
-        // int recvRequest(int clientFd,Server* serverId);
+        // int receiveRequest(int clientFd,Server* serverId);
         void addFdToTheSet(int clientFd);
         void changeClientMonitoringEvent(std::string event, int clientFd);
         void addServerToTheSet(ServerInstance &serverInstance);

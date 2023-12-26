@@ -129,7 +129,7 @@ void RequestParser::getChunkedData(std::string &body) {
 				return ;
 			}
 			this->parsingState.bodyOk = true;
-			this->parsingState.failCode = 201;
+			this->parsingState.statusCode = 201;
 			return ;
 		}
 		size_t pos = body.find("\r\n"); // removing chunk size from body
@@ -164,7 +164,7 @@ void RequestParser::getChunkedData(std::string &body) {
 
 	if (isZero == true && this->chunkRemainder == 0) {
 		this->parsingState.bodyOk = true;
-		this->parsingState.failCode = 201;
+		this->parsingState.statusCode = 201;
 		return ;
 	}
 

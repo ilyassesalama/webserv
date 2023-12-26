@@ -48,23 +48,27 @@ void Response::feedDataToTheSender() {
 
 void Response::responseBuilder() {
    try {
-        //check if the parser failed
-        if(this->statusCode != 200 && this->statusCode != 201)
+        // check if the parser failed
+        if(this->statusCode != 200 && this->statusCode != 201){
 			throw(Utils::WebservException("ResponseBuilder: Parser failed to parse the request"));
-        else {
-            if (this->request->getRequestLine()["method"] == "GET") {
-                GETResponseBuilder();
-            } else if (this->request->getRequestLine()["method"] == "DELETE") {
-                DELETEResponseBuilder();
-            } else if (this->request->getRequestLine()["method"] == "POST") {
-                POSTResponseBuilder();
-            }
+            return;
+        }
+        if (this->request->getRequestLine()["method"] == "GET") {
+            GETResponseBuilder();
+            return;
+        }
+        if (this->request->getRequestLine()["method"] == "DELETE") {
+            DELETEResponseBuilder();
+            return;
+        }
+        if (this->request->getRequestLine()["method"] == "POST") {
+            POSTResponseBuilder();
+            return;
         }
     } catch(Utils::WebservException &ex) {
-        //build error Response based on the error code
         buildErrorResponse();
     }
-} 
+}
 
 
 /*
@@ -73,8 +77,8 @@ void Response::responseBuilder() {
 */
 void Response::buildErrorResponse() {
     this->responseBody = getErrorPageHTML();
-    this->setResponseLine();
     this->setHeaders();
+    this->setResponseLine();
     this->response.append(this->responseLine);
     this->response.append(this->responseHeaders);
     this->response.append(this->responseBody);
@@ -111,11 +115,11 @@ std::string Response::getErrorPageHTML(){
 	std::string error_page;
 
     this->path = getErrorPagePath(this->server->error_pages, this->statusCode);
+
     try {
         responseBody = File::getFileContent(this->path);
     } catch (std::exception &e) {
-        responseBody = "<html><body><h1>ERROR 403</h1><p>Forbidden</p></body></html>";
-        Log::e("Error page not found, who edited the permissions MFs!");
+        responseBody = "<html><body><h1>500 | Server Internal Error</h1><p>It seems like our awesome webserv couldn't handle your request. Falling back to error 500 since no solution can be proposed in this case.</p></body></html>";
     }
     return responseBody;
 }

@@ -15,14 +15,14 @@ void RequestParser::nullOutVars(){
     this->parsingState.headLineOk = false;
     this->parsingState.headsOk = false;
     this->parsingState.bodyOk = false;
-    this->parsingState.failCode = 0;
-    this->parsingState.failReason = "";
+    this->parsingState.statusCode = 0;
+    this->parsingState.statusMessage = "";
 	this->chunkRemainder = 0;
 	this->isChunked = false;
 }
 
 /*
-    The first function to be called, specifically by ServerInstance::recvRequest()
+    The first function to be called, specifically by ServerInstance::receiveRequest()
     to receive and merge the final full request.
 */
 void RequestParser::mergeRequestChunks(std::string &requestInput) {
@@ -64,52 +64,52 @@ void RequestParser::mergeRequestChunks(std::string &requestInput) {
 void RequestParser::verifyIfRequestIsSafe(){
 
 	if (Utils::isMapKeyExists(this->headers, "Transfer-Encoding") && this->headers["Transfer-Encoding"] != "chunked") {
-        this->parsingState.failCode = 501;
-        this->parsingState.failReason = "Not Implemented";
+        this->parsingState.statusCode = 501;
+        this->parsingState.statusMessage = "Not Implemented";
         return;
     }
     if(this->requestLine["method"] == "POST" && (!Utils::isMapKeyExists(this->headers, "Content-Length") && !Utils::isMapKeyExists(this->headers, "Transfer-Encoding") && (Utils::isMapKeyExists(this->headers, "Content-Type") && this->headers["Content-Type"].find("multipart/form-data") == std::string::npos))){
-		this->parsingState.failCode = 400;
-        this->parsingState.failReason = "Bad Request";
+		this->parsingState.statusCode = 400;
+        this->parsingState.statusMessage = "Bad Request";
         return;
     }
     if(!isHeaderLineValid()){
-        this->parsingState.failCode = 400;
-        this->parsingState.failReason = "Bad Request";
+        this->parsingState.statusCode = 400;
+        this->parsingState.statusMessage = "Bad Request";
         return;
     }
     if(this->requestLine["path"].length() > 2048){
-        this->parsingState.failCode = 414;
-        this->parsingState.failReason = "URI Too Long";
+        this->parsingState.statusCode = 414;
+        this->parsingState.statusMessage = "URI Too Long";
         return;
     }
     size_t bodyMaxSizeFromConfig = (this->server->client_body_size * 1000000);
     if(this->body.length() > bodyMaxSizeFromConfig){
-        this->parsingState.failCode = 413;
-        this->parsingState.failReason = "Request Entity Too Large";
+        this->parsingState.statusCode = 413;
+        this->parsingState.statusMessage = "Request Entity Too Large";
         return;
     }
     if (!isPathAccessible()) {
-        this->parsingState.failCode = 404;
-        this->parsingState.failReason = "Not Found";
+        this->parsingState.statusCode = 404;
+        this->parsingState.statusMessage = "Not Found";
         return;
     }
     if(File::isDirectory(this->requestResourcePath) && this->requestResourcePath[this->requestResourcePath.length() - 1] != '/'){
-        this->parsingState.failCode = 301;
-        this->parsingState.failReason = "Moved Permanently";
+        this->parsingState.statusCode = 301;
+        this->parsingState.statusMessage = "Moved Permanently";
         return;
     }
     if(!isMethodAllowed()){
-        this->parsingState.failCode = 405;
-        this->parsingState.failReason = "Method Not Allowed";
+        this->parsingState.statusCode = 405;
+        this->parsingState.statusMessage = "Method Not Allowed";
         return;
     }
 	if (!parseContentType()) {
-		this->parsingState.failCode = 400;
-		this->parsingState.failReason = "Bad Request";
+		this->parsingState.statusCode = 400;
+		this->parsingState.statusMessage = "Bad Request";
 		return;
 	}
-    this->parsingState.failCode = 200;
+    this->parsingState.statusCode = 200;
 }
 
 /*
@@ -162,9 +162,9 @@ void RequestParser::parseRequestHeaders(std::string &requestData) {
 }
 
 /*
-    NOT NECESSARY, but will probably be useful later?
     Handles only the URI parameters and set their values to their
     respective variables. (ex: ?key=value&key2=value2)
+    Will be used in the cgi part.
 */
 void RequestParser::parseRequestParams(std::string &requestData){
     size_t start = requestData.find("?"); // look for the first param

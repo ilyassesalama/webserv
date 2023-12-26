@@ -72,16 +72,12 @@ bool RequestParser::isPathAccessible() {
             this->route = slashR;
             this->requestResourcePath.append(File::getWorkingDir());
             this->requestResourcePath.append(slashR->root);
-            if(getRequestLine()["method"] == "DELETE")
-                this->requestResourcePath.append("/UPLOADS");
             this->requestResourcePath.append(getRequestLine()["path"]);
         }
     } else {
         this->route = route;
         this->requestResourcePath.append(File::getWorkingDir());
         this->requestResourcePath.append(route->root);
-        if(getRequestLine()["method"] == "DELETE")
-            this->requestResourcePath.append("/UPLOADS");
         this->requestResourcePath.append(getRequestLine()["path"]);
     }
     if(FULL_LOGGING_ENABLED)
@@ -215,7 +211,7 @@ void RequestParser::logParsedRequest(){
         Log::v("RequestParser: Parsed body:");
         std::cout << this->body << "\n";
     }
-    if(this->parsingState.failCode != 0 && this->parsingState.failCode != 200 && this->parsingState.failCode != 201){
-        Log::e("RequestParser: Parsing failed with code " + String::to_string(this->parsingState.failCode) + " and reason: " + this->parsingState.failReason);
+    if(this->parsingState.statusCode != 0 && this->parsingState.statusCode != 200 && this->parsingState.statusCode != 201){
+        Log::e("RequestParser: Parsing failed with code " + String::to_string(this->parsingState.statusCode) + " and reason: " + this->parsingState.statusMessage);
     }
 }
