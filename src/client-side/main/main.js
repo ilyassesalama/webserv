@@ -79,6 +79,36 @@ function switchPage(page){
 
 switchPage("home");
 
+
+const loginBtn = document.getElementById("login-btn");
+
+loginBtn.addEventListener("click", () => {
+	const username = document.getElementById("username").value;
+	const password = document.getElementById("password").value;
+
+	fetch("http://localhost:8080/", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json"
+		},
+		body: JSON.stringify({
+			username: username,
+			password: password
+		}),
+	}).then((res) => {
+		if (res.status === 200) {
+			document.cookie = "username=" + username;
+			switchPage("home");
+			alert("Login successful!");
+		}
+		else {
+			alert("Incorrect username or password.");
+		}
+	}).catch((error) => {
+		console.log(error);
+	});
+});
+
 // --------------------- text animation stuff --------------------- //
 
 var charWidth = 0;
