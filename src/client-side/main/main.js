@@ -1,43 +1,91 @@
 const CONTAINER = document.querySelector('.container')
 const CARDS = document.querySelectorAll('.article')
 
-const upload = document.getElementById("upload");
+const pageTitle = document.getElementById("webservTitle");
+const pageSubtitle = document.getElementById("webservSubtitle");
 
 const homePage = document.getElementById("home");
 const loginPage = document.getElementById("login");
+const uploadPage = document.getElementById("upload");
 
-const loginButton = document.getElementById("loginButton");
+const homeNavButton = document.getElementById("homeNavButton");
+const loginNavButton = document.getElementById("loginNavButton");
+const uploadNavButton = document.getElementById("uploadNavButton");
 
-loginButton.addEventListener("click", () => {
-	homePage.classList.remove("active");
-	loginPage.classList.add("active");
-	loginButton.style.display = "none";
+loginNavButton.addEventListener("click", () => {
+	switchPage("login");
+});
+
+homeNavButton.addEventListener("click", () => {
+	switchPage("home");
+});
+
+uploadNavButton.addEventListener("click", () => {
+	switchPage("upload");
+});
+
+const fileLabel = document.getElementById("file-label");
+const inputFile = document.getElementById("file");
+
+inputFile.addEventListener("change", () => {
+	const file = inputFile.files[0];
+
+	fileLabel.innerHTML = file.name;
 })
+
+function switchPage(page){
+	var titleText = "Webserver";
+	var subText = "Welcome to Webserver, a mini server that hosts your website!";
+	document.getElementById("webservTitle").innerHTML = "";
+	document.getElementById("webservSubtitle").innerHTML = "";
+	switch (page) {
+		case "home":
+			homePage.classList.add("active");
+			loginPage.classList.remove("active");
+			uploadPage.classList.remove("active");
+			homeNavButton.style.display = "none";
+			loginNavButton.style.display = "block";
+			uploadNavButton.style.display = "block";
+			break;
+		case "login":
+			homePage.classList.remove("active");
+			loginPage.classList.add("active");
+			uploadPage.classList.remove("active");
+			homeNavButton.style.display = "block";
+			loginNavButton.style.display = "none";
+			uploadNavButton.style.display = "block";
+			titleText = "Login";
+			subText = "Login using your username and password to continue.";
+			break;
+		case "upload":
+			homePage.classList.remove("active");
+			loginPage.classList.remove("active");
+			uploadPage.classList.add("active");
+			homeNavButton.style.display = "block";
+			loginNavButton.style.display = "block";
+			uploadNavButton.style.display = "none";
+			titleText = "Upload";
+			subText = "Upload your website to the server.";
+			break;
+	}
+	setTimeout(function() {
+		writeChars("webservTitle", titleText, 100);
+	}, 50);
+	setTimeout(function() {
+		writeChars("webservSubtitle", subText, 300);
+	}, 300);
+}
+
+
+switchPage("home");
+
+// --------------------- text animation stuff --------------------- //
 
 var charWidth = 0;
 var spaceWidth = 8;
-var animSpeed = 40;
+var animSpeed = 60;
 var fadeSec = 0.5;
 var lineSpace = 25;
-
-upload.addEventListener("click", () => {
-
-	upload.addEventListener("change", () => {
-		console.log("hey");
-		console.log(upload.files[0].name);
-		fetch("http://0.0.0.0:8080/" + upload.files[0].name,
-		{
-			headers: {
-			'Content-Type': 'text/plain',
-			'Content-Length': "11",
-			},
-			method: "POST",
-			body: "hello world"
-		})
-		.then(function(res){ console.log("rest " + res) })
-		.catch(function(res){ console.log("err " + res) })
-	});
-});
 
 function writeChars(p, t, lim) {
 	var zone = document.getElementById(p);
@@ -65,14 +113,7 @@ function writeChars(p, t, lim) {
 		}
 	}
 }
-
-var text = "Webserver";
-var moreText = "Welcome to Webserver, a mini server that hosts your website!";
-
-writeChars("webservTitle", text, 100);
-setTimeout(function() {
-	writeChars("webservSubtitle", moreText, 300);
-}, 500);
+// --------------------- glowing box stuff --------------------- //
 
 const CONFIG = {
   proximity: 40,
