@@ -15,9 +15,9 @@ void ConfigurationFile::parseValue( std::string key, std::string value, t_server
 		t_listen listen = parseListen( value );
 		server->listen.push_back(listen);
 	}
-	else if (key == "server_name")
+	else if (key == "server_name") {
 		server->server_names = multipleValuesParser( value );
-	else if (key == "client_body_size" && !server->is_client_body_size) {
+	} else if (key == "client_body_size" && !server->is_client_body_size) {
 		parseClientBodySize(&server->client_body_size, server->body_size_unit, value);
 		server->is_client_body_size = true;
 	} else if (key == "error_page") {
@@ -134,9 +134,9 @@ void ConfigurationFile::handleDirectives( std::string file, t_server server ) {
 		skipSpaces(file, &i);
 
 		if (directiveKey != "location") {
-				directiveValue = getDirectiveValue(directiveKey, &file[i], &i);
+			directiveValue = getDirectiveValue(directiveKey, &file[i], &i);
 
-				parseValue(directiveKey, directiveValue, &server);
+			parseValue(directiveKey, directiveValue, &server);
 		}
 		else {
 
@@ -156,6 +156,10 @@ void ConfigurationFile::handleDirectives( std::string file, t_server server ) {
 			}
 		}
 
+	}
+
+	if (server.server_names.size() == 0) {
+		throw (Utils::WebservException("Error, server_name directive must have at least one value"));
 	}
 
 	this->ConfigFileServers.push_back(server);
