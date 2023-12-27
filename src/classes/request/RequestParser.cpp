@@ -19,6 +19,7 @@ void RequestParser::nullOutVars(){
     this->parsingState.statusMessage = "";
 	this->chunkRemainder = 0;
 	this->isChunked = false;
+	this->isCRLF = false;
 }
 
 /*
@@ -68,7 +69,7 @@ void RequestParser::verifyIfRequestIsSafe(){
         this->parsingState.statusMessage = "Not Implemented";
         return;
     }
-    if(this->requestLine["method"] == "POST" && (!Utils::isMapKeyExists(this->headers, "Content-Length") && !Utils::isMapKeyExists(this->headers, "Transfer-Encoding") && (Utils::isMapKeyExists(this->headers, "Content-Type") && this->headers["Content-Type"].find("multipart/form-data") == std::string::npos))){
+    if(this->requestLine["method"] == "POST" && (!Utils::isMapKeyExists(this->headers, "Content-Length") && !Utils::isMapKeyExists(this->headers, "Transfer-Encoding") && !(Utils::isMapKeyExists(this->headers, "Content-Type") && this->headers["Content-Type"].find("multipart/form-data") != std::string::npos))){
 		this->parsingState.statusCode = 400;
         this->parsingState.statusMessage = "Bad Request";
         return;
@@ -83,7 +84,7 @@ void RequestParser::verifyIfRequestIsSafe(){
         this->parsingState.statusMessage = "URI Too Long";
         return;
     }
-    size_t bodyMaxSizeFromConfig = (this->server->client_body_size * 1000000);
+    size_t bodyMaxSizeFromConfig = this->server->client_body_size;
     if(this->body.length() > bodyMaxSizeFromConfig){
         this->parsingState.statusCode = 413;
         this->parsingState.statusMessage = "Request Entity Too Large";
@@ -94,7 +95,8 @@ void RequestParser::verifyIfRequestIsSafe(){
         this->parsingState.statusMessage = "Not Found";
         return;
     }
-    if(File::isDirectory(this->requestResourcePath) && this->requestResourcePath[this->requestResourcePath.length() - 1] != '/'){
+    if(File::isDirectory(this->requestResourcePath) && this->requestResourcePath[this->requestResourcePath.length() - 1] != '/'
+			&& this->requestLine["method"] != "DELETE" && this->requestLine["method"] != "POST"){
         this->parsingState.statusCode = 301;
         this->parsingState.statusMessage = "Moved Permanently";
         return;
@@ -187,11 +189,22 @@ void RequestParser::parseRequestParams(std::string &requestData){
     }
 }
 
+bool uploadSingleFile(std::map<std::string, std::string> headers, std::string &fileName, std::string body) {
+	fileName = File::generateFileName("uploaded") + File::getExtension(headers);
+	std::fstream myFile(File::getWorkingDir() + "/uploads/" + fileName, std::ios::binary | std::ios::app);
+	if (!myFile.is_open())
+		return false;
+
+	myFile << body;
+
+	return true;
+}
+
 /*
     Last check by the request parser, stores the body if it exists.
 */
 void RequestParser::parseRequestBody(std::string &requestData){
-    size_t found = requestData.find("\r\n\r\n");
+	size_t found = requestData.find("\r\n\r\n");
 	this->body += requestData.substr(found + 4);
 
 	if (!this->isChunked) {
@@ -203,7 +216,7 @@ void RequestParser::parseRequestBody(std::string &requestData){
 			getBoundaryContent(firstRequestBody);
 
 		} else if (Utils::isMapKeyExists(this->headers, "Transfer-Encoding")) {
-			this->fileName = getContentDisposition(this->headers);
+			this->fileName = File::generateFileName("uploaded") + File::getExtension(headers);
 			getChunkedData(firstRequestBody);
 		}
 	} else if (Utils::isMapKeyExists(this->headers, "Transfer-Encoding") || (Utils::isMapKeyExists(this->headers, "Content-Type") && this->headers["Content-Type"].find("multipart/form-data") != std::string::npos)) {
@@ -211,7 +224,13 @@ void RequestParser::parseRequestBody(std::string &requestData){
 			getBoundaryContent(requestData);
 		else
 			getChunkedData(requestData);
-	} else if(!Utils::isMapKeyExists(this->headers, "Transfer-Encoding") && requestData.length() - found - 4 == String::to_size_t(getHeaders()["Content-Length"])) {
+	}
+	
+	if(!Utils::isMapKeyExists(this->headers, "Transfer-Encoding") && !(Utils::isMapKeyExists(this->headers, "Content-Type") && this->headers["Content-Type"].find("multipart/form-data") != std::string::npos) && requestData.length() - found - 4 == String::to_size_t(getHeaders()["Content-Length"])) {
+		if (!uploadSingleFile(this->headers, this->fileName, this->body)) {
+			this->parsingState.ok = false;
+			return ;
+		}
         parsingState.bodyOk = true;
     }
 }

@@ -185,10 +185,21 @@ void parseClientBodySize(size_t *body_size, std::string &body_size_unit, std::st
 	buffer >> client_body_size;
 	if (buffer.fail()) throw(Utils::WebservException("Error, stringstream"));
 
-	*body_size = client_body_size;
-	if (!isspace(value[i]) && checkUnit(value[i]) && onlySpaces(&value[i + 1]))
+	if (!isspace(value[i]) && checkUnit(value[i]) && onlySpaces(&value[i + 1])){
 		body_size_unit = value[i];
+		*body_size = convertFromUnitToBytes(client_body_size, body_size_unit);
+	}
 	else throw(Utils::WebservException("Error, client_body_size syntax error"));
+}
+
+size_t convertFromUnitToBytes(size_t body_size, std::string body_size_unit){
+	if (body_size_unit == "K")
+		return body_size * 1024;
+	else if (body_size_unit == "M")
+		return body_size * 1024 * 1024;
+	else if (body_size_unit == "G")
+		return body_size * 1024 * 1024 * 1024;
+	return body_size;
 }
 
 std::vector<t_error_page> parseErrorPage(std::string value)
