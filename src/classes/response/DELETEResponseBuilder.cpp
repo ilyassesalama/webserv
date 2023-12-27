@@ -4,12 +4,13 @@ void Response::DELETEResponseBuilder() {
     if(FULL_LOGGING_ENABLED)
         Log::v("DELETE method is requested, we're trying to delete: " + this->path + "...");
     try {
-        File::deleteFile(this->path);
+        File::deleteLocation(this->path);
+    	this->setStatusCode(204);
         if(FULL_LOGGING_ENABLED) Log::v("Requested file has been deleted successfully!");
     } catch (Utils::WebservException &ex) {
+    	this->setStatusCode(500);
         Log::w("DELETE failed due to: " + std::string(ex.what()));
     }
-    this->setStatusCode(204);
     this->setResponseBody();
     this->setHeaders();
     this->setResponseLine();
