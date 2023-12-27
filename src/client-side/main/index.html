@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Web Server Response</title>
+    <title>Home page - webserv</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,25 +19,35 @@
 					<div id="webservSubtitle"></div>
 				</div>
 				<ul>
-					<!-- <li><a href="#"><button id="upload"><img src="./icons/ic_upload.svg">File upload</button></a></li> -->
-					<input id="upload" type="file">
-					<li><a href="#"><button><img src="./icons/ic_login.svg">Login</button></a></li>
+					<li><a href="#"><button id="upload"><img src="./icons/ic_upload.svg">File upload</button></a></li>
+					<li id="loginButton"><a href="#"><button><img src="./icons/ic_login.svg">Login</button></a></li>
 				</ul>
 			</nav>
 			<div class="line"></div>
-			
-			<h3>Slaves:</h3>
-			<div class="images">
-				<div class="image article">
-					<h1>Badr Eddine El Kalai</h1>
+			<main>
+				<div id="home" class="home active">
+					<h3>Slaves:</h3>
+					<div class="images">
+						<div class="image article">
+							<h1>Badr Eddine El Kalai</h1>
+						</div>
+						<div class="image article">
+							<h1>Abdellah Bahsine</h1>
+						</div>
+						<div class="image article">
+							<h1>Ilyasse Salama</h1>
+						</div>
+					</div>
 				</div>
-				<div class="image article">
-					<h1>Abdellah Bahsine</h1>
+
+				<div id="login" class="login">
+					<form class="login-form" action="http://localhost:8080/" method="POST" enctype="multipart/form-data">
+						<input class="username" type="text" name="username" placeholder="Username" autocomplete="off">
+						<input class="password" type="password" name="password" placeholder="Password">
+						<input class="login-btn" type="submit" value="Login">
+					</form>
 				</div>
-				<div class="image article">
-					<h1>Ilyasse Salama</h1>
-				</div>
-			</div>
+			</main>
 		</div>
 	</div>
 

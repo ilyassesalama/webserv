@@ -3,6 +3,16 @@ const CARDS = document.querySelectorAll('.article')
 
 const upload = document.getElementById("upload");
 
+const homePage = document.getElementById("home");
+const loginPage = document.getElementById("login");
+
+const loginButton = document.getElementById("loginButton");
+
+loginButton.addEventListener("click", () => {
+	homePage.classList.remove("active");
+	loginPage.classList.add("active");
+	loginButton.style.display = "none";
+})
 
 var charWidth = 0;
 var spaceWidth = 8;
