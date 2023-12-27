@@ -17,8 +17,28 @@ Response::Response() {
     this->uploadFileOffset = 0;
 }
 
-
-Response::~Response() {}
+void Response::responseBuilder() {
+   try {
+        // check if the parser failed
+        if(this->statusCode != 200 && this->statusCode != 201){
+			throw(Utils::WebservException("ResponseBuilder: Parser failed to parse the request"));
+        }
+        if (this->request->getRequestLine()["method"] == "GET") {
+            GETResponseBuilder();
+            return;
+        }
+        if (this->request->getRequestLine()["method"] == "DELETE") {
+            DELETEResponseBuilder();
+            return;
+        }
+        if (this->request->getRequestLine()["method"] == "POST") {
+            POSTResponseBuilder();
+            return;
+        }
+    } catch(Utils::WebservException &ex) {
+        buildErrorResponse();
+    }
+}
 
 void Response::feedDataToTheSender() {
     if(fileOffset == -2 &&  bytesSent == responseVector.size()) {
@@ -45,31 +65,6 @@ void Response::feedDataToTheSender() {
         }
     }
 }
-
-void Response::responseBuilder() {
-   try {
-        // check if the parser failed
-        if(this->statusCode != 200 && this->statusCode != 201){
-			throw(Utils::WebservException("ResponseBuilder: Parser failed to parse the request"));
-            return;
-        }
-        if (this->request->getRequestLine()["method"] == "GET") {
-            GETResponseBuilder();
-            return;
-        }
-        if (this->request->getRequestLine()["method"] == "DELETE") {
-            DELETEResponseBuilder();
-            return;
-        }
-        if (this->request->getRequestLine()["method"] == "POST") {
-            POSTResponseBuilder();
-            return;
-        }
-    } catch(Utils::WebservException &ex) {
-        buildErrorResponse();
-    }
-}
-
 
 /*
 	Builds and adds the error page HTML source code to the response body
@@ -113,7 +108,7 @@ std::string getErrorPagePath(std::vector<t_error_page> &pages, int errorCode) {
 std::string Response::getErrorPageHTML(){
     std::string responseBody;
 	std::string error_page;
-
+	
     this->path = getErrorPagePath(this->server->error_pages, this->statusCode);
 
     try {
@@ -125,6 +120,7 @@ std::string Response::getErrorPageHTML(){
 }
 
 void Response::handleDirectoryRequest() {
+
 
     size_t slashPos = this->path.find_last_of("/");
 
