@@ -114,10 +114,6 @@ std::string Response::getStringStatus(){
 
 // setters
 
-void Response::setRequestMethod(std::string method) {
-    this->method = method;
-}
-
 void Response::setPath(std::string requestedResourcePath) {
     this->path = requestedResourcePath;
 }

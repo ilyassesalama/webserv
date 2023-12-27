@@ -6,7 +6,6 @@
 class Response {
     public:
         Response();
-        ~Response();
         
         void setRequest(RequestParser &request);
         void setServer(t_server &server);
@@ -18,7 +17,6 @@ class Response {
         void setStatusCode(int code);
         void setServingState(bool status);
         void setBytesSent(size_t bytes);
-        void setRequestMethod(std::string method);
 
 
 		std::vector<char>& getResponse();
@@ -47,7 +45,6 @@ class Response {
         void CGIhandler();
 
         void uploadFile();
-        void skipHeaders(std::ifstream inputFile);
 
     private:
         std::string path;
