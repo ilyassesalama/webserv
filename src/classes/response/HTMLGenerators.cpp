@@ -5,7 +5,7 @@ std::string generateHTMLStart(std::string path) {
 }
 
 std::string createAnchor(std::string name) {
-	return "<a href=\"#\" class=\"name\">" + name + "</a>";
+	return "<a href=\"" + name + "\" class=\"name\">" + name + "</a>";
 }
 
 std::string createParagraph(std::string lastUpdate) {

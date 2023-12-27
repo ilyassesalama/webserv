@@ -37,7 +37,7 @@ std::string getSingleValue(std::string value, size_t *startPos)
 	skipSpaces(value, &end);
 
 	if (value[end] == ';') end++;
-	else throw(Utils::WebservException("Error, directives must end with a semicolon"));
+	else throw(Utils::WebservException("Error, directives must end with a semi-colon"));
 
 	if (end + 1 != value.size() && value[end + 1] == ';') throw(Utils::WebservException("Error, there is a syntax error"));
 

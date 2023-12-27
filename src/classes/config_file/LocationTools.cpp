@@ -79,6 +79,6 @@ std::string getRouteDirectiveValue(std::string key, std::string file, size_t *st
 bool boolParser(std::string &value) {
 	std::string boolean = singleValueParser(value);
 	if (boolean != "on" && boolean != "off") throw (Utils::WebservException("Error, directory_listing can only be on or off"));
-	else if (boolean == "true") return true;
+	else if (boolean == "on") return true;
 	return false;
 }
