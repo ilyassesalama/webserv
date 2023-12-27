@@ -121,6 +121,7 @@ std::vector<std::string> getAllowedTypes() {
 	allowedTypes.push_back("text/html");
 	allowedTypes.push_back("text/css");
 	allowedTypes.push_back("application/javascript");
+	allowedTypes.push_back("application/json");
 	allowedTypes.push_back("image/jpeg");
 	allowedTypes.push_back("image/png");
 	allowedTypes.push_back("image/gif");
@@ -130,6 +131,11 @@ std::vector<std::string> getAllowedTypes() {
 	allowedTypes.push_back("video/mp4");
 	allowedTypes.push_back("application/octet-stream");
 	allowedTypes.push_back("text/plain");
+	allowedTypes.push_back("application/x-www-form-urlencoded");
+	allowedTypes.push_back("application/pdf");
+	allowedTypes.push_back("application/zip");
+	allowedTypes.push_back("application/gzip");
+	allowedTypes.push_back("audio/mp3");
 
 	return allowedTypes;
 }
@@ -209,7 +215,7 @@ void RequestParser::logParsedRequest(){
         Log::v("RequestParser: No body found");
     } else {
         Log::v("RequestParser: Parsed body:");
-        std::cout << this->body << "\n";
+        // std::cout << this->body << "\n";
     }
     if(this->parsingState.statusCode != 0 && this->parsingState.statusCode != 200 && this->parsingState.statusCode != 201){
         Log::e("RequestParser: Parsing failed with code " + String::to_string(this->parsingState.statusCode) + " and reason: " + this->parsingState.statusMessage);
