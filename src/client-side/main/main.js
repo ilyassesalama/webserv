@@ -8,6 +8,8 @@ const homePage = document.getElementById("home");
 const loginPage = document.getElementById("login");
 const uploadPage = document.getElementById("upload");
 
+const loginForm = document.getElementById("loginForm");
+
 const homeNavButton = document.getElementById("homeNavButton");
 const loginNavButton = document.getElementById("loginNavButton");
 const uploadNavButton = document.getElementById("uploadNavButton");
@@ -82,7 +84,8 @@ switchPage("home");
 
 const loginBtn = document.getElementById("login-btn");
 
-loginBtn.addEventListener("click", () => {
+loginForm.addEventListener("submit", e => {
+	e.preventDefault();
 	const username = document.getElementById("username").value;
 	const password = document.getElementById("password").value;
 
