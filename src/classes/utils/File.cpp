@@ -15,6 +15,37 @@ std::string File::getFileContent(const std::string &path){
     return content;
 }
 
+std::string File::getExtension(std::map<std::string, std::string> &headers) {
+	bool isContentType = Utils::isMapKeyExists(headers, "Content-Type");
+	if (!isContentType)	return "";
+
+    if (headers["Content-Type"] == "text/css") {
+        return ".css";
+    } else if(headers["Content-Type"] == "video/mp4") {
+        return ".mp4";
+    }else if(headers["Content-Type"] == "application/pdf") {
+        return ".pdf";
+    } else if (headers["Content-Type"] == "application/javascript") {
+        return ".js";
+    } else if (headers["Content-Type"] == "text/html") {
+        return ".html";
+    } else if (headers["Content-Type"] == "image/jpeg") {
+        return ".jpeg";
+    } else if (headers["Content-Type"] == "image/png") {
+        return ".png";
+    } else if (headers["Content-Type"] == "image/gif") {
+        return ".gif";
+    } else if (headers["Content-Type"] == "image/svg+xml") {
+        return ".svg";
+    } else if (headers["Content-Type"] == "image/x-icon") {
+        return ".ico";
+    } else if (headers["Content-Type"] == "font/ttf") {
+        return ".ttf";
+    } else {
+        return "";  // default
+    }
+}
+
 /*
     Adding a new allowed type to this list will require adding it
     to the list of allowed types in the std::vector<std::string> getAllowedTypes() method as well.
@@ -99,10 +130,20 @@ size_t File::getFileSize(std::string path) {
     return static_cast<size_t>(size);
 }
 
-void File::deleteFile(std::string path) {
-    if (remove(path.c_str()) != 0) {
-        throw(Utils::WebservException("Can't delete \"" + path + "\" due to " + std::string(strerror(errno))));
-    }
+void File::deleteLocation(std::string path) {
+	const char *finalPath = path.c_str();
+	char command[8] = "/bin/rm";
+	char parameters[4] = "-rf";
+	// delete using execve
+	int pid = fork();
+	if (pid == 0) {
+		char *args[] = {command, parameters, const_cast<char *>(finalPath), NULL};
+		execve(args[0], args, NULL);
+	} else if (pid > 0) {
+		waitpid(pid, NULL, 0);
+	} else {
+		throw Utils::WebservException("deleteLocation: Can't delete \"" + path + "\" due to " + std::string(strerror(errno)));
+	}
 }
 
 std::string File::generateFileName(std::string name) {
