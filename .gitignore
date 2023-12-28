@@ -33,3 +33,5 @@
 .DS_Store
 webserv
 webserverLogs.txt
+src/client-side/uploads/
+out
