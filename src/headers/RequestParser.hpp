@@ -28,6 +28,9 @@ class RequestParser {
 		std::string boundary;
 		bool isChunked;
 		std::string fileName;
+		std::string sizeBuffer;
+		std::string previousChunkCRLF;
+		bool isCRLF;
     public:
         RequestParser();
 
@@ -61,4 +64,7 @@ class RequestParser {
 		void getBoundaryContent(std::string &body);
 		bool parseContentType();
 		std::string getContentDisposition(std::map<std::string, std::string> &headers);
+		size_t getChunkSize(std::string &body);
+		void escapeCRLF(std::string &body);
+		void openFile(std::fstream &myFile);
 };
