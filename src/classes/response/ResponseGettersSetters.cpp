@@ -42,7 +42,7 @@ void Response::uploadFile() {
 
 bool Response::isLocationHasCGI() {
     if(!this->currentRoute->cgi_extension.empty()) {
-        if(std::find(this->currentRoute->allowed_methods.begin(),this->currentRoute->allowed_methods.end(),this->method) == this->currentRoute->allowed_methods.end()) {
+\        if(std::find(this->currentRoute->allowed_methods.begin(),this->currentRoute->allowed_methods.end(), this->request->getRequestLine()["method"]) == this->currentRoute->allowed_methods.end()) {
             if(FULL_LOGGING_ENABLED)
                 Log::d("The CGI method is not supported at this location");
             return(false);
