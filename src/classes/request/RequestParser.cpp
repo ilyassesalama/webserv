@@ -18,7 +18,7 @@ void RequestParser::nullOutVars(){
     this->parsingState.statusCode = 0;
     this->parsingState.statusMessage = "";
 	this->chunkRemainder = 0;
-	this->isChunked = false;
+	this->isFirstRequest = true;
 	this->isCRLF = false;
 	this->isRequestChunked = false;
 	this->isRequestMultipart = false;
@@ -47,9 +47,9 @@ void RequestParser::mergeRequestChunks(std::string &requestInput) {
         parseRequestBody(requestData);
         if(FULL_LOGGING_ENABLED) Log::v("Parsing request body finished with status: " + String::to_string(parsingState.bodyOk));
     }
-	if (!this->isChunked) {
+	if (this->isFirstRequest) {
     	verifyIfRequestIsSafe(); // can only be called once all the parsing is done
-		this->isChunked = this->isRequestChunked || this->isRequestMultipart ? true : false;
+		this->isFirstRequest = false;
 	}
 	if (this->getRequestLine()["method"] == "GET" || this->getRequestLine()["method"] == "DELETE")
     	this->parsingState.ok = parsingState.headLineOk && parsingState.headsOk; // don't care about the body since it's optional
@@ -195,15 +195,15 @@ void RequestParser::parseRequestParams(std::string &requestData){
     }
 }
 
-bool uploadSingleFile(std::map<std::string, std::string> headers, std::string &fileName, std::string body) {
+void RequestParser::uploadSingleFile(std::map<std::string, std::string> headers, std::string &fileName, std::string body) {
 	fileName = File::generateFileName("uploaded") + File::getExtension(headers);
 	std::fstream myFile(File::getWorkingDir() + "/uploads/" + fileName, std::ios::binary | std::ios::app);
-	if (!myFile.is_open())
-		return false;
+	if (!myFile.is_open()) {
+		this->parsingState.ok = false;
+		throw std::runtime_error("Error opening file");
+	}
 
 	myFile << body;
-
-	return true;
 }
 
 /*
@@ -213,30 +213,31 @@ void RequestParser::parseRequestBody(std::string &requestData){
 
 	size_t found = requestData.find("\r\n\r\n") + 4;
 
+	std::string requestBody = this->isFirstRequest ? requestData.substr(found) : requestData;
+
 	if (!isRequestChunked && !isRequestMultipart) {
 		this->body = requestData.substr(found);
-	} else if (!this->isChunked) {
-		std::string firstRequestBody = requestData.substr(found);
+	} else if (isRequestChunked) {
 
-		if (isRequestMultipart) {
+		if (this->isFirstRequest)
+			this->fileName = File::generateFileName("uploaded") + File::getExtension(headers);
+
+		getChunkedData(requestBody);
+
+	}
+	
+	if (isRequestMultipart) {
+
+		if (this->isFirstRequest) {
 			getBoundary(this->headers["Content-Type"]);
 			this->fileName = File::generateFileName("boundary");
-			getBoundaryContent(firstRequestBody);
-		} else if (isRequestChunked) {
-			this->fileName = File::generateFileName("uploaded") + File::getExtension(headers);
-			getChunkedData(firstRequestBody);
 		}
-	} else {
-		if (isRequestMultipart)
-			getBoundaryContent(requestData);
-		else if (isRequestChunked)
-			getChunkedData(requestData);
+		getBoundaryContent(requestBody);
 	}
 
 	if(!isRequestChunked && !isRequestMultipart && this->body.length() == String::to_size_t(getHeaders()["Content-Length"])) {
-		if (!uploadSingleFile(this->headers, this->fileName, this->body)) {
-			this->parsingState.ok = false;
-			return ;
+		if (this->requestLine["method"] == "POST") {
+			uploadSingleFile(this->headers, this->fileName, this->body);
 		}
         parsingState.bodyOk = true;
     }

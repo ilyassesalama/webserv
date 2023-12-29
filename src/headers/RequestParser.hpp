@@ -26,13 +26,13 @@ class RequestParser {
 		size_t chunkRemainder;
 
 		std::string boundary;
-		bool isChunked;
 		std::string fileName;
 		std::string sizeBuffer;
 		std::string previousChunkCRLF;
 		bool isCRLF;
 		bool isRequestChunked;
 		bool isRequestMultipart;
+		bool isFirstRequest;
     public:
         RequestParser();
 
@@ -69,4 +69,5 @@ class RequestParser {
 		size_t getChunkSize(std::string &body);
 		void escapeCRLF(std::string &body);
 		void openFile(std::fstream &myFile);
+		void uploadSingleFile(std::map<std::string, std::string> headers, std::string &fileName, std::string body);
 };
