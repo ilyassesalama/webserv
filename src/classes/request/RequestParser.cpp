@@ -20,6 +20,8 @@ void RequestParser::nullOutVars(){
 	this->chunkRemainder = 0;
 	this->isChunked = false;
 	this->isCRLF = false;
+	this->isRequestChunked = false;
+	this->isRequestMultipart = false;
 }
 
 /*
@@ -27,9 +29,10 @@ void RequestParser::nullOutVars(){
     to receive and merge the final full request.
 */
 void RequestParser::mergeRequestChunks(std::string &requestInput) {
-	if (this->headers.empty())
+
+	if (this->headers.empty() || (!this->isRequestChunked && !this->isRequestMultipart))
     	this->requestData.append(requestInput);
-	else if (Utils::isMapKeyExists(this->headers, "Transfer-Encoding") || (Utils::isMapKeyExists(this->headers, "Content-Type") && this->headers["Content-Type"].find("multipart/form-data") != std::string::npos))
+	else if (this->isRequestChunked || this->isRequestMultipart)
 		this->requestData = requestInput;
 
 	if(!parsingState.headLineOk && (requestData.find("\r\n") != std::string::npos)) {
@@ -46,12 +49,12 @@ void RequestParser::mergeRequestChunks(std::string &requestInput) {
     }
 	if (!this->isChunked) {
     	verifyIfRequestIsSafe(); // can only be called once all the parsing is done
-		this->isChunked = Utils::isMapKeyExists(this->headers, "Transfer-Encoding") || (Utils::isMapKeyExists(this->headers, "Content-Type") && this->headers["Content-Type"].find("multipart/form-data") != std::string::npos) ? true : false;
+		this->isChunked = this->isRequestChunked || this->isRequestMultipart ? true : false;
 	}
 	if (this->getRequestLine()["method"] == "GET" || this->getRequestLine()["method"] == "DELETE")
     	this->parsingState.ok = parsingState.headLineOk && parsingState.headsOk; // don't care about the body since it's optional
 	else
-    	this->parsingState.ok = parsingState.headLineOk && parsingState.headsOk && parsingState.bodyOk; // don't care about the body since it's optional
+    this->parsingState.ok = parsingState.headLineOk && parsingState.headsOk && parsingState.bodyOk; // don't care about the body since it's optional
     Log::d("Request parsing finished with status: " + String::to_string(parsingState.ok));
     if (parsingState.ok && FULL_LOGGING_ENABLED) {
         logParsedRequest();
@@ -64,12 +67,12 @@ void RequestParser::mergeRequestChunks(std::string &requestInput) {
 */
 void RequestParser::verifyIfRequestIsSafe(){
 
-	if (Utils::isMapKeyExists(this->headers, "Transfer-Encoding") && this->headers["Transfer-Encoding"] != "chunked") {
+	if (this->isRequestChunked) {
         this->parsingState.statusCode = 501;
         this->parsingState.statusMessage = "Not Implemented";
         return;
     }
-    if(this->requestLine["method"] == "POST" && (!Utils::isMapKeyExists(this->headers, "Content-Length") && !Utils::isMapKeyExists(this->headers, "Transfer-Encoding") && !(Utils::isMapKeyExists(this->headers, "Content-Type") && this->headers["Content-Type"].find("multipart/form-data") != std::string::npos))){
+    if(this->requestLine["method"] == "POST" && (!Utils::isMapKeyExists(this->headers, "Content-Length") && !this->isRequestChunked && !this->isRequestMultipart)){
 		this->parsingState.statusCode = 400;
         this->parsingState.statusMessage = "Bad Request";
         return;
@@ -161,6 +164,9 @@ void RequestParser::parseRequestHeaders(std::string &requestData) {
     }
     this->headers = keyValuePairs;
     parsingState.headsOk = true;
+
+	this->isRequestChunked = Utils::isMapKeyExists(this->headers, "Transfer-Encoding") && this->headers["Transfer-Encoding"] == "chunked" ? true : false;
+	this->isRequestMultipart = Utils::isMapKeyExists(this->headers, "Content-Type") && this->headers["Content-Type"].find("multipart/form-data") != std::string::npos ? true : false;
 }
 
 /*
@@ -204,29 +210,30 @@ bool uploadSingleFile(std::map<std::string, std::string> headers, std::string &f
     Last check by the request parser, stores the body if it exists.
 */
 void RequestParser::parseRequestBody(std::string &requestData){
-	size_t found = requestData.find("\r\n\r\n");
-	this->body += requestData.substr(found + 4);
 
-	if (!this->isChunked) {
-		std::string firstRequestBody = requestData.substr(found + 4);
+	size_t found = requestData.find("\r\n\r\n") + 4;
 
-		if (Utils::isMapKeyExists(this->headers, "Content-Type") && this->headers["Content-Type"].find("multipart/form-data") != std::string::npos) {
+	if (!isRequestChunked && !isRequestMultipart) {
+		this->body = requestData.substr(found);
+	} else if (!this->isChunked) {
+		std::string firstRequestBody = requestData.substr(found);
+
+		if (isRequestMultipart) {
 			getBoundary(this->headers["Content-Type"]);
 			this->fileName = File::generateFileName("boundary");
 			getBoundaryContent(firstRequestBody);
-
-		} else if (Utils::isMapKeyExists(this->headers, "Transfer-Encoding")) {
+		} else if (isRequestChunked) {
 			this->fileName = File::generateFileName("uploaded") + File::getExtension(headers);
 			getChunkedData(firstRequestBody);
 		}
-	} else if (Utils::isMapKeyExists(this->headers, "Transfer-Encoding") || (Utils::isMapKeyExists(this->headers, "Content-Type") && this->headers["Content-Type"].find("multipart/form-data") != std::string::npos)) {
-		if (Utils::isMapKeyExists(this->headers, "Content-Type") && this->headers["Content-Type"].find("multipart/form-data") != std::string::npos)
+	} else {
+		if (isRequestMultipart)
 			getBoundaryContent(requestData);
-		else
+		else if (isRequestChunked)
 			getChunkedData(requestData);
 	}
-	
-	if(!Utils::isMapKeyExists(this->headers, "Transfer-Encoding") && !(Utils::isMapKeyExists(this->headers, "Content-Type") && this->headers["Content-Type"].find("multipart/form-data") != std::string::npos) && requestData.length() - found - 4 == String::to_size_t(getHeaders()["Content-Length"])) {
+
+	if(!isRequestChunked && !isRequestMultipart && this->body.length() == String::to_size_t(getHeaders()["Content-Length"])) {
 		if (!uploadSingleFile(this->headers, this->fileName, this->body)) {
 			this->parsingState.ok = false;
 			return ;

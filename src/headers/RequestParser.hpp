@@ -31,6 +31,8 @@ class RequestParser {
 		std::string sizeBuffer;
 		std::string previousChunkCRLF;
 		bool isCRLF;
+		bool isRequestChunked;
+		bool isRequestMultipart;
     public:
         RequestParser();
 
