@@ -29,6 +29,7 @@ class RequestParser {
 		std::string fileName;
 		std::string sizeBuffer;
 		std::string previousChunkCRLF;
+
 		bool isCRLF;
 		bool isRequestChunked;
 		bool isRequestMultipart;
@@ -55,7 +56,8 @@ class RequestParser {
         const std::map<std::string, std::string> &getParams();
         const std::string &getBody();
         const ParsingState &getParsingState();
-        std::string& getRequestData();
+        std::string &getRequestData();
+        std::string &getFileName();
 
         bool isPathAccessible();
         bool isMethodAllowed();
@@ -69,5 +71,4 @@ class RequestParser {
 		size_t getChunkSize(std::string &body);
 		void escapeCRLF(std::string &body);
 		void openFile(std::fstream &myFile);
-		void uploadSingleFile(std::map<std::string, std::string> headers, std::string &fileName, std::string body);
 };

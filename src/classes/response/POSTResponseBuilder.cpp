@@ -1,33 +1,19 @@
 #include "../../../webserv.hpp"
 
-void uploadRequest() {
-
-}
-
-bool isTransferEncoding(std::map<std::string, std::string>&headers) {
-	if (headers.find("Transfer-Encoding") != headers.end()) {
-		return headers["Transfer-Encoding"] == "chunked" ? true : false;
+void uploadSingleFile(std::map<std::string, std::string> headers, std::string &fileName, std::string body) {
+	fileName = File::generateFileName("uploaded") + File::getExtension(headers);
+	std::fstream myFile(File::getWorkingDir() + "/uploads/" + fileName, std::ios::binary | std::ios::app);
+	if (!myFile.is_open()) {
+		throw std::runtime_error("Error opening file");
 	}
-	return false;
-}
-
-std::string getBody(const std::string &body) {
-	size_t sizePos = body.find("0123456789");
-	if (sizePos == std::string::npos)
-	 return "";
-
-	size_t sizeEndPos = sizePos;
-	for (sizeEndPos = sizePos; sizeEndPos < body.size(); sizeEndPos++) {
-		if (!isdigit(body[sizeEndPos]))
-			break ;
-	}
-
-	std::string bodySize = body.substr(sizePos, sizeEndPos);
-
-	return body.substr(sizeEndPos);
+	myFile << body;
 }
 
 void Response::POSTResponseBuilder() {
+	this->isCGI = this->isLocationHasCGI();
+	if (!this->isCGI) {
+		uploadSingleFile(this->request->getHeaders(), this->request->getFileName(), this->request->getBody());
+	}
 	this->responseBody = "";
     this->setHeaders();
     this->setResponseLine();

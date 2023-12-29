@@ -1,48 +1,8 @@
 #include "../../../webserv.hpp"
 
-// REVIEW: THE FOLLOWING VARIABLES ARE SUPPOSED FOR TESTING PURPOSES ONLY (?)
-// MUST BE CHANGED LATER
-
-std::string fileToUpload = "/Users/bel-kala/Desktop/webserv/file_1703410552468188_boundary";
-std::string boundaryStart = "--------------------------e724ea100db92128\r";
-std::string boundaryEnd = "--------------------------e724ea100db92128--\r";
-int lineCount = 500;
-
-void Response::uploadFile() {
-    std::ifstream inputFile(fileToUpload.c_str(), std::ios::binary);
-    std::ofstream outputFile("output.mp4", std::ios::binary);
-    std::string line;   
-    int count = 0;
-    
-    inputFile.seekg((*this).uploadFileOffset);
-    if(!inputFile.is_open() || !outputFile.is_open()) {
-        Log::e("Error Opening The File FAKYO");
-        throw(Utils::WebservException("halaloya"));
-    }
-
-    while(count < lineCount && std::getline(inputFile,line)) {
-        if(line == boundaryStart) {
-            while(std::getline(inputFile, line)) {
-                if(line == "\r")
-                    break;
-            }
-        }
-        else if(line == boundaryEnd) {
-            Log::d("Upload Finished");
-            break;
-        }
-        else {
-            outputFile << line + '\n';
-            count++;
-        }
-    }
-
-    this->uploadFileOffset = inputFile.tellg();
-}
-
 bool Response::isLocationHasCGI() {
     if(!this->currentRoute->cgi_extension.empty()) {
-       if(std::find(this->currentRoute->allowed_methods.begin(),this->currentRoute->allowed_methods.end(), this->request->getRequestLine()["method"]) == this->currentRoute->allowed_methods.end()) {
+       if(std::find(this->currentRoute->allowed_methods.begin(), this->currentRoute->allowed_methods.end(), this->request->getRequestLine()["method"]) == this->currentRoute->allowed_methods.end()) {
             if(FULL_LOGGING_ENABLED)
                 Log::d("The CGI method is not supported at this location");
             return(false);

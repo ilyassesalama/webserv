@@ -195,22 +195,10 @@ void RequestParser::parseRequestParams(std::string &requestData){
     }
 }
 
-void RequestParser::uploadSingleFile(std::map<std::string, std::string> headers, std::string &fileName, std::string body) {
-	fileName = File::generateFileName("uploaded") + File::getExtension(headers);
-	std::fstream myFile(File::getWorkingDir() + "/uploads/" + fileName, std::ios::binary | std::ios::app);
-	if (!myFile.is_open()) {
-		this->parsingState.ok = false;
-		throw std::runtime_error("Error opening file");
-	}
-
-	myFile << body;
-}
-
 /*
     Last check by the request parser, stores the body if it exists.
 */
 void RequestParser::parseRequestBody(std::string &requestData){
-
 	size_t found = requestData.find("\r\n\r\n") + 4;
 
 	std::string requestBody = this->isFirstRequest ? requestData.substr(found) : requestData;
@@ -236,9 +224,7 @@ void RequestParser::parseRequestBody(std::string &requestData){
 	}
 
 	if(!isRequestChunked && !isRequestMultipart && this->body.length() == String::to_size_t(getHeaders()["Content-Length"])) {
-		if (this->requestLine["method"] == "POST") {
-			uploadSingleFile(this->headers, this->fileName, this->body);
-		}
+		
         parsingState.bodyOk = true;
     }
 }
