@@ -25,4 +25,7 @@ struct ClientProfile {
 
     RequestParser parser;
     Response response;
+
+	std::string requestBuffered;
+	bool isHeaders;
 };
