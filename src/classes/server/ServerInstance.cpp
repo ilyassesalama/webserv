@@ -114,9 +114,12 @@ int ServerInstance::receiveRequest(int clientFd) {
 
     memset(buffer, 0, sizeof(buffer));
     bytesRead = recv(clientFd, buffer, sizeof(buffer), 0);
-    if(bytesRead > 0) receivedRequest.append(buffer, bytesRead);
+    if(bytesRead > 0) {
+		receivedRequest.append(buffer, bytesRead);
+	}
+	
     if(bytesRead <= 0) {
-        Log::e("Client " + String::to_string(clientFd) + " closed the connection, in other words: " + std::string(strerror(errno)));
+        Log::e("Client closed the connection");
         this->dropClient(clientFd);
         return(DROP_CLIENT);
     }
@@ -125,12 +128,21 @@ int ServerInstance::receiveRequest(int clientFd) {
 	client->connectionTime = std::time(0);
 	client->parser.setServerInformation((this->serverInformations));
 
-    try {
-        client->parser.mergeRequestChunks(receivedRequest);
-    } catch (Utils::WebservException &e) {
-        Log::e(e.what());
-        return(INVALIDE_REQUEST);
-    }
+	client->requestBuffered += receivedRequest;
+
+	if (client->requestBuffered.find("\r\n\r\n") != std::string::npos) {
+		try {
+			if (client->isHeaders) {
+				client->parser.mergeRequestChunks(client->requestBuffered);
+				client->isHeaders = false;
+			}
+			else
+				client->parser.mergeRequestChunks(receivedRequest);
+		} catch (Utils::WebservException &e) {
+			Log::e(e.what());
+			return(INVALIDE_REQUEST);
+		}
+	}
     if(client->parser.getParsingState().ok) {
         client->request = client->parser.getRequestData();
 		client->response.setStatusCode(client->parser.getParsingState().statusCode);
@@ -142,6 +154,8 @@ int ServerInstance::receiveRequest(int clientFd) {
         client->request.clear();
 		client->parser.nullOutVars();
         client->parser.getRequestData().clear();
+		client->requestBuffered.clear();
+		client->isHeaders = true;
         return(FULL_REQUEST_RECEIVED);
     }
     return(INVALIDE_REQUEST);
