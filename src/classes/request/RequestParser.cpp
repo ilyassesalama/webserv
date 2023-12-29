@@ -54,7 +54,7 @@ void RequestParser::mergeRequestChunks(std::string &requestInput) {
 	if (this->getRequestLine()["method"] == "GET" || this->getRequestLine()["method"] == "DELETE")
     	this->parsingState.ok = parsingState.headLineOk && parsingState.headsOk; // don't care about the body since it's optional
 	else
-    this->parsingState.ok = parsingState.headLineOk && parsingState.headsOk && parsingState.bodyOk; // don't care about the body since it's optional
+		this->parsingState.ok = parsingState.headLineOk && parsingState.headsOk && parsingState.bodyOk; // don't care about the body since it's optional
     Log::d("Request parsing finished with status: " + String::to_string(parsingState.ok));
     if (parsingState.ok && FULL_LOGGING_ENABLED) {
         logParsedRequest();
@@ -215,7 +215,7 @@ void RequestParser::parseRequestBody(std::string &requestData){
 
 	std::string requestBody = this->isFirstRequest ? requestData.substr(found) : requestData;
 
-	if (!isRequestChunked && !isRequestMultipart) {
+	if (!isRequestChunked) {
 		this->body = requestData.substr(found);
 	} else if (isRequestChunked) {
 

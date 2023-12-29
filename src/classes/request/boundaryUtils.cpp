@@ -17,24 +17,11 @@ void RequestParser::getBoundary(std::string contentType) {
 */
 bool isEndBoundary(std::string &body, std::string boundary) {
 	boundary = "--" + boundary + "--";
-	size_t endPos = body.rfind(boundary);
-	size_t CRLF = body.rfind("\r\n");
-	if (CRLF == std::string::npos) {
-		CRLF = body.rfind("\n");
-		if (CRLF == std::string::npos)
-			CRLF = 0;
-		else if (CRLF == body.size() - 1)
-			CRLF = 1;
-	} else {
-		if (CRLF == body.size() - 2)	
-			CRLF = 2;
-		else
-			CRLF = 0;
-	}
-	if (endPos == std::string::npos)
-		return false;
-	else if (endPos == body.size() - boundary.size() - CRLF)
+	size_t boundaryPos = body.rfind(boundary);
+
+	if (boundaryPos == body.size() - boundary.size() - 2)
 		return true;
+
 	return false;
 }
 
@@ -46,14 +33,13 @@ void RequestParser::getBoundaryContent(std::string &body) {
 	std::fstream buffer("/tmp/" + this->fileName, std::ios::app);
 	if (!buffer.is_open()) {
 		this->parsingState.ok = false;
-		return ;
+		throw std::runtime_error("Error opening file");
 	}
 
 	buffer << body;
 
-	if (isEndBoundary(body, this->boundary)) {
+	if (isEndBoundary(body, this->boundary))
 		this->parsingState.bodyOk = true;
-	}
 
 	buffer.close();
 }
