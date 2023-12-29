@@ -68,6 +68,9 @@ void ConnectionsManager::checkClientTimeOut() {
 void ConnectionsManager::acceptNewIncommingConnections(ServerInstance *serverId) {
     ClientProfile client;
 
+	client.requestBuffered = "";
+	client.isHeaders = true;
+
     client.address_length = sizeof(client.address);
     client.SocketFD = accept(serverId->getListenSocketFd(),(struct sockaddr*)&client.address,&client.address_length);
     if(client.SocketFD < 0) {
