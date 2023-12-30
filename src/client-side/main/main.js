@@ -78,10 +78,6 @@ function switchPage(page){
 	}, 300);
 }
 
-
-switchPage("home");
-
-
 const loginBtn = document.getElementById("login-btn");
 
 loginForm.addEventListener("submit", e => {
@@ -109,6 +105,17 @@ loginForm.addEventListener("submit", e => {
 		console.log(error);
 	});
 });
+
+function checkLogin() {
+	if (document.cookie.includes("logged_in=true")) {
+		alert("You are already logged in!");
+	} else {
+		console.log("Not logged in.");
+	}
+}
+
+switchPage("home");
+checkLogin();
 
 // --------------------- text animation stuff --------------------- //
 
