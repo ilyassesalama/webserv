@@ -73,4 +73,5 @@ class RequestParser {
 		size_t getChunkSize(std::string &body);
 		void escapeCRLF(std::string &body);
 		void openFile(std::fstream &myFile);
+        std::string getBoundaryInfos(int a);
 };

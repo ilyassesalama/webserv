@@ -2,6 +2,12 @@
 
 // getters
 
+std::string RequestParser::getBoundaryInfos(int a) {
+    if(a == 0)
+        return(this->boundary);
+    return(this->fileName);
+}
+
 t_route* RequestParser::getRoute() {
     return(this->route);
 }

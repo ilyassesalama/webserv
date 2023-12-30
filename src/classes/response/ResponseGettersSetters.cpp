@@ -161,3 +161,7 @@ void Response::setServingState(bool status) {
 void Response::setBytesSent(size_t bytes) {
     this->bytesSent = bytes;
 }
+
+bool Response::isUploading() {
+    return(this->uploading);
+}

@@ -15,6 +15,11 @@ Response::Response() {
     this->bytesSent = 0;
     this->servingState = false;
     this->uploadFileOffset = 0;
+    this->uploading = false;
+    this->uploadFileOffset = 0;
+    this->boundary = "";
+    this->boundaryFilePath = "";
+    this->uploadFilePath = "";
 }
 
 void Response::responseBuilder() {
