@@ -32,8 +32,9 @@ void RequestParser::getBoundaryContent(std::string &body) {
 
 	std::fstream buffer("/tmp/" + this->fileName, std::ios::app);
 	if (!buffer.is_open()) {
-		this->parsingState.ok = false;
-		throw std::runtime_error("Error opening file");
+		this->parsingState.bodyOk = true;
+		this->parsingState.statusCode = 500;
+		throw Utils::WebservException("Error opening file");
 	}
 
 	buffer << body;

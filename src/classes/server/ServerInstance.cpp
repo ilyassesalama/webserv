@@ -143,9 +143,10 @@ int ServerInstance::receiveRequest(int clientFd) {
 				client->parser.mergeRequestChunks(receivedRequest);
 		} catch (Utils::WebservException &e) {
 			Log::e(e.what());
-			return(INVALIDE_REQUEST);
+			// return(INVALIDE_REQUEST); // TODO: check if this is needed
 		}
 	}
+
     if(client->parser.getParsingState().ok) {
         client->request = client->parser.getRequestData();
 		client->response.setStatusCode(client->parser.getParsingState().statusCode);

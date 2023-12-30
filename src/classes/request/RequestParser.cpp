@@ -30,10 +30,7 @@ void RequestParser::nullOutVars(){
 */
 void RequestParser::mergeRequestChunks(std::string &requestInput) {
 
-	if (this->headers.empty() || (!this->isRequestChunked && !this->isRequestMultipart))
-    	this->requestData.append(requestInput);
-	else if (this->isRequestChunked || this->isRequestMultipart)
-		this->requestData = requestInput;
+	this->requestData = requestInput;
 
 	if(!parsingState.headLineOk && (requestData.find("\r\n") != std::string::npos)) {
 		parseRequestLine(requestData);
@@ -43,14 +40,17 @@ void RequestParser::mergeRequestChunks(std::string &requestInput) {
 		parseRequestHeaders(requestData);
 		if(FULL_LOGGING_ENABLED) Log::v("Parsing request headers finished with status: " + String::to_string(parsingState.headsOk));
 	}
+	if (this->isFirstRequest) {
+    	verifyIfRequestIsSafe(); // can only be called once all the parsing is done
+		if (this->parsingState.statusCode != 200) {
+			this->parsingState.ok = true;
+			return;
+		}
+	}
     if(parsingState.headsOk && !parsingState.bodyOk) {
         parseRequestBody(requestData);
         if(FULL_LOGGING_ENABLED) Log::v("Parsing request body finished with status: " + String::to_string(parsingState.bodyOk));
     }
-	if (this->isFirstRequest) {
-    	verifyIfRequestIsSafe(); // can only be called once all the parsing is done
-		this->isFirstRequest = false;
-	}
 	if (this->getRequestLine()["method"] == "GET" || this->getRequestLine()["method"] == "DELETE")
     	this->parsingState.ok = parsingState.headLineOk && parsingState.headsOk; // don't care about the body since it's optional
 	else
@@ -67,7 +67,7 @@ void RequestParser::mergeRequestChunks(std::string &requestInput) {
 */
 void RequestParser::verifyIfRequestIsSafe(){
 
-	if (!this->isRequestChunked) {
+	if (Utils::isMapKeyExists(this->headers, "Transfer-Encoding") && this->headers["Transfer-Encoding"] != "chunked") {
         this->parsingState.statusCode = 501;
         this->parsingState.statusMessage = "Not Implemented";
         return;
@@ -195,6 +195,20 @@ void RequestParser::parseRequestParams(std::string &requestData){
     }
 }
 
+size_t getFileLength(ParsingState &parsingState, std::string fileName) {
+	std::fstream myFile(fileName, std::ios::binary | std::ios::app);
+	if (!myFile.is_open()) {
+		parsingState.ok = true;
+		parsingState.statusCode = 500;
+		throw Utils::WebservException("Error opening file");
+	}
+	myFile.seekg(0, std::ios::end);
+    std::size_t length = myFile.tellg();
+    myFile.seekg(0, std::ios::beg);
+	myFile.close();
+	return length;
+}
+
 /*
     Last check by the request parser, stores the body if it exists.
 */
@@ -204,7 +218,16 @@ void RequestParser::parseRequestBody(std::string &requestData){
 	std::string requestBody = this->isFirstRequest ? requestData.substr(found) : requestData;
 
 	if (!isRequestChunked) {
-		this->body = requestData.substr(found);
+		if (this->isFirstRequest)
+			this->fileName = File::generateFileName("uploaded") + File::getExtension(headers);
+		std::fstream myFile(File::getWorkingDir() + this->route->upload_path + this->fileName, std::ios::binary | std::ios::app);
+		if (!myFile.is_open()) {
+			this->parsingState.ok = true;
+			this->parsingState.statusCode = 500;
+			throw Utils::WebservException("Error opening file");
+		}
+		myFile << requestBody;
+		myFile.close();
 	} else if (isRequestChunked) {
 
 		if (this->isFirstRequest)
@@ -223,8 +246,9 @@ void RequestParser::parseRequestBody(std::string &requestData){
 		getBoundaryContent(requestBody);
 	}
 
-	if(!isRequestChunked && !isRequestMultipart && this->body.length() == String::to_size_t(getHeaders()["Content-Length"])) {
-		
+	this->isFirstRequest = false;
+
+	if(!isRequestChunked && !isRequestMultipart && getFileLength(this->parsingState, File::getWorkingDir() + this->route->upload_path + this->fileName) == String::to_size_t(getHeaders()["Content-Length"])) {
         parsingState.bodyOk = true;
     }
 }
