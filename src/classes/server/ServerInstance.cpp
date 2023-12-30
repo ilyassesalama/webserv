@@ -4,7 +4,7 @@ ServerInstance::ServerInstance(s_server &serverInfos): backLog(200) {
 
     setListenAdressPort(serverInfos);
     this->duplicated = false;
-    this->serverName = serverInfos.server_names[0];
+    this->serverName = serverInfos.server_name;
     this->serverInformations = &serverInfos;
     this->listenSocket = -1;
     this->bindAddress = NULL;
@@ -31,16 +31,16 @@ std::string ServerInstance::getServerName() {
 
 
 void ServerInstance::setListenAdressPort(t_server &serverInfos) {
-    this->listenPort =  serverInfos.listen[0].port;
+    this->listenPort =  serverInfos.listen.port;
     if(this->listenPort > 65535) {
-        Log::e("Port Out Of Range " + String::to_string(serverInfos.listen[0].port) + " ... ");
+        Log::e("Port Out Of Range " + String::to_string(serverInfos.listen.port) + " ... ");
         (*this).initialized = false;
         return;
     }
-    this->listenAdress = serverInfos.listen[0].host;
+    this->listenAdress = serverInfos.listen.host;
     if(String::isIpFormCorrect(this->listenAdress) != true) {
         (*this).initialized = false;
-        Log::e("Invalid Host Address " + serverInfos.listen[0].host + " ... ");
+        Log::e("Invalid Host Address " + serverInfos.listen.host + " ... ");
     }
 }
 

@@ -40,13 +40,15 @@ typedef struct s_route {
 } t_route;
 
 typedef struct s_server {
-	std::vector<t_listen>listen;
-	std::vector<std::string>server_names;
+	t_listen listen;
+	std::string server_name;
 	std::vector<t_error_page>error_pages;
 	size_t client_body_size;
 	std::string body_size_unit;
 
 	bool is_client_body_size;
+	bool is_listen;
+	bool is_server_name;
 
 	// Location specific directives
 
@@ -75,6 +77,7 @@ class ConfigurationFile {
 
 void curlyBracesChecker( std::string file, size_t startIndex, size_t endIndex );
 void checkBetweenServers( std::string file, int startIndex );
+bool checkDuplicateServers(std::list<t_server> &servers, t_server &server);
 
 /* general tools */
 

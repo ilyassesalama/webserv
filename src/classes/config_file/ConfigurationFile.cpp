@@ -12,14 +12,28 @@ bool findVal( std::vector<t_error_page>error_pages, int val ) {
 void ConfigurationFile::parseValue( std::string key, std::string value, t_server *server ) {
 	
 	if (key == "listen") {
-		t_listen listen = parseListen( value );
-		server->listen.push_back(listen);
+		if (!server->is_listen) {
+			t_listen listen = parseListen( value );
+			server->listen = listen;
+			server->is_listen = true;
+		} else {
+			Log::w("Warning, there is more than one listen directive");
+		}
 	}
 	else if (key == "server_name") {
-		server->server_names = multipleValuesParser( value );
-	} else if (key == "client_body_size" && !server->is_client_body_size) {
-		parseClientBodySize(&server->client_body_size, server->body_size_unit, value);
-		server->is_client_body_size = true;
+		if (!server->is_server_name) {
+			server->server_name = singleValueParser( value );
+			server->is_server_name = true;
+		} else {
+			Log::e("Warning, there is more than one server_name directive");
+		}
+	} else if (key == "client_body_size") {
+		if (!server->is_client_body_size) {
+			parseClientBodySize(&server->client_body_size, server->body_size_unit, value);
+			server->is_client_body_size = true;
+		} else {
+			Log::e("Warning, there is more than one client_body_size directive");
+		}
 	} else if (key == "error_page") {
 
 		std::vector<t_error_page>errors = parseErrorPage( value );
@@ -122,6 +136,10 @@ void ConfigurationFile::handleDirectives( std::string file, t_server server ) {
 	std::string directiveValue;
 
 	server.is_client_body_size = false;
+	server.is_listen = false;
+	server.is_server_name = false;
+	server.listen.port = 8080;
+	server.listen.host = "0.0.0.0";
 
 	for (size_t i = ++startIndex; i < endIndex; i++) {
 
@@ -144,6 +162,7 @@ void ConfigurationFile::handleDirectives( std::string file, t_server server ) {
 
 			if (isRouteAlreadyExist(server, directiveValue)) {
 				skipRoute(&file[i], &i);
+				Log::e("Error, there is already a route with the same path");
 			} else {
 				skipSpaces(file, &i);
 
@@ -158,12 +177,14 @@ void ConfigurationFile::handleDirectives( std::string file, t_server server ) {
 
 	}
 
-	if (server.server_names.size() == 0) {
+	if (server.server_name.empty()) {
 		throw (Utils::WebservException("Error, server_name directive must have at least one value"));
 	}
-
-	this->ConfigFileServers.push_back(server);
-
+	
+	if (checkDuplicateServers(this->ConfigFileServers, server))
+		this->ConfigFileServers.push_back(server);
+	else
+		Log::w("Warning, there is already a server with the same listen & server_name values");
 }
 
 void ConfigurationFile::configFileParsing( void ) {

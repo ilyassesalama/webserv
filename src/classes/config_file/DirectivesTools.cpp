@@ -253,5 +253,5 @@ std::vector<t_error_page> parseErrorPage(std::string value)
 
 std::string getDirectiveValue(std::string key, std::string file, size_t *startIndex)
 {
-	return key != "error_page" && key != "server_name" ? getSingleValue(file, startIndex) : getMultipleValues(file, startIndex);
+	return key != "error_page" ? getSingleValue(file, startIndex) : getMultipleValues(file, startIndex);
 }

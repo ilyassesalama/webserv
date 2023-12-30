@@ -36,3 +36,15 @@ void checkBetweenServers( std::string file, int endIndex ) {
 	}
 
 }
+
+bool checkDuplicateServers(std::list<t_server> &servers, t_server &server) {
+
+	std::list<t_server>::iterator it;
+
+	for (it = servers.begin(); it != servers.end(); it++) {
+		if (it->listen.host == server.listen.host && it->listen.port == server.listen.port && it->server_name == server.server_name)
+			return false;
+	}
+	return true;
+
+}
