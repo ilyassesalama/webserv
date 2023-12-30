@@ -238,7 +238,6 @@ int ServerInstance::sendResponse(int clientFd) {
     client->connectionTime = std::time(0);
     if(client->response.isUploading()) {
         client->response.uploadFile();
-        std::cout << "1000 line uploaded" << std::endl;
         //need to be changed
         return(999);
     }

@@ -74,7 +74,7 @@ void Response::saveOnFile(std::string data) {
 void Response::uploadFile() {
 	std::ifstream inputFile(this->boundaryFilePath.c_str(), std::ios::binary);
 	std::string line;
-	int count = 1000;
+	int count = 100;
 	if(!inputFile.is_open()) {
 		Log::e("error opening the file ");
 		//need to be changed
