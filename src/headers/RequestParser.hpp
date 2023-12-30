@@ -58,6 +58,8 @@ class RequestParser {
         const ParsingState &getParsingState();
         std::string &getRequestData();
         std::string &getFileName();
+        bool getIsRequestChunked();
+        bool getIsRequestMultipart();
 
         bool isPathAccessible();
         bool isMethodAllowed();

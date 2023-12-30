@@ -38,6 +38,14 @@ std::string &RequestParser::getFileName() {
     return(this->fileName);
 }
 
+bool RequestParser::getIsRequestChunked() {
+	return(this->isRequestChunked);
+}
+
+bool RequestParser::getIsRequestMultipart() {
+	return(this->isRequestMultipart);
+}
+
 // setters
 
 void RequestParser::setServerInformation(t_server *server){
@@ -47,6 +55,7 @@ void RequestParser::setServerInformation(t_server *server){
 // helper functions
 
 bool RequestParser::isPathAccessible() {
+
     this->requestResourcePath = "";
     size_t firstSlash = this->requestLine["path"].find_first_of("/");
     std::string location;
@@ -219,7 +228,7 @@ void RequestParser::logParsedRequest(){
         Log::v("RequestParser: No body found");
     } else {
         Log::v("RequestParser: Parsed body:");
-        std::cout << this->body << "\n";
+        // std::cout << this->body << "\n";
     }
     if(this->parsingState.statusCode != 0 && this->parsingState.statusCode != 200 && this->parsingState.statusCode != 201){
         Log::e("RequestParser: Parsing failed with code " + String::to_string(this->parsingState.statusCode) + " and reason: " + this->parsingState.statusMessage);
