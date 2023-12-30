@@ -67,7 +67,6 @@ void ConnectionsManager::checkClientTimeOut() {
 
 void ConnectionsManager::acceptNewIncommingConnections(ServerInstance *serverId) {
     ClientProfile client;
-    std::cout << "here" << std::endl;
     client.serverName = "NONE";
     client.address_length = sizeof(client.address);
     client.isReceiving = false;
@@ -133,7 +132,6 @@ void ConnectionsManager::socketMonitore() {
         for (std::vector<struct pollfd>::iterator it = masterFdSet.begin(); it != masterFdSet.end(); ++it) {
             if (it->revents & POLLIN) {
                 if (isaListeningSocket(it->fd) == true) {
-                    std::cout << "the server accepting this connection is " << getFdServer(it->fd)->getServerName() << std::endl; 
                     it->events = POLLIN;
                     it->revents = 0;
                     acceptNewIncommingConnections(getFdServer(it->fd));

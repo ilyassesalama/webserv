@@ -159,7 +159,6 @@ int ServerInstance::receiveRequest(int clientFd) {
     }
     else
         server = this->serverInformations;
-    std::cout << "the Server Serving the request is : " << server->server_name << std::endl;
 	client->connectionTime = std::time(0);
 	client->parser.setServerInformation(server);
 
