@@ -56,31 +56,63 @@ void ConfigurationFile::parseValue( std::string key, std::string value, t_server
 
 void ConfigurationFile::parseRouteValue( std::string key, std::string value, t_route *route) {
 
-	if (key == "root" && !route->is_root) {
-		route->root = singleValueParser(value);
-		route->is_root = true;
-	} else if (key == "directory_listing" && !route->is_directory_listing) {
-		route->directory_listing = boolParser(value);
-		route->is_directory_listing = true;
-	} else if (key == "is_directory" && !route->is_is_directory) {
-		route->is_directory = singleValueParser(value);
-		route->is_is_directory = true;
-	} else if (key == "cgi_extension" && !route->is_cgi_extension) {
-		route->cgi_extension = singleValueParser(value);
-		route->is_cgi_extension = true;
-	} else if (key == "allowed_methods" && !route->is_allowed_methods) {
-		route->allowed_methods = multipleValuesParser(value);
-		checkAllowedMethods(route->allowed_methods);
-		route->is_allowed_methods = true;
-	} else if (key == "redirection" && !route->is_redirection) {
-		route->redirection = singleValueParser(value);
-		route->is_redirection = true;
-	} else if (key == "upload" && !route->is_upload) {
-		route->upload = boolParser(value);
-		route->is_upload = true;
-	} else if (key == "upload_path" && !route->is_upload_path) {
-		route->upload_path = singleValueParser(value);
-		route->is_upload_path = true;
+	if (key == "root") {
+		if (!route->is_root) {
+			route->root = singleValueParser(value);
+			route->is_root = true;
+		} else {
+			Log::e("Warning, there is more than one root directive");
+		}
+	} else if (key == "directory_listing") {
+		if (!route->is_directory_listing) {
+			route->directory_listing = boolParser(value);
+			route->is_directory_listing = true;
+		} else {
+			Log::e("Warning, there is more than one directory_listing directive");
+		}
+	} else if (key == "is_directory") {
+		if (!route->is_is_directory) {
+			route->is_directory = singleValueParser(value);
+			route->is_is_directory = true;
+		} else {
+			Log::e("Warning, there is more than one is_directory directive");
+		}
+	} else if (key == "cgi_extension") {
+		if (!route->is_cgi_extension) {
+			route->cgi_extension = singleValueParser(value);
+			route->is_cgi_extension = true;
+		} else {
+			Log::e("Warning, there is more than one cgi_extension directive");
+		}
+	} else if (key == "allowed_methods") {
+		if (!route->is_allowed_methods) {
+			route->allowed_methods = multipleValuesParser(value);
+			checkAllowedMethods(route->allowed_methods);
+			route->is_allowed_methods = true;
+		} else {
+			Log::e("Warning, there is more than one allowed_methods directive");
+		}
+	} else if (key == "redirection") {
+		if (!route->is_redirection) {
+			route->redirection = singleValueParser(value);
+			route->is_redirection = true;
+		} else {
+			Log::e("Warning, there is more than one redirection directive");
+		}
+	} else if (key == "upload") {
+		if (!route->is_upload) {
+			route->upload = boolParser(value);
+			route->is_upload = true;
+		} else {
+			Log::e("Warning, there is more than one upload directive");
+		}
+	} else if (key == "upload_path") {
+		if (!route->is_upload_path) {
+			route->upload_path = singleValueParser(value);
+			route->is_upload_path = true;
+		} else {
+			Log::e("Warning, there is more than one upload_path directive");
+		}
 	} else if (key != "root" && key != "directory_listing" && key != "is_directory" && key != "cgi_extension" && key != "allowed_methods" && key != "redirection" && key != "upload_path" && key != "upload") {
 		throw (Utils::WebservException ("Error, directive not allowed"));
 	}
