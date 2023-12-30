@@ -89,7 +89,7 @@ loginForm.addEventListener("submit", e => {
 	const username = document.getElementById("username").value;
 	const password = document.getElementById("password").value;
 
-	fetch("http://localhost:8080/", {
+	fetch("./login.php", {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json"
@@ -100,11 +100,9 @@ loginForm.addEventListener("submit", e => {
 		}),
 	}).then((res) => {
 		if (res.status === 200) {
-			document.cookie = "username=" + username;
+			alert("Logged in successfully!");
 			switchPage("home");
-			alert("Login successful!");
-		}
-		else {
+		} else {
 			alert("Incorrect username or password.");
 		}
 	}).catch((error) => {
