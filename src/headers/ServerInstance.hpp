@@ -29,19 +29,24 @@ class ServerInstance {
         int sendResponse(int clientFd);
         ClientProfile *getClientProfile(int clientFd);
         // bool checkListeningInfos();
+        void setDuplicated(bool status);
+        void addDuplicatedServers(t_server *server);
 
     private:
         std::string serverName;
-        t_server *serverInformations;
+        int listenPort;
         std::string listenAdress;
-        int serverPort;
         int listenSocket;
+        bool initialized;
+        const int backLog;
+        bool duplicated;
+
+        t_server *serverInformations;
         struct addrinfo hint;
         struct addrinfo *bindAddress;
-        std::vector<struct pollfd> serverPollFd;
         std::vector<struct ClientProfile> clientProfiles;
-        const int backLog;
-        std::vector<t_listen> listenDirectives;
+        std::vector<t_server *>duplicatedServers;
+        
 
-        bool initialized;
+        std::vector<struct pollfd> serverPollFd;
 };

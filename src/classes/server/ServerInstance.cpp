@@ -1,16 +1,19 @@
 #include "../../../webserv.hpp"
 
 ServerInstance::ServerInstance(s_server &serverInfos): backLog(200) {
-        (*this).initialized = true;
-        setListenAdressPort(serverInfos); //check if the array is empty !!!!
-        this->serverName = serverInfos.server_names[0];
-        this->serverInformations = &serverInfos;
-        this->listenSocket = -1;
-        this->bindAddress = NULL;
-        std::memset(&this->hint,0,sizeof(this->hint));
-        this->hint.ai_family = AF_INET;
-        this->hint.ai_socktype = SOCK_STREAM;
-        this->hint.ai_flags = AI_PASSIVE;
+
+    setListenAdressPort(serverInfos);
+    this->duplicated = false;
+    this->serverName = serverInfos.server_names[0];
+    this->serverInformations = &serverInfos;
+    this->listenSocket = -1;
+    this->bindAddress = NULL;
+    std::memset(&this->hint,0,sizeof(this->hint));
+    this->hint.ai_family = AF_INET;
+    this->hint.ai_socktype = SOCK_STREAM;
+    this->hint.ai_flags = AI_PASSIVE;
+    this->initialized = true;
+
 }
 
 std::vector<struct pollfd>& ServerInstance::getClientFdSet() {
@@ -28,8 +31,8 @@ std::string ServerInstance::getServerName() {
 
 
 void ServerInstance::setListenAdressPort(t_server &serverInfos) {
-    this->serverPort =  serverInfos.listen[0].port;
-    if(this->serverPort > 65535) {
+    this->listenPort =  serverInfos.listen[0].port;
+    if(this->listenPort > 65535) {
         Log::e("Port Out Of Range " + String::to_string(serverInfos.listen[0].port) + " ... ");
         (*this).initialized = false;
         return;
@@ -48,7 +51,7 @@ void ServerInstance::setListenSocket(int SocketFd) {
 std::string ServerInstance::getServerPort() {
     std::stringstream ss;
 
-    ss << this->serverPort;
+    ss << this->listenPort;
     std::string port = ss.str();
     return(port);
 }
@@ -224,4 +227,13 @@ int ServerInstance::sendResponse(int clientFd) {
 
 bool ServerInstance::isInitialized() {
     return(initialized);
+}
+
+void ServerInstance::setDuplicated(bool status) {
+    this->duplicated = status;
+}
+
+
+void ServerInstance::addDuplicatedServers(t_server *server) {
+    this->duplicatedServers.push_back(server);
 }

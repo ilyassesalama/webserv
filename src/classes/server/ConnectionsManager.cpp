@@ -10,15 +10,15 @@ ConnectionsManager::~ConnectionsManager() {
 
 void ConnectionsManager::addServerToTheSet(ServerInstance &serverInstance) {
     this->serversSet.push_back(serverInstance);
+    addFdToTheSet(serverInstance.getListenSocketFd());
     this->serverCount++;
 
-    std::vector<struct pollfd> clientFdSet = serverInstance.getClientFdSet();
-    std::vector<struct pollfd>::iterator it = clientFdSet.begin();
+    // std::vector<struct pollfd> clientFdSet = serverInstance.getClientFdSet();
+    // std::vector<struct pollfd>::iterator it = clientFdSet.begin();
 
-    this->masterFdSet.push_back((*it));
+    // this->masterFdSet.push_back((*it));
 
 }
-
 void ConnectionsManager::deleteFromFdSet(int clientFd) {
     for(std::vector<struct pollfd>::iterator it = this->masterFdSet.begin(); it != this->masterFdSet.end(); it++) {
         if(it->fd == clientFd) {
@@ -162,9 +162,26 @@ size_t ConnectionsManager::getServerCount() {
     return((*this).serverCount);
 }
 
+ServerInstance* ConnectionsManager::isServerExist(ServerInstance &server) {
+    for (std::vector<ServerInstance>::iterator it = this->serversSet.begin(); it != serversSet.end(); it++) {
+        if(it->getListenAdress() == server.getListenAdress() && it->getServerPort() == server.getServerPort())
+            return(&(*it));
+    }
+    return(NULL);
+}
 
 
+void ConnectionsManager::printMasterFdSet() {
+    for(std::vector<struct pollfd>::iterator it = this->masterFdSet.begin(); it != this->masterFdSet.end(); it++) {
+        std::cout << "client Fd : " << it->fd << " client event : " << it->events << " client revent : " << it->revents << std::endl;
+    }
+}
 
+void ConnectionsManager::printServers() {
+    for(std::vector<ServerInstance>::iterator it = this->serversSet.begin(); it != this->serversSet.end(); it++) {
+        std::cout <<"Server name : "<< it->getServerName() <<  " listen Socket Fd : " << it->getListenSocketFd() << std::endl;
+    }
+}
 
 
 

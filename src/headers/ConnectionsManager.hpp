@@ -21,6 +21,11 @@ class ConnectionsManager {
         void checkClientTimeOut();
         size_t getServerCount();
         bool isaListeningSocket(int fd);
+
+        ServerInstance* isServerExist(ServerInstance &server);
+
+        void printMasterFdSet();
+        void printServers();
     private:
         std::vector<ServerInstance> serversSet;
         std::vector<struct pollfd> masterFdSet;

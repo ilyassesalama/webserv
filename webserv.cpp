@@ -63,14 +63,26 @@ void printServers(ConfigurationFile &cFile) {
 void startTheParty(ConfigurationFile &obj) {
 	Log::i("Server is starting...");
 	ConnectionsManager master;
+	ServerInstance *server;
 
     for (std::list<t_server>::iterator it = obj.getConfigFileServers().begin(); it != obj.getConfigFileServers().end(); ++it) {
         ServerInstance s((*it));
 		if(s.isInitialized()) {
-			s.setupServerConfiguration();
-			master.addServerToTheSet(s);
+			server = master.isServerExist(s);
+			if(server == NULL) {
+				//the server in nor duplicated need to lunch the configuration
+				s.setupServerConfiguration();
+				master.addServerToTheSet(s);
+			}
+			else if (server != NULL) {
+				//the server is duplicated
+				server->setDuplicated(true);
+				server->addDuplicatedServers(&(*it));
+			}
 		}
     }
+	master.printMasterFdSet();
+	master.printServers();
 	if(master.getServerCount() > 0)
 		master.socketMonitore();
 	else {
