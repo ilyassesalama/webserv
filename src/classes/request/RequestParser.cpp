@@ -67,7 +67,7 @@ void RequestParser::mergeRequestChunks(std::string &requestInput) {
 */
 void RequestParser::verifyIfRequestIsSafe(){
 
-	if (this->isRequestChunked) {
+	if (!this->isRequestChunked) {
         this->parsingState.statusCode = 501;
         this->parsingState.statusMessage = "Not Implemented";
         return;
