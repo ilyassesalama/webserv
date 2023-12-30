@@ -14,51 +14,51 @@ void printBanner() {
               << "\033[0m";
 }
 
-void printServers(ConfigurationFile &cFile) {
-	// ConfigurationFile cFile(av[1]);
+// void printServers(ConfigurationFile &cFile) {
+// 	// ConfigurationFile cFile(av[1]);
 
-	std::list<t_server>::iterator it;
+// 	std::list<t_server>::iterator it;
 
-	for (it = cFile.ConfigFileServers.begin(); it != cFile.ConfigFileServers.end(); it++) {
+// 	for (it = cFile.ConfigFileServers.begin(); it != cFile.ConfigFileServers.end(); it++) {
 		
-		std::cout << "------------ server -----------" << std::endl;
+// 		std::cout << "------------ server -----------" << std::endl;
 
-		std::vector<t_listen>::iterator listenIt;
-		for (listenIt = it->listen.begin(); listenIt != it->listen.end(); listenIt++)
-			std::cout << "listen host: " << listenIt->host << " listen port: " << listenIt->port << std::endl;
+// 		std::vector<t_listen>::iterator listenIt;
+// 		for (listenIt = it->listen.begin(); listenIt != it->listen.end(); listenIt++)
+// 			std::cout << "listen host: " << listenIt->host << " listen port: " << listenIt->port << std::endl;
 
-		std::vector<std::string>::iterator serverNameIt;
-		for (serverNameIt = it->server_names.begin(); serverNameIt != it->server_names.end(); serverNameIt++)
-			std::cout << "server_name: " << *serverNameIt << std::endl;
+// 		std::vector<std::string>::iterator serverNameIt;
+// 		for (serverNameIt = it->server_names.begin(); serverNameIt != it->server_names.end(); serverNameIt++)
+// 			std::cout << "server_name: " << *serverNameIt << std::endl;
 
-		std::vector<t_error_page>::iterator errIt;
-		for (errIt = it->error_pages.begin(); errIt != it->error_pages.end(); errIt++)
-			std::cout << "error_code: " << errIt->error_code << " error_page: " << errIt->error_page << std::endl;
+// 		std::vector<t_error_page>::iterator errIt;
+// 		for (errIt = it->error_pages.begin(); errIt != it->error_pages.end(); errIt++)
+// 			std::cout << "error_code: " << errIt->error_code << " error_page: " << errIt->error_page << std::endl;
 
-		std::cout << "client_body_size: " << it->client_body_size << " client_body_unit: " << it->body_size_unit << std::endl;
+// 		std::cout << "client_body_size: " << it->client_body_size << " client_body_unit: " << it->body_size_unit << std::endl;
 
 
-		std::vector<t_route>::iterator routeIt;
-		for (routeIt = it->routes.begin(); routeIt != it->routes.end(); routeIt++) {
+// 		std::vector<t_route>::iterator routeIt;
+// 		for (routeIt = it->routes.begin(); routeIt != it->routes.end(); routeIt++) {
 
-			std::cout << "--------------------" << std::endl;
+// 			std::cout << "--------------------" << std::endl;
 
-			std::cout << "path: " << routeIt->path << std::endl;
+// 			std::cout << "path: " << routeIt->path << std::endl;
 
-			for (serverNameIt = routeIt->allowed_methods.begin(); serverNameIt != routeIt->allowed_methods.end(); serverNameIt++)
-				std::cout << "allowed_method: " << *serverNameIt << std::endl;
+// 			for (serverNameIt = routeIt->allowed_methods.begin(); serverNameIt != routeIt->allowed_methods.end(); serverNameIt++)
+// 				std::cout << "allowed_method: " << *serverNameIt << std::endl;
 
-			std::cout << "root: " << routeIt->root << std::endl;
-			std::cout << "redirection: " << routeIt->redirection << std::endl;
-			std::cout << "is_directory: " << routeIt->is_directory << std::endl;
-			std::cout << "cgi_extension: " << routeIt->cgi_extension << std::endl;
+// 			std::cout << "root: " << routeIt->root << std::endl;
+// 			std::cout << "redirection: " << routeIt->redirection << std::endl;
+// 			std::cout << "is_directory: " << routeIt->is_directory << std::endl;
+// 			std::cout << "cgi_extension: " << routeIt->cgi_extension << std::endl;
 
-			std::cout << "directory_listing: " << routeIt->directory_listing << std::endl;
+// 			std::cout << "directory_listing: " << routeIt->directory_listing << std::endl;
 
-		}
-		std::cout << std::endl << std::endl;
-	}
-}
+// 		}
+// 		std::cout << std::endl << std::endl;
+// 	}
+// }
 
 void startTheParty(ConfigurationFile &obj) {
 	Log::i("Server is starting...");

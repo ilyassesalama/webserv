@@ -67,11 +67,10 @@ void ConnectionsManager::checkClientTimeOut() {
 
 void ConnectionsManager::acceptNewIncommingConnections(ServerInstance *serverId) {
     ClientProfile client;
-
-	client.requestBuffered = "";
-	client.isHeaders = true;
-
+    std::cout << "here" << std::endl;
+    client.serverName = "NONE";
     client.address_length = sizeof(client.address);
+    client.isReceiving = false;
     client.SocketFD = accept(serverId->getListenSocketFd(),(struct sockaddr*)&client.address,&client.address_length);
     if(client.SocketFD < 0) {
         Log::e("accept Failed ...");
@@ -134,9 +133,10 @@ void ConnectionsManager::socketMonitore() {
         for (std::vector<struct pollfd>::iterator it = masterFdSet.begin(); it != masterFdSet.end(); ++it) {
             if (it->revents & POLLIN) {
                 if (isaListeningSocket(it->fd) == true) {
+                    std::cout << "the server accepting this connection is " << getFdServer(it->fd)->getServerName() << std::endl; 
+                    it->events = POLLIN;
+                    it->revents = 0;
                     acceptNewIncommingConnections(getFdServer(it->fd));
-                    this->masterFdSet[0].events = POLLIN;
-                    this->masterFdSet[0].revents = 0;
                     break;
                 } else {
                     int requestState = getFdServer(it->fd)->receiveRequest(it->fd);

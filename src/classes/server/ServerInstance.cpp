@@ -2,6 +2,7 @@
 
 ServerInstance::ServerInstance(s_server &serverInfos): backLog(200) {
 
+    (*this).initialized = true;
     setListenAdressPort(serverInfos);
     this->duplicated = false;
     this->serverName = serverInfos.server_name;
@@ -12,7 +13,6 @@ ServerInstance::ServerInstance(s_server &serverInfos): backLog(200) {
     this->hint.ai_family = AF_INET;
     this->hint.ai_socktype = SOCK_STREAM;
     this->hint.ai_flags = AI_PASSIVE;
-    this->initialized = true;
 
 }
 
@@ -38,10 +38,10 @@ void ServerInstance::setListenAdressPort(t_server &serverInfos) {
         return;
     }
     this->listenAdress = serverInfos.listen.host;
-    if(String::isIpFormCorrect(this->listenAdress) != true) {
-        (*this).initialized = false;
-        Log::e("Invalid Host Address " + serverInfos.listen.host + " ... ");
-    }
+    // if(String::isIpFormCorrect(this->listenAdress) != true) {
+    //     (*this).initialized = false;
+    //     Log::e("Invalid Host Address " + serverInfos.listen.host + " ... ");
+    // }
 }
 
 void ServerInstance::setListenSocket(int SocketFd) {
@@ -110,6 +110,17 @@ void ServerInstance::setupServerConfiguration() {
     AddFdToPollFds(getListenSocketFd());
 }
 
+std::string extractTheHostFromTheRequest(const std::string& request) {
+    size_t findHost = request.find("Host: ");
+    if (findHost != std::string::npos) {
+        size_t endOfLine = request.find("\r", findHost);
+        if (endOfLine != std::string::npos) {
+            return request.substr(findHost + 6, endOfLine - (findHost + 6));
+        }
+    }
+    return ""; 
+}
+
 int ServerInstance::receiveRequest(int clientFd) {
     std::string receivedRequest;
     int bytesRead;
@@ -126,10 +137,31 @@ int ServerInstance::receiveRequest(int clientFd) {
         this->dropClient(clientFd);
         return(DROP_CLIENT);
     }
-
+    t_server *server = NULL;
+    std::string Host;
     ClientProfile *client = getClientProfile(clientFd);
+    if(this->isDuplicated()) {
+        //there is multi server
+        if(client->serverName != "NONE" && client->isReceiving) {
+            server = server = getTheServerConfiguration(client->serverName);
+            if(server == NULL)
+                server = this->serverInformations;
+        }
+        else {
+            Host = extractTheHostFromTheRequest(receivedRequest);
+            std::cout << Host << std::endl;
+            client->serverName = Host;
+            server = getTheServerConfiguration(Host);
+            client->isReceiving = true;
+            if(server == NULL)
+                server = this->serverInformations;
+        }
+    }
+    else
+        server = this->serverInformations;
+    std::cout << "the Server Serving the request is : " << server->server_name << std::endl;
 	client->connectionTime = std::time(0);
-	client->parser.setServerInformation((this->serverInformations));
+	client->parser.setServerInformation(server);
 
 	client->requestBuffered += receivedRequest;
 
@@ -160,6 +192,7 @@ int ServerInstance::receiveRequest(int clientFd) {
         client->parser.getRequestData().clear();
 		client->requestBuffered.clear();
 		client->isHeaders = true;
+        client->isReceiving = false;
         return(FULL_REQUEST_RECEIVED);
     }
     return(INVALIDE_REQUEST);
@@ -237,4 +270,22 @@ void ServerInstance::setDuplicated(bool status) {
 
 void ServerInstance::addDuplicatedServers(t_server *server) {
     this->duplicatedServers.push_back(server);
+}
+
+bool ServerInstance::isDuplicated() {
+    return(this->duplicated);
+}
+
+t_server* ServerInstance::getTheServerConfiguration(std::string host) {
+    if (this->getServerName() == host) {
+        return this->serverInformations;
+    }
+
+    for (std::vector<t_server*>::iterator it = this->duplicatedServers.begin(); it != this->duplicatedServers.end(); ++it) {
+        if ((*it)->server_name == host) {
+            return *it;
+        }
+    }
+
+    return NULL;
 }

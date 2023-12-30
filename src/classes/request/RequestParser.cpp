@@ -213,6 +213,10 @@ size_t getFileLength(ParsingState &parsingState, std::string fileName) {
     Last check by the request parser, stores the body if it exists.
 */
 void RequestParser::parseRequestBody(std::string &requestData){
+
+    if (this->requestLine["method"] == "GET" || this->requestLine["method"] == "DELETE")
+        return ;
+
 	size_t found = requestData.find("\r\n\r\n") + 4;
 
 	std::string requestBody = this->isFirstRequest ? requestData.substr(found) : requestData;

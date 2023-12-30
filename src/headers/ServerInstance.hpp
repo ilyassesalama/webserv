@@ -31,6 +31,8 @@ class ServerInstance {
         // bool checkListeningInfos();
         void setDuplicated(bool status);
         void addDuplicatedServers(t_server *server);
+        bool isDuplicated();
+        t_server* getTheServerConfiguration(std::string host);
 
     private:
         std::string serverName;

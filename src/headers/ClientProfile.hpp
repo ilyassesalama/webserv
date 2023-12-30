@@ -11,6 +11,8 @@ class RequestParser;
 #include "Response.hpp"
 
 struct ClientProfile {
+    std::string serverName;
+    bool isReceiving;
     int SocketFD;
     std::string ipAdress;
     socklen_t address_length;
