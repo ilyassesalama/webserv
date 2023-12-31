@@ -1,22 +1,5 @@
 #include "../../../webserv.hpp"
 
-// void uploadSingleFile(std::map<std::string, std::string> headers, std::string &fileName, t_route *currentRoute) {
-
-// 	std::fstream bufferFile(fileName, std::ios::binary | std::ios::app);
-// 	if (!bufferFile.is_open()) {
-// 		throw Utils::WebservException("Error opening file");
-// 	}
-
-// 	std::fstream myFile(File::getWorkingDir() + currentRoute->upload_path + File::generateFileName("uploaded") + File::getExtension(headers), std::ios::binary | std::ios::app);
-// 	if (!myFile.is_open()) {
-// 		throw Utils::WebservException("Error opening file");
-// 	}
-// 	myFile << bufferFile.rdbuf();
-
-// 	myFile.close();
-// 	bufferFile.close();
-// }
-
 std::string generateRandomName() {
     // Characters to use in the random name
     const std::string characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -112,7 +95,29 @@ void Response::POSTResponseBuilder() {
 		this->isCGI = this->isLocationHasCGI();
 
 		if (this->isCGI || !this->currentRoute->upload) {
-			this->setResponseBody();
+
+			if (File::isDirectory(this->path)) {
+
+				size_t slashPos = this->path.find_last_of("/");
+
+				std::string indexHTML = slashPos != this->path.size() - 1 ? "/index.html" : "index.html";
+
+				if (!this->currentRoute->is_directory.empty() && this->isCGI) {
+					this->path += this->currentRoute->is_directory;
+				} else if (File::isFile(this->path + indexHTML) && this->isCGI) {
+					this->path += indexHTML;
+				}
+
+				if ((File::isFile(this->path) || !this->currentRoute->is_directory.empty()) && this->isCGI) {
+					CGIhandler();
+        			return;
+				}
+			} else if (this->isCGI) {
+				CGIhandler();
+        		return;
+			}
+			this->statusCode = 403;
+			this->responseBody = this->getErrorPageHTML();
 		} else {
 			this->statusCode = 201;
 			if (this->request->getIsRequestMultipart()) {
@@ -127,8 +132,6 @@ void Response::POSTResponseBuilder() {
 			}
 			else if (!this->request->getIsRequestChunked())
 				std::cout << "will enter if header is content-length" << std::endl;
-
-			this->responseBody = "";
 		}
 	}
 
