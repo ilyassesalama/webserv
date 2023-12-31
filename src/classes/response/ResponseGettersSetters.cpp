@@ -7,7 +7,7 @@ bool Response::isLocationHasCGI() {
                 Log::d("The CGI method is not supported at this location");
             return(false);
         } //abahsine will add more extentions to the config file 
-        if(File::getCGIbinary(path) == "WALO") {
+        if(File::getCGIbinary(path) == "") {
             if(FULL_LOGGING_ENABLED)
                 Log::d("The CGI extension is not supported at this location");
             return(false);            
@@ -110,6 +110,7 @@ std::string addHeaders(std::string key, std::string value) {
     Add headers to the response headers accrordingly depending on the status code.
 */
 void Response::setHeaders() {
+	this->isCGI = this->isLocationHasCGI();
     if(!this->isCGI){
         if(statusCode != 200) {
             this->responseHeadersMap["Connection"] = "close";

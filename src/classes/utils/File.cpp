@@ -85,7 +85,7 @@ std::string File::getCGIbinary(std::string path) {
     } else if (String::endsWith(path, ".py")) {
         return cgiBinPath.append("/py-cgi");
     } else {
-        return "WALO" ; // :3 
+        return "" ; // :3 
     }
 }
 
