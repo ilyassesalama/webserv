@@ -34,7 +34,7 @@ void RequestParser::getBoundaryContent(std::string &body) {
 	if (!buffer.is_open()) {
 		this->parsingState.bodyOk = true;
 		this->parsingState.statusCode = 500;
-		throw Utils::WebservException("Error opening file");
+		throw Utils::WebservException("Error opening file : " + this->fileName);
 	}
 
 	buffer << body;

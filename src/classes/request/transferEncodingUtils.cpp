@@ -58,7 +58,7 @@ void RequestParser::openFile(std::fstream &myFile) {
 	if (!myFile.is_open()) {
 		this->parsingState.ok = true;
 		this->parsingState.statusCode = 500;
-		throw Utils::WebservException("Error opening file");
+		throw Utils::WebservException("Error opening file : " + File::getWorkingDir() + this->route->upload_path + this->fileName);
 	}
 }
 /*

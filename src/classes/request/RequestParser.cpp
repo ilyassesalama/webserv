@@ -200,7 +200,7 @@ size_t getFileLength(ParsingState &parsingState, std::string fileName) {
 	if (!myFile.is_open()) {
 		parsingState.ok = true;
 		parsingState.statusCode = 500;
-		throw Utils::WebservException("Error opening file");
+		throw Utils::WebservException("Error opening file : " + fileName);
 	}
 	myFile.seekg(0, std::ios::end);
     std::size_t length = myFile.tellg();
@@ -228,7 +228,7 @@ void RequestParser::parseRequestBody(std::string &requestData){
 		if (!myFile.is_open()) {
 			this->parsingState.ok = true;
 			this->parsingState.statusCode = 500;
-			throw Utils::WebservException("Error opening file");
+			throw Utils::WebservException("Error opening file : " + File::getWorkingDir() + this->route->upload_path + this->fileName);
 		}
 		myFile << requestBody;
 		myFile.close();
