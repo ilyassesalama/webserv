@@ -17,8 +17,6 @@
 
     http_response_code(200);
     printfJSON(array('status' => 'success', 'message' => 'Login success'));
-    setcookie('username', $username, time() + 3600, '/');
-    setcookie('logged_in', true, time() + 3600, '/');
     function printfJSON($array) {
         echo json_encode($array, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     }

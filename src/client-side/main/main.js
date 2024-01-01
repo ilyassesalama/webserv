@@ -97,6 +97,8 @@ loginForm.addEventListener("submit", e => {
 	}).then((res) => {
 		if (res.status === 200) {
 			alert("Logged in successfully!");
+			document.cookie = "logged_in=true";
+			document.cookie = "username=" + username;
 			switchPage("home");
 		} else {
 			alert("Incorrect username or password.");
