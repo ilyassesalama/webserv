@@ -52,6 +52,10 @@ bool RequestParser::getIsRequestMultipart() {
 	return(this->isRequestMultipart);
 }
 
+t_server *RequestParser::getServerInformation() {
+    return(this->server);
+}
+
 // setters
 
 void RequestParser::setServerInformation(t_server *server){

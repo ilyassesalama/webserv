@@ -31,10 +31,10 @@ void CGInstance::setEnvironnementVariables() {
     env_map["SCRIPT_FILENAME"] = this->filePath;    
     env_map["SCRIPT_NAME"] = scriptName;
     env_map["DOCUMENT_ROOT"] = documentRoot;
-    env_map["SERVER_NAME"] = "localhost";
+    env_map["SERVER_NAME"] = this->request.getServerInformation()->listen.host;
     env_map["CONTENT_LENGTH"] = this->cgiRequestBodySize;
     env_map["CONTENT_TYPE"] = request.getHeaders()["Content-Type"];
-    env_map["SERVER_PORT"] = "8080";
+    env_map["SERVER_PORT"] = String::to_string(this->request.getServerInformation()->listen.port);
     env_map["REDIRECT_STATUS"] = "1";
     this->cgiEnv = Utils::convertMapToChar2D(env_map);
 }

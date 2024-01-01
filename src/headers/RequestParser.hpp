@@ -50,6 +50,7 @@ class RequestParser {
 		void setServerInformation(t_server *server);
 
         t_route *getRoute();
+        t_server *getServerInformation();
         std::map<std::string, std::string> &getRequestLine();
         std::string getRequestedResourcePath();
         std::map<std::string, std::string> &getHeaders();
