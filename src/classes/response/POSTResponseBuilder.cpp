@@ -91,48 +91,46 @@ void Response::uploadFile() {
 
 void Response::POSTResponseBuilder() {
 
-	if (this->statusCode == 200) {
-		this->isCGI = this->isLocationHasCGI();
+	this->isCGI = this->isLocationHasCGI();
 
-		if (this->isCGI || !this->currentRoute->upload) {
+	if (this->isCGI || !this->currentRoute->upload) {
 
-			if (File::isDirectory(this->path)) {
+		if (File::isDirectory(this->path)) {
 
-				size_t slashPos = this->path.find_last_of("/");
+			size_t slashPos = this->path.find_last_of("/");
 
-				std::string indexHTML = slashPos != this->path.size() - 1 ? "/index.html" : "index.html";
+			std::string indexHTML = slashPos != this->path.size() - 1 ? "/index.html" : "index.html";
 
-				if (!this->currentRoute->is_directory.empty() && this->isCGI) {
-					this->path += this->currentRoute->is_directory;
-				} else if (File::isFile(this->path + indexHTML) && this->isCGI) {
-					this->path += indexHTML;
-				}
+			if (!this->currentRoute->is_directory.empty() && this->isCGI) {
+				this->path += this->currentRoute->is_directory;
+			}
 
-				if ((File::isFile(this->path) || !this->currentRoute->is_directory.empty()) && this->isCGI) {
-					CGIhandler();
-        			return;
-				}
-			} else if (this->isCGI) {
+			if ((File::isFile(this->path) || !this->currentRoute->is_directory.empty()) && this->isCGI) {
 				CGIhandler();
-        		return;
+				return;
 			}
-			this->statusCode = 403;
-			this->responseBody = this->getErrorPageHTML();
-		} else {
-			this->statusCode = 201;
-			if (this->request->getIsRequestMultipart()) {
-				//note !!!!! : this condition did not triggered even the request is multipart !!!!!
-				std::cout << "will enter if header is multipart" << std::endl;
-				this->uploading = true;
-				this->boundary = this->request->getBoundaryInfos(0);
-				this->boundaryFilePath = "/tmp/" + this->request->getBoundaryInfos(1);
-				this->statusCode = 201;
-				this->responseBody = "";
-
-			}
-			else if (!this->request->getIsRequestChunked())
-				std::cout << "will enter if header is content-length" << std::endl;
+		} else if (this->isCGI) {
+			CGIhandler();
+			return;
 		}
+		this->statusCode = 403;
+		this->responseBody = this->getErrorPageHTML();
+	} else {
+		this->statusCode = 201;
+		if (this->request->getIsRequestMultipart()) {
+			//note !!!!! : this condition did not triggered even the request is multipart !!!!!
+			std::cout << "will enter if header is multipart" << std::endl;
+			this->uploading = true;
+			this->boundary = this->request->getBoundaryInfos(0);
+			this->boundaryFilePath = "/tmp/" + this->request->getBoundaryInfos(1);
+			this->statusCode = 201;
+			this->responseBody = "";
+
+		}
+		else if (this->request->getIsRequestChunked())
+			std::cout << "will enter if header is chunked" << std::endl;
+		else
+			std::cout << "will enter if header is content-length" << std::endl;
 	}
 
 	
