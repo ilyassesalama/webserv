@@ -223,19 +223,19 @@ void RequestParser::parseRequestBody(std::string &requestData){
 
 	if (!isRequestChunked && !isRequestMultipart) {
 		if (this->isFirstRequest)
-			this->fileName = File::generateFileName("uploaded") + File::getExtension(headers);
-		std::fstream myFile(File::getWorkingDir() + this->route->upload_path + this->fileName, std::ios::binary | std::ios::app);
+			this->fileName = File::getWorkingDir() + this->route->upload_path + File::generateFileName("uploaded") + File::getExtension(headers);
+		std::fstream myFile(this->fileName, std::ios::binary | std::ios::app);
 		if (!myFile.is_open()) {
 			this->parsingState.ok = true;
 			this->parsingState.statusCode = 500;
-			throw Utils::WebservException("Error opening file: " + File::getWorkingDir() + this->route->upload_path + this->fileName);
+			throw Utils::WebservException("Error opening file: " + this->fileName);
 		}
 		myFile << requestBody;
 		myFile.close();
 	} else if (isRequestChunked) {
 
 		if (this->isFirstRequest)
-			this->fileName = File::generateFileName("uploaded") + File::getExtension(headers);
+			this->fileName = File::getWorkingDir() + this->route->upload_path + File::generateFileName("uploaded") + File::getExtension(headers);
 
 		getChunkedData(requestBody);
 
@@ -245,14 +245,14 @@ void RequestParser::parseRequestBody(std::string &requestData){
 
 		if (this->isFirstRequest) {
 			getBoundary(this->headers["Content-Type"]);
-			this->fileName = File::generateFileName("boundary");
+			this->fileName = "/tmp/" + File::generateFileName("boundary");
 		}
 		getBoundaryContent(requestBody);
 	}
 
 	this->isFirstRequest = false;
 
-	if(!isRequestChunked && !isRequestMultipart && getFileLength(this->parsingState, File::getWorkingDir() + this->route->upload_path + this->fileName) == String::to_size_t(getHeaders()["Content-Length"])) {
+	if(!isRequestChunked && !isRequestMultipart && getFileLength(this->parsingState, this->fileName) == String::to_size_t(getHeaders()["Content-Length"])) {
         parsingState.bodyOk = true;
     }
 }

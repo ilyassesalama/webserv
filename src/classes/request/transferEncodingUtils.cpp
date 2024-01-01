@@ -54,11 +54,11 @@ size_t RequestParser::getChunkSize(std::string &body) {
 }
 
 void RequestParser::openFile(std::fstream &myFile) {
-	myFile.open(File::getWorkingDir() + this->route->upload_path + this->fileName, std::ios::binary | std::ios::app);
+	myFile.open(this->fileName, std::ios::binary | std::ios::app);
 	if (!myFile.is_open()) {
 		this->parsingState.ok = true;
 		this->parsingState.statusCode = 500;
-		throw Utils::WebservException("Error opening file : " + File::getWorkingDir() + this->route->upload_path + this->fileName);
+		throw Utils::WebservException("Error opening file : " + this->fileName);
 	}
 }
 /*

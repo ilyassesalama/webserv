@@ -30,7 +30,7 @@ bool isEndBoundary(std::string &body, std::string boundary) {
 */
 void RequestParser::getBoundaryContent(std::string &body) {
 
-	std::fstream buffer("/tmp/" + this->fileName, std::ios::app);
+	std::fstream buffer(this->fileName, std::ios::app);
 	if (!buffer.is_open()) {
 		this->parsingState.bodyOk = true;
 		this->parsingState.statusCode = 500;

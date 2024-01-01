@@ -15,4 +15,5 @@ class File {
 		static std::string generateFileName(std::string name);
         static std::string getCurrentDir();
 		static std::string getExtension(std::map<std::string, std::string> &headers);
+        static bool removeFile(std::string path);
 };

@@ -161,3 +161,10 @@ std::string File::getCurrentDir() {
     path.append(cwd);
     return path;
 }
+
+bool File::removeFile(std::string path) {
+    if(std::remove(path.c_str()) != 0) {
+        Log::e("Error Removing File ...");
+        return(false);
+    } else return(true);
+}
