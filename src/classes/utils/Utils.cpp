@@ -28,6 +28,17 @@ void Utils::freeArray(char **arr){
     delete[] arr;
 }
 
+std::string Utils::generateRandomName() {
+    const std::string characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const int nameLength = 10;
+    std::string randomName;
+    for (int i = 0; i < nameLength; ++i) {
+        int randomIndex = std::rand() % characters.length();
+        randomName += characters[randomIndex];
+    }
+    return randomName;
+}
+
 Utils::WebservException::WebservException(const std::string& message) throw() : message(message) {}
 
 Utils::WebservException::~WebservException() throw() {}

@@ -15,9 +15,7 @@ void CGInstance::setRequestBody() {
     std::string requestBody = "";
     try {
         requestBody = File::getFileContent(request.getFileName());
-    } catch (Utils::WebservException &e) {
-        Log::w("Can't open cgi body path due to: " + std::string(e.what()));
-    }
+    } catch (Utils::WebservException &e) {}
     this->cgiRequestBodySize = String::to_string(requestBody.size());
     this->cgiRequestBody = requestBody;
 }
@@ -61,13 +59,12 @@ void CGInstance::executeScript() {
         throw Utils::WebservException("Cannot execute the script");
 
     } else if (pid == -1) {
-        // fork failed
         throw Utils::WebservException("Cannot fork a new child process to execute the script");
     } else {
         // parent process
         char buffer[1024];
         waitpid(pid, NULL, 0);
-        lseek(fd_out, 0, SEEK_SET);
+        lseek(fd_out, 0, SEEK_SET); // reset the file pointer to the beginning of the file
         
         while ((readBytes = read(fd_out, buffer, sizeof(buffer) - 1)) > 0) {
             buffer[readBytes] = '\0';

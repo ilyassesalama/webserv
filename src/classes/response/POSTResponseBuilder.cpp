@@ -1,22 +1,5 @@
 #include "../../../webserv.hpp"
 
-std::string generateRandomName() {
-    // Characters to use in the random name
-    const std::string characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
-    // Length of the random name
-    const int nameLength = 10;
-
-    // Generate the random name
-    std::string randomName;
-    for (int i = 0; i < nameLength; ++i) {
-        int randomIndex = std::rand() % characters.length();
-        randomName += characters[randomIndex];
-    }
-
-    return randomName;
-}
-
 void Response::handleboundaryStart(std::ifstream& inputfile) {
 	std::string boundaryContente;
 	std::string contentType = "";
@@ -32,7 +15,7 @@ void Response::handleboundaryStart(std::ifstream& inputfile) {
 		boundaryContente.append(line+'\n');
 	}
 	
-	this->uploadFilePath = File::getWorkingDir() + "/uploads/" + generateRandomName() + File::getContentTypeExtension(contentType);
+	this->uploadFilePath = File::getWorkingDir() + "/uploads/" + Utils::generateRandomName() + File::getContentTypeExtension(contentType);
 }
 void Response::saveOnFile(std::string data) {
     std::ofstream outputFile(this->uploadFilePath.c_str(), std::ios::binary | std::ios::app);
@@ -90,7 +73,6 @@ void Response::POSTResponseBuilder() {
 		this->statusCode = 201;
 		if (this->request->getIsRequestMultipart()) {
 			//note !!!!! : this condition did not triggered even the request is multipart !!!!!
-			std::cout << "will enter if header is multipart" << std::endl;
 			this->uploading = true;
 			this->boundary = this->request->getBoundaryInfos(0);
 			this->boundaryFilePath = this->request->getBoundaryInfos(1);
@@ -105,7 +87,7 @@ void Response::POSTResponseBuilder() {
 	}
 	else {
 		this->statusCode = 403;
-		throw(Utils::WebservException("Forbiden ..."));
+		throw(Utils::WebservException("ResponseBuilder: 403 Forbidden"));
 	}
 
 	this->setHeaders();
@@ -116,58 +98,3 @@ void Response::POSTResponseBuilder() {
     addDataToResponse(this->responseBody);
     setServingState(true);
 }
-
-
-// void Response::POSTResponseBuilder() {
-// 	if (File::isDirectory(this->path)) {
-
-// 		if (!this->currentRoute->index.empty()) {
-// 			this->path += this->currentRoute->index;
-// 		}
-
-// 		this->isCGI = this->isLocationHasCGI();
-
-// 		if (this->isCGI) {
-// 			CGIhandler();
-// 			return;
-// 		}
-// 		this->statusCode = 403;
-// 		throw(Utils::WebservException("ResponseBuilder: 403 Forbidden"));
-// 	} else {
-// 		this->isCGI = this->isLocationHasCGI();
-	
-// 		if (this->isCGI) {
-// 			CGIhandler();
-// 			return;
-// 		}
-
-// 		if (this->currentRoute->upload) {
-// 			this->statusCode = 201;
-// 			if (this->request->getIsRequestMultipart()) {
-// 				//note !!!!! : this condition did not triggered even the request is multipart !!!!!
-// 				std::cout << "will enter if header is multipart" << std::endl;
-// 				this->uploading = true;
-// 				this->boundary = this->request->getBoundaryInfos(0);
-// 				this->boundaryFilePath = this->request->getBoundaryInfos(1);
-// 				this->statusCode = 201;
-// 				this->responseBody = "";
-
-// 			}
-// 			else if (this->request->getIsRequestChunked())
-// 				std::cout << "will enter if header is chunked" << std::endl;
-// 			else
-// 				std::cout << "will enter if header is content-length" << std::endl;
-// 		} else {
-// 			this->statusCode = 403;
-// 			throw(Utils::WebservException("ResponseBuilder: 403 Forbidden"));
-// 		}
-// 	}
-	
-//     this->setHeaders();
-//     this->setResponseLine();
-// 	this->fileOffset = -2;
-// 	addDataToResponse(this->responseLine);
-//     addDataToResponse(this->responseHeaders);
-//     addDataToResponse(this->responseBody);
-//     setServingState(true);
-// }

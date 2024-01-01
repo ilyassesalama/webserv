@@ -4,12 +4,12 @@ bool Response::isLocationHasCGI() {
     if(!this->currentRoute->cgi_extension.empty()) {
        if(std::find(this->currentRoute->allowed_methods.begin(), this->currentRoute->allowed_methods.end(), this->request->getRequestLine()["method"]) == this->currentRoute->allowed_methods.end()) {
             if(FULL_LOGGING_ENABLED)
-                Log::d("The CGI method is not supported at this location");
+                Log::d("The CGI method is not supported at this location, method: " + this->request->getRequestLine()["method"]);
             return(false);
         } //abahsine will add more extentions to the config file 
         if(File::getCGIbinary(path, this->currentRoute) == "") {
             if(FULL_LOGGING_ENABLED)
-                Log::d("The CGI extension is not supported at this location");
+                Log::d("The CGI extension is not supported at this location, no binary found");
             return(false);            
         }
         if(FULL_LOGGING_ENABLED)

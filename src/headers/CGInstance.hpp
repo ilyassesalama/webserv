@@ -39,15 +39,3 @@ class CGInstance {
         std::map<std::string, std::string> cgiResponseHeadersMap;
         char **cgiEnv;
 };
-
-
-// env 
-// REQUEST_METHOD: The HTTP request method (e.g., "GET" or "POST").
-// QUERY_STRING: The query string portion of the URL.
-// CONTENT_TYPE: The content type of the request body for POST requests.
-// CONTENT_LENGTH: The length of the request body for POST requests.
-// SCRIPT_FILENAME: The absolute path to the PHP script file.
-// SCRIPT_NAME: The virtual path of the script.
-// DOCUMENT_ROOT: The document root directory.
-// SERVER_NAME: The server's hostname.
-// SERVER_PORT: The server's port number.
