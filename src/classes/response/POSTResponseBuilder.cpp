@@ -89,53 +89,48 @@ void Response::uploadFile() {
 	}
 }
 
+
 void Response::POSTResponseBuilder() {
-
-	if (File::isDirectory(this->path)) {
-
-		if (!this->currentRoute->is_directory.empty()) {
-			this->path += this->currentRoute->is_directory;
-		}
-
-		this->isCGI = this->isLocationHasCGI();
-
-		if (this->isCGI) {
-			CGIhandler();
-			return;
-		}
-		this->statusCode = 403;
-		throw(Utils::WebservException("ResponseBuilder: 403 Forbidden"));
-	} else {
-		this->isCGI = this->isLocationHasCGI();
-	
-		if (this->isCGI) {
-			CGIhandler();
-			return;
-		}
-
-		if (this->currentRoute->upload) {
-			this->statusCode = 201;
-			if (this->request->getIsRequestMultipart()) {
-				//note !!!!! : this condition did not triggered even the request is multipart !!!!!
-				std::cout << "will enter if header is multipart" << std::endl;
-				this->uploading = true;
-				this->boundary = this->request->getBoundaryInfos(0);
-				this->boundaryFilePath = this->request->getBoundaryInfos(1);
-				this->statusCode = 201;
-				this->responseBody = "";
-
+	if(isCGIon()) {
+		if(File::isFile(this->path)) 
+			this->handleFileRequest();
+		else if(File::isDirectory(this->path)) {
+			size_t slashPos = this->path.find_last_of("/");
+			std::string index = slashPos != this->path.size() - 1 ? "/" : "";
+			index.append(this->currentRoute->index);
+			if(File::isFile(this->path + index)) {
+				this->handleFileRequest();
 			}
-			else if (this->request->getIsRequestChunked())
-				std::cout << "will enter if header is chunked" << std::endl;
-			else
-				std::cout << "will enter if header is content-length" << std::endl;
-		} else {
-			this->statusCode = 403;
-			throw(Utils::WebservException("ResponseBuilder: 403 Forbidden"));
+			else {
+				this->statusCode = 404;
+				throw(Utils::WebservException("File Not Found ..."));
+			}
 		}
 	}
-	
-    this->setHeaders();
+	else if(this->currentRoute->upload) {
+		//upload File
+		this->statusCode = 201;
+		if (this->request->getIsRequestMultipart()) {
+			//note !!!!! : this condition did not triggered even the request is multipart !!!!!
+			std::cout << "will enter if header is multipart" << std::endl;
+			this->uploading = true;
+			this->boundary = this->request->getBoundaryInfos(0);
+			this->boundaryFilePath = this->request->getBoundaryInfos(1);
+			this->statusCode = 201;
+			this->responseBody = "";
+
+		}
+		else if (this->request->getIsRequestChunked())
+			std::cout << "will enter if header is chunked" << std::endl;
+		else
+			std::cout << "will enter if header is content-length" << std::endl;
+	}
+	else {
+		this->statusCode = 403;
+		throw(Utils::WebservException("Forbiden ..."));
+	}
+
+	this->setHeaders();
     this->setResponseLine();
 	this->fileOffset = -2;
 	addDataToResponse(this->responseLine);
@@ -143,3 +138,58 @@ void Response::POSTResponseBuilder() {
     addDataToResponse(this->responseBody);
     setServingState(true);
 }
+
+
+// void Response::POSTResponseBuilder() {
+// 	if (File::isDirectory(this->path)) {
+
+// 		if (!this->currentRoute->index.empty()) {
+// 			this->path += this->currentRoute->index;
+// 		}
+
+// 		this->isCGI = this->isLocationHasCGI();
+
+// 		if (this->isCGI) {
+// 			CGIhandler();
+// 			return;
+// 		}
+// 		this->statusCode = 403;
+// 		throw(Utils::WebservException("ResponseBuilder: 403 Forbidden"));
+// 	} else {
+// 		this->isCGI = this->isLocationHasCGI();
+	
+// 		if (this->isCGI) {
+// 			CGIhandler();
+// 			return;
+// 		}
+
+// 		if (this->currentRoute->upload) {
+// 			this->statusCode = 201;
+// 			if (this->request->getIsRequestMultipart()) {
+// 				//note !!!!! : this condition did not triggered even the request is multipart !!!!!
+// 				std::cout << "will enter if header is multipart" << std::endl;
+// 				this->uploading = true;
+// 				this->boundary = this->request->getBoundaryInfos(0);
+// 				this->boundaryFilePath = this->request->getBoundaryInfos(1);
+// 				this->statusCode = 201;
+// 				this->responseBody = "";
+
+// 			}
+// 			else if (this->request->getIsRequestChunked())
+// 				std::cout << "will enter if header is chunked" << std::endl;
+// 			else
+// 				std::cout << "will enter if header is content-length" << std::endl;
+// 		} else {
+// 			this->statusCode = 403;
+// 			throw(Utils::WebservException("ResponseBuilder: 403 Forbidden"));
+// 		}
+// 	}
+	
+//     this->setHeaders();
+//     this->setResponseLine();
+// 	this->fileOffset = -2;
+// 	addDataToResponse(this->responseLine);
+//     addDataToResponse(this->responseHeaders);
+//     addDataToResponse(this->responseBody);
+//     setServingState(true);
+// }

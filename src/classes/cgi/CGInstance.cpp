@@ -4,7 +4,7 @@ CGInstance::CGInstance(RequestParser &request) : request(request) {}
 
 void CGInstance::initCGInstance() {
     setFilePath(request.getRequestedResourcePath());
-    setCGIPath(File::getCGIbinary(this->filePath));
+    setCGIPath(File::getCGIbinary(this->filePath,this->request.getRoute()));
     setCGIServer();
     setEnvironnementVariables();
     executeScript();

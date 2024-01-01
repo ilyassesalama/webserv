@@ -79,7 +79,7 @@ void ConfigurationFile::parseRouteValue( std::string key, std::string value, t_r
 		}
 	} else if (key == "cgi_extension") {
 		if (!route->is_cgi_extension) {
-			route->cgi_extension = singleValueParser(value);
+			route->cgi_extension = multipleValuesParser(value);
 			route->is_cgi_extension = true;
 		} else {
 			Log::e("Warning, there is more than one cgi_extension directive");
@@ -138,9 +138,8 @@ void ConfigurationFile::handleLocation( std::string file, size_t *startIndex, st
 
 	route.path = path;
 	route.directory_listing = false;
-	route.is_upload = false;
-	route.is_upload_path = false;
-	route.is_isCGI = false;
+	route.isCGI = false;
+	route.upload = false;
 
 	initRouteBooleans(&route);
 	for (i = 0; i < endIndex && file[i] != '}'; i++) {

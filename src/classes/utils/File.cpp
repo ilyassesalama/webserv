@@ -78,11 +78,11 @@ std::string File::getContentType(std::string path) {
     }
 }
 
-std::string File::getCGIbinary(std::string path) {
+std::string File::getCGIbinary(std::string path, t_route *route) {
 	std::string cgiBinPath = getCurrentDir() + "/src/classes/cgi/bin";
-    if(String::endsWith(path, ".php")) {
+    if(String::endsWith(path, ".php") && std::find(route->cgi_extension.begin(), route->cgi_extension.end(), "php") != route->cgi_extension.end()) {
         return cgiBinPath.append("/php-cgi");
-    } else if (String::endsWith(path, ".py")) {
+    } else if (String::endsWith(path, ".py") && std::find(route->cgi_extension.begin(), route->cgi_extension.end(), "py") != route->cgi_extension.end()) {
         return cgiBinPath.append("/py-cgi");
     } else {
         return "" ; // :3 

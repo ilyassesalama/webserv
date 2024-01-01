@@ -134,7 +134,6 @@ void Response::handleDirectoryRequest() {
     if (File::isFile(this->path + indexHTML)) {
 		this->path += indexHTML;
         this->responseBody = readFileByOffset();
-		this->statusCode = 200;
     } else {
         bool directory_listing = this->currentRoute->directory_listing;
 
@@ -179,10 +178,16 @@ void Response::CGIhandler() {
 void Response::handleFileRequest() {
     this->isCGI = this->isLocationHasCGI();
     if(this->isCGI){
+        //salama khaso ydir khdamto
         CGIhandler();
         return;
     }
-    this->responseBody = readFileByOffset();
+    if(this->request->getRequestLine()["method"] == "GET")
+        this->responseBody = readFileByOffset();
+    else {
+        this->statusCode = 403;
+        throw(Utils::WebservException("403 FORBIDEN ..."));
+    }
 }
 
 void Response::clearResponse() {
@@ -206,4 +211,9 @@ void Response::buildResourcePath(t_route *route) {
     requestedResource.append(route->root);
     requestedResource.append(this->path);
     this->path = requestedResource;
+}
+
+
+bool Response::isCGIon() {
+    return(this->currentRoute->isCGI);
 }

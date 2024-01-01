@@ -27,7 +27,7 @@ typedef struct s_route {
 	bool isCGI;
 
 	// cgi specific
-	std::string cgi_extension;
+	std::vector<std::string> cgi_extension;
 
 	bool is_allowed_methods;
 	bool is_redirection;

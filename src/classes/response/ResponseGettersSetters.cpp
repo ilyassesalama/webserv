@@ -7,7 +7,7 @@ bool Response::isLocationHasCGI() {
                 Log::d("The CGI method is not supported at this location");
             return(false);
         } //abahsine will add more extentions to the config file 
-        if(File::getCGIbinary(path) == "") {
+        if(File::getCGIbinary(path, this->currentRoute) == "") {
             if(FULL_LOGGING_ENABLED)
                 Log::d("The CGI extension is not supported at this location");
             return(false);            
