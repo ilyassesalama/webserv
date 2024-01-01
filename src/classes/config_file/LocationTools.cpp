@@ -36,6 +36,7 @@ void initRouteBooleans(t_route *route) {
 	route->is_directory_listing = false;
 	route->is_index = false;
 	route->is_cgi_extension = false;
+	route->is_isCGI = false;
 	route->is_upload = false;
 	route->is_upload_path = false;
 }

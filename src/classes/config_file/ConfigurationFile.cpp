@@ -113,7 +113,14 @@ void ConfigurationFile::parseRouteValue( std::string key, std::string value, t_r
 		} else {
 			Log::e("Warning, there is more than one upload_path directive");
 		}
-	} else if (key != "root" && key != "directory_listing" && key != "index" && key != "cgi_extension" && key != "allowed_methods" && key != "redirection" && key != "upload_path" && key != "upload") {
+	} else if (key == "cgi") {
+		if (!route->is_isCGI) {
+			route->isCGI = boolParser(value);
+			route->is_isCGI = true;
+		} else {
+			Log::e("Warning, there is more than one cgi directive");
+		}
+	} else {
 		throw (Utils::WebservException ("Error, directive not allowed"));
 	}
 }
@@ -133,6 +140,7 @@ void ConfigurationFile::handleLocation( std::string file, size_t *startIndex, st
 	route.directory_listing = false;
 	route.is_upload = false;
 	route.is_upload_path = false;
+	route.is_isCGI = false;
 
 	initRouteBooleans(&route);
 	for (i = 0; i < endIndex && file[i] != '}'; i++) {
