@@ -91,48 +91,49 @@ void Response::uploadFile() {
 
 void Response::POSTResponseBuilder() {
 
-	this->isCGI = this->isLocationHasCGI();
+	if (File::isDirectory(this->path)) {
 
-	if (this->isCGI || !this->currentRoute->upload) {
+		if (!this->currentRoute->is_directory.empty()) {
+			this->path += this->currentRoute->is_directory;
+		}
 
-		if (File::isDirectory(this->path)) {
+		this->isCGI = this->isLocationHasCGI();
 
-			size_t slashPos = this->path.find_last_of("/");
-
-			std::string indexHTML = slashPos != this->path.size() - 1 ? "/index.html" : "index.html";
-
-			if (!this->currentRoute->is_directory.empty() && this->isCGI) {
-				this->path += this->currentRoute->is_directory;
-			}
-
-			if ((File::isFile(this->path) || !this->currentRoute->is_directory.empty()) && this->isCGI) {
-				CGIhandler();
-				return;
-			}
-		} else if (this->isCGI) {
+		if (this->isCGI) {
 			CGIhandler();
 			return;
 		}
 		this->statusCode = 403;
-		this->responseBody = this->getErrorPageHTML();
+		throw(Utils::WebservException("ResponseBuilder: 403 Forbidden"));
 	} else {
-		this->statusCode = 201;
-		if (this->request->getIsRequestMultipart()) {
-			//note !!!!! : this condition did not triggered even the request is multipart !!!!!
-			std::cout << "will enter if header is multipart" << std::endl;
-			this->uploading = true;
-			this->boundary = this->request->getBoundaryInfos(0);
-			this->boundaryFilePath = "/tmp/" + this->request->getBoundaryInfos(1);
-			this->statusCode = 201;
-			this->responseBody = "";
-
+		this->isCGI = this->isLocationHasCGI();
+	
+		if (this->isCGI) {
+			CGIhandler();
+			return;
 		}
-		else if (this->request->getIsRequestChunked())
-			std::cout << "will enter if header is chunked" << std::endl;
-		else
-			std::cout << "will enter if header is content-length" << std::endl;
-	}
 
+		if (this->currentRoute->upload) {
+			this->statusCode = 201;
+			if (this->request->getIsRequestMultipart()) {
+				//note !!!!! : this condition did not triggered even the request is multipart !!!!!
+				std::cout << "will enter if header is multipart" << std::endl;
+				this->uploading = true;
+				this->boundary = this->request->getBoundaryInfos(0);
+				this->boundaryFilePath = this->request->getBoundaryInfos(1);
+				this->statusCode = 201;
+				this->responseBody = "";
+
+			}
+			else if (this->request->getIsRequestChunked())
+				std::cout << "will enter if header is chunked" << std::endl;
+			else
+				std::cout << "will enter if header is content-length" << std::endl;
+		} else {
+			this->statusCode = 403;
+			throw(Utils::WebservException("ResponseBuilder: 403 Forbidden"));
+		}
+	}
 	
     this->setHeaders();
     this->setResponseLine();
