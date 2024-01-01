@@ -6,8 +6,20 @@ void CGInstance::initCGInstance() {
     setFilePath(request.getRequestedResourcePath());
     setCGIPath(File::getCGIbinary(this->filePath,this->request.getRoute()));
     setCGIServer();
+    setRequestBody();
     setEnvironnementVariables();
     executeScript();
+}
+
+void CGInstance::setRequestBody() {
+    std::string requestBody = "";
+    try {
+        requestBody = File::getFileContent(request.getFileName());
+    } catch (Utils::WebservException &e) {
+        Log::w("Can't open cgi body path due to: " + std::string(e.what()));
+    }
+    this->cgiRequestBodySize = String::to_string(requestBody.size());
+    this->cgiRequestBody = requestBody;
 }
 
 void CGInstance::setEnvironnementVariables() {
@@ -22,6 +34,8 @@ void CGInstance::setEnvironnementVariables() {
     env_map["SCRIPT_NAME"] = scriptName;
     env_map["DOCUMENT_ROOT"] = documentRoot;
     env_map["SERVER_NAME"] = "localhost";
+    env_map["CONTENT_LENGTH"] = this->cgiRequestBodySize;
+    env_map["CONTENT_TYPE"] = request.getHeaders()["Content-Type"];
     env_map["SERVER_PORT"] = "8080";
     env_map["REDIRECT_STATUS"] = "1";
     this->cgiEnv = Utils::convertMapToChar2D(env_map);
@@ -31,6 +45,9 @@ void CGInstance::executeScript() {
     int readBytes;
     FILE *file_in = tmpfile(), *file_out = tmpfile();
     int fd_in = fileno(file_in), fd_out = fileno(file_out);
+
+    write(fd_in, this->cgiRequestBody.c_str(), String::to_size_t(this->cgiRequestBodySize));
+    lseek(fd_in, 0, SEEK_SET); // reset the file pointer to the beginning of the file
 
     pid_t pid = fork();
     if (pid == 0) {
