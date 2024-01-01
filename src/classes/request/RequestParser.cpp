@@ -239,9 +239,7 @@ void RequestParser::parseRequestBody(std::string &requestData){
 
 		getChunkedData(requestBody);
 
-	}
-	
-	if (isRequestMultipart) {
+	} else if (isRequestMultipart) {
 
 		if (this->isFirstRequest) {
 			getBoundary(this->headers["Content-Type"]);
