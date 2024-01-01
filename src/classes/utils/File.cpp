@@ -15,31 +15,28 @@ std::string File::getFileContent(const std::string &path){
     return content;
 }
 
-std::string File::getExtension(std::map<std::string, std::string> &headers) {
-	bool isContentType = Utils::isMapKeyExists(headers, "Content-Type");
-	if (!isContentType)	return "";
-
-    if (headers["Content-Type"] == "text/css") {
+std::string File::getContentTypeExtension(const std::string &type) {
+    if (type == "text/css") {
         return ".css";
-    } else if(headers["Content-Type"] == "video/mp4") {
+    } else if(type == "video/mp4") {
         return ".mp4";
-    }else if(headers["Content-Type"] == "application/pdf") {
+    } else if(type == "application/pdf") {
         return ".pdf";
-    } else if (headers["Content-Type"] == "application/javascript") {
+    } else if (type == "application/javascript" || type == "text/javascript") {
         return ".js";
-    } else if (headers["Content-Type"] == "text/html") {
+    } else if (type == "text/html") {
         return ".html";
-    } else if (headers["Content-Type"] == "image/jpeg") {
+    } else if (type == "image/jpeg") {
         return ".jpeg";
-    } else if (headers["Content-Type"] == "image/png") {
+    } else if (type == "image/png") {
         return ".png";
-    } else if (headers["Content-Type"] == "image/gif") {
+    } else if (type == "image/gif") {
         return ".gif";
-    } else if (headers["Content-Type"] == "image/svg+xml") {
+    } else if (type == "image/svg+xml") {
         return ".svg";
-    } else if (headers["Content-Type"] == "image/x-icon") {
+    } else if (type == "image/x-icon") {
         return ".ico";
-    } else if (headers["Content-Type"] == "font/ttf") {
+    } else if (type == "font/ttf") {
         return ".ttf";
     } else {
         return "";  // default
@@ -55,7 +52,7 @@ std::string File::getContentType(std::string path) {
         return "text/css";
     } else if(String::endsWith(path,".mp4")) {
         return("video/mp4");
-    }else if(String::endsWith(path, ".pdf")) {
+    } else if(String::endsWith(path, ".pdf")) {
         return("application/pdf");
     } else if (String::endsWith(path, ".js")) {
         return "application/javascript";

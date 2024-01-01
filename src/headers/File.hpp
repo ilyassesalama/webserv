@@ -14,6 +14,6 @@ class File {
         static std::string getCGIbinary(std::string path, t_route *route);
 		static std::string generateFileName(std::string name);
         static std::string getCurrentDir();
-		static std::string getExtension(std::map<std::string, std::string> &headers);
+		static std::string getContentTypeExtension(const std::string &type);
         static bool removeFile(std::string path);
 };

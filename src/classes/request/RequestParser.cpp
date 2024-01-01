@@ -223,7 +223,7 @@ void RequestParser::parseRequestBody(std::string &requestData){
 
 	if (!isRequestChunked && !isRequestMultipart) {
 		if (this->isFirstRequest)
-			this->fileName = File::getWorkingDir() + this->route->upload_path + File::generateFileName("uploaded") + File::getExtension(headers);
+			this->fileName = File::getWorkingDir() + this->route->upload_path + File::generateFileName("uploaded") + File::getContentTypeExtension(this->headers["Content-Type"]);
 		std::fstream myFile(this->fileName, std::ios::binary | std::ios::app);
 		if (!myFile.is_open()) {
 			this->parsingState.ok = true;
@@ -235,7 +235,7 @@ void RequestParser::parseRequestBody(std::string &requestData){
 	} else if (isRequestChunked) {
 
 		if (this->isFirstRequest)
-			this->fileName = File::getWorkingDir() + this->route->upload_path + File::generateFileName("uploaded") + File::getExtension(headers);
+			this->fileName = File::getWorkingDir() + this->route->upload_path + File::generateFileName("uploaded") + File::getContentTypeExtension(this->headers["Content-Type"]);
 
 		getChunkedData(requestBody);
 

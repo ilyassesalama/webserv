@@ -19,26 +19,20 @@ std::string generateRandomName() {
 
 void Response::handleboundaryStart(std::ifstream& inputfile) {
 	std::string boundaryContente;
-	std::string Content_Type = "";
+	std::string contentType = "";
 	std::string line;
 	std::map<std::string, std::string> contentTempMap;
 
 	while(std::getline(inputfile,line)) {
-		if(line == "\r")
-			break;
-		if(line.find("Content-Type: ") != std::string::npos) {
-			std::string contentType = line.substr(14, line.substr(14).find("\r"));
-			Log::w("<" + contentType + ">");
-			contentTempMap["Content-Type"] = contentType;
-			Log::w(File::getExtension(contentTempMap));
+		if(line == "\r") break;
 
+		if(line.find("Content-Type: ") != std::string::npos) {
+			contentType = line.substr(14, line.substr(14).find("\r"));
 		}
 		boundaryContente.append(line+'\n');
 	}
-
 	
-	this->uploadFilePath = File::getWorkingDir() + "/uploads/" + generateRandomName() + File::getExtension(contentTempMap);
-	std::cout << this->uploadFilePath << std::endl;
+	this->uploadFilePath = File::getWorkingDir() + "/uploads/" + generateRandomName() + File::getContentTypeExtension(contentType);
 }
 void Response::saveOnFile(std::string data) {
     std::ofstream outputFile(this->uploadFilePath.c_str(), std::ios::binary | std::ios::app);
@@ -52,35 +46,19 @@ void Response::saveOnFile(std::string data) {
     }
 }
 
-
-
 void Response::uploadFile() {
 	std::ifstream inputFile(this->boundaryFilePath.c_str(), std::ios::binary);
 	std::string line;
 	int count = 100;
-	if(!inputFile.is_open()) {
-		Log::e("error opening the file ");
-		//need to be changed
-		exit(0);
-	}
+	if(!inputFile.is_open()) throw Utils::WebservException("Error opening the input file");
 	inputFile.seekg((*this).uploadFileOffset);
 	while(std::getline(inputFile,line)) {
 		if(line == "--" + this->boundary + '\r') {
-			Log::e("handle boundary ...");
 			handleboundaryStart(inputFile);
-		}
-		else if(line == "--" + this->boundary + "--") {
-			Log::e("upload finished ...");
-			//need to be changed just for testing 
-			exit(0);
-		}
-		else
-			saveOnFile(line);
+		} else if(line == "--" + this->boundary + "--\r") break;
+		  else saveOnFile(line);
 		count --;
-		if(count == 0) {
-			std::cout << "break;" << std::endl;
-			break;
-		}
+		if(count == 0) break;
 	}
 	this->uploadFileOffset = inputFile.tellg();
 	if(this->uploadFileOffset == -1) {
