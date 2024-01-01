@@ -70,12 +70,12 @@ void ConfigurationFile::parseRouteValue( std::string key, std::string value, t_r
 		} else {
 			Log::e("Warning, there is more than one directory_listing directive");
 		}
-	} else if (key == "is_directory") {
-		if (!route->is_is_directory) {
-			route->is_directory = singleValueParser(value);
-			route->is_is_directory = true;
+	} else if (key == "index") {
+		if (!route->is_index) {
+			route->index = singleValueParser(value);
+			route->is_index = true;
 		} else {
-			Log::e("Warning, there is more than one is_directory directive");
+			Log::e("Warning, there is more than one index directive");
 		}
 	} else if (key == "cgi_extension") {
 		if (!route->is_cgi_extension) {
@@ -113,7 +113,7 @@ void ConfigurationFile::parseRouteValue( std::string key, std::string value, t_r
 		} else {
 			Log::e("Warning, there is more than one upload_path directive");
 		}
-	} else if (key != "root" && key != "directory_listing" && key != "is_directory" && key != "cgi_extension" && key != "allowed_methods" && key != "redirection" && key != "upload_path" && key != "upload") {
+	} else if (key != "root" && key != "directory_listing" && key != "index" && key != "cgi_extension" && key != "allowed_methods" && key != "redirection" && key != "upload_path" && key != "upload") {
 		throw (Utils::WebservException ("Error, directive not allowed"));
 	}
 }
@@ -194,7 +194,7 @@ void ConfigurationFile::handleDirectives( std::string file, t_server server ) {
 
 			if (isRouteAlreadyExist(server, directiveValue)) {
 				skipRoute(&file[i], &i);
-				Log::e("Error, there is already a route with the same path");
+				Log::w("Warning, there is already a route with the same location path this one is going to be ignored");
 			} else {
 				skipSpaces(file, &i);
 

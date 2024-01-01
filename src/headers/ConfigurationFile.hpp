@@ -20,7 +20,7 @@ typedef struct s_route {
 	std::string root;
 	std::string redirection;
 	std::vector<std::string>allowed_methods;
-	std::string is_directory;
+	std::string index;
 	std::string upload_path;
 	bool directory_listing;
 	bool upload;
@@ -32,7 +32,7 @@ typedef struct s_route {
 	bool is_redirection;
 	bool is_root;
 	bool is_directory_listing;
-	bool is_is_directory;
+	bool is_index;
 	bool is_cgi_extension;
 	bool is_upload;
 	bool is_upload_path;
