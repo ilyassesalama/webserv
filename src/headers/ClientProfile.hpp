@@ -22,10 +22,10 @@ struct ClientProfile {
     time_t connectionTime;
     int requestCount;
     
-    std::string request;
+    // std::string requestStr;
     std::string responseStr;
 
-    RequestParser parser;
+    RequestParser request;
     Response response;
 
 	std::string requestBuffered;

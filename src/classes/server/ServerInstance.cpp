@@ -160,35 +160,35 @@ int ServerInstance::receiveRequest(int clientFd) {
     else
         server = this->serverInformations;
 	client->connectionTime = std::time(0);
-	client->parser.setServerInformation(server);
+	client->request.setServerInformation(server);
 
 	client->requestBuffered += receivedRequest;
 
 	if (client->requestBuffered.find("\r\n\r\n") != std::string::npos) {
 		try {
 			if (client->isHeaders) {
-				client->parser.mergeRequestChunks(client->requestBuffered);
+				client->request.mergeRequestChunks(client->requestBuffered);
 				client->isHeaders = false;
 			}
 			else
-				client->parser.mergeRequestChunks(receivedRequest);
+				client->request.mergeRequestChunks(receivedRequest);
 		} catch (Utils::WebservException &e) {
 			Log::e(e.what());
 			// return(INVALIDE_REQUEST); // TODO: check if this is needed
 		}
 	}
 
-    if(client->parser.getParsingState().ok) {
-        client->request = client->parser.getRequestData();
-		client->response.setStatusCode(client->parser.getParsingState().statusCode);
-        client->response.setPath(client->parser.getRequestedResourcePath());
-		client->response.setRequest(client->parser);
+    if(client->request.getParsingState().ok) {
+        // client->requestStr = client->request.getRequestData();
+		client->response.setStatusCode(client->request.getParsingState().statusCode);
+        client->response.setPath(client->request.getRequestedResourcePath());
+		client->response.setRequest(client->request);
 		client->response.setServer(*(this->serverInformations));
-        client->response.setRoute(client->parser.getRoute());
+        client->response.setRoute(client->request.getRoute());
 		client->response.responseBuilder();
-        client->request.clear();
-		client->parser.nullOutVars();
-        client->parser.getRequestData().clear();
+        // client->requestStr.clear();
+		client->request.nullOutVars();
+        client->request.getRequestData().clear();
 		client->requestBuffered.clear();
 		client->isHeaders = true;
         client->isReceiving = false;
