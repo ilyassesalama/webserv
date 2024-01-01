@@ -3,6 +3,7 @@ const CARDS = document.querySelectorAll('.article')
 
 const pageTitle = document.getElementById("webservTitle");
 const pageSubtitle = document.getElementById("webservSubtitle");
+const loggedInTitle = document.getElementById("loggedInTitle");
 
 const homePage = document.getElementById("home");
 const loginPage = document.getElementById("login");
@@ -15,11 +16,11 @@ const loginNavButton = document.getElementById("loginNavButton");
 const uploadNavButton = document.getElementById("uploadNavButton");
 
 loginNavButton.addEventListener("click", () => {
-	switchPage("login");
+	checkLogin();
 });
 
 homeNavButton.addEventListener("click", () => {
-	switchPage("home");
+	checkLogin();
 });
 
 uploadNavButton.addEventListener("click", () => {
@@ -69,9 +70,19 @@ function switchPage(page){
 			titleText = "Upload";
 			subText = "Upload your website to the server.";
 			break;
+		case "logged_in":
+			homePage.classList.add("active");
+			loginPage.classList.remove("active");
+			uploadPage.classList.remove("active");
+			homeNavButton.style.display = "none";
+			loginNavButton.style.display = "none";
+			uploadNavButton.style.display = "block";
+			titleText = "Logged In";
+			subText = "Welcome back, " + document.cookie.split("username=")[1] + " to our awesome webserver!"
+			break;
 	}
 	setTimeout(function() {
-		writeChars("webservTitle", titleText, 100);
+		writeChars("webservTitle", titleText, 200);
 	}, 50);
 	setTimeout(function() {
 		writeChars("webservSubtitle", subText, 300);
@@ -99,7 +110,7 @@ loginForm.addEventListener("submit", e => {
 			alert("Logged in successfully!");
 			document.cookie = "logged_in=true";
 			document.cookie = "username=" + username;
-			switchPage("home");
+			checkLogin();
 		} else {
 			alert("Incorrect username or password.");
 		}
@@ -110,13 +121,12 @@ loginForm.addEventListener("submit", e => {
 
 function checkLogin() {
 	if (document.cookie.includes("logged_in=true")) {
-		alert("You are already logged in!");
+		switchPage("logged_in");
 	} else {
-		console.log("Not logged in.");
+		switchPage("home");
 	}
 }
 
-switchPage("home");
 checkLogin();
 
 // --------------------- text animation stuff --------------------- //
