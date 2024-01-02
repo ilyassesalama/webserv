@@ -162,7 +162,7 @@ void ConnectionsManager::socketMonitore() {
 }
 
 size_t ConnectionsManager::getServerCount() {
-    return((*this).serverCount);
+    return(this->serverCount);
 }
 
 ServerInstance* ConnectionsManager::isServerExist(ServerInstance &server) {

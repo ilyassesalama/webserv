@@ -1,21 +1,21 @@
 #include "../../../webserv.hpp"
 
-std::string getBoundaryFileName(std::string boundaryContente, std::string contentType) {
-	size_t startPosition = boundaryContente.find("filename=\"");
+std::string getBoundaryFileName(std::string boundaryContent, std::string contentType) {
+	size_t startPosition = boundaryContent.find("filename=\"");
 	if (startPosition != std::string::npos)
 		startPosition += 10;
 	else {
-		startPosition = boundaryContente.find("name=\"");
+		startPosition = boundaryContent.find("name=\"");
 		if (startPosition != std::string::npos)
 			startPosition += 6;
 	}
 
-	size_t endPosition = boundaryContente.find("\"", startPosition);
-	return startPosition != std::string::npos && !boundaryContente.substr(startPosition, endPosition - startPosition).empty() ? boundaryContente.substr(startPosition, endPosition - startPosition) : File::generateFileName("boundary") + File::getContentTypeExtension(contentType);
+	size_t endPosition = boundaryContent.find("\"", startPosition);
+	return startPosition != std::string::npos && !boundaryContent.substr(startPosition, endPosition - startPosition).empty() ? boundaryContent.substr(startPosition, endPosition - startPosition) : File::generateFileName("boundary") + File::getContentTypeExtension(contentType);
 }
 
 void Response::handleboundaryStart(std::ifstream& inputfile) {
-	std::string boundaryContente;
+	std::string boundaryContent;
 	std::string contentType = "";
 	std::string line;
 	std::map<std::string, std::string> contentTempMap;
@@ -27,10 +27,10 @@ void Response::handleboundaryStart(std::ifstream& inputfile) {
 			contentType = line.substr(14, line.substr(14).find("\r"));
 			std::cout<< "Content-Type: " << contentType << std::endl;
 		}
-		boundaryContente.append(line+'\n');
+		boundaryContent.append(line+'\n');
 	}
 	
-	std::string BoundaryFileName = getBoundaryFileName(boundaryContente, contentType);
+	std::string BoundaryFileName = getBoundaryFileName(boundaryContent, contentType);
 
 	this->uploadFilePath = File::getWorkingDir() + this->currentRoute->upload_path + BoundaryFileName;
 }
@@ -57,7 +57,7 @@ void Response::uploadFile() {
 		buildErrorResponse();
 		throw Utils::WebservException("Error opening the input file");
 	}
-	inputFile.seekg((*this).uploadFileOffset);
+	inputFile.seekg(this->uploadFileOffset);
 	while(std::getline(inputFile,line)) {
 		if(line == "--" + this->boundary + '\r') {
 			handleboundaryStart(inputFile);

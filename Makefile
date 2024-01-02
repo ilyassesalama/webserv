@@ -3,7 +3,7 @@ NAME = webserv
 SRC = $(shell find . -name '*.cpp')
 HEADERS = $(shell find . -name '*.hpp')
 OBJ = $(SRC:.cpp=.o)
-FLAGS = #-std=c++98 -Wall -Wextra -Werror
+FLAGS = -std=c++98 -Wall -Wextra -Werror
 COMPILER = c++
 
 all: $(NAME)
