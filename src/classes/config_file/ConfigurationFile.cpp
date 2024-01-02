@@ -25,14 +25,14 @@ void ConfigurationFile::parseValue( std::string key, std::string value, t_server
 			server->server_name = singleValueParser( value );
 			server->is_server_name = true;
 		} else {
-			Log::e("Warning, there is more than one server_name directive");
+			Log::w("Warning, there is more than one server_name directive");
 		}
 	} else if (key == "client_body_size") {
 		if (!server->is_client_body_size) {
 			parseClientBodySize(&server->client_body_size, server->body_size_unit, value);
 			server->is_client_body_size = true;
 		} else {
-			Log::e("Warning, there is more than one client_body_size directive");
+			Log::w("Warning, there is more than one client_body_size directive");
 		}
 	} else if (key == "error_page") {
 
@@ -61,28 +61,28 @@ void ConfigurationFile::parseRouteValue( std::string key, std::string value, t_r
 			route->root = singleValueParser(value);
 			route->is_root = true;
 		} else {
-			Log::e("Warning, there is more than one root directive");
+			Log::w("Warning, there is more than one root directive");
 		}
 	} else if (key == "directory_listing") {
 		if (!route->is_directory_listing) {
 			route->directory_listing = boolParser(value);
 			route->is_directory_listing = true;
 		} else {
-			Log::e("Warning, there is more than one directory_listing directive");
+			Log::w("Warning, there is more than one directory_listing directive");
 		}
 	} else if (key == "index") {
 		if (!route->is_index) {
 			route->index = singleValueParser(value);
 			route->is_index = true;
 		} else {
-			Log::e("Warning, there is more than one index directive");
+			Log::w("Warning, there is more than one index directive");
 		}
 	} else if (key == "cgi_extension") {
 		if (!route->is_cgi_extension) {
 			route->cgi_extension = multipleValuesParser(value);
 			route->is_cgi_extension = true;
 		} else {
-			Log::e("Warning, there is more than one cgi_extension directive");
+			Log::w("Warning, there is more than one cgi_extension directive");
 		}
 	} else if (key == "allowed_methods") {
 		if (!route->is_allowed_methods) {
@@ -90,35 +90,35 @@ void ConfigurationFile::parseRouteValue( std::string key, std::string value, t_r
 			checkAllowedMethods(route->allowed_methods);
 			route->is_allowed_methods = true;
 		} else {
-			Log::e("Warning, there is more than one allowed_methods directive");
+			Log::w("Warning, there is more than one allowed_methods directive");
 		}
 	} else if (key == "redirection") {
 		if (!route->is_redirection) {
 			route->redirection = singleValueParser(value);
 			route->is_redirection = true;
 		} else {
-			Log::e("Warning, there is more than one redirection directive");
+			Log::w("Warning, there is more than one redirection directive");
 		}
 	} else if (key == "upload") {
 		if (!route->is_upload) {
 			route->upload = boolParser(value);
 			route->is_upload = true;
 		} else {
-			Log::e("Warning, there is more than one upload directive");
+			Log::w("Warning, there is more than one upload directive");
 		}
 	} else if (key == "upload_path") {
 		if (!route->is_upload_path) {
 			route->upload_path = singleValueParser(value);
 			route->is_upload_path = true;
 		} else {
-			Log::e("Warning, there is more than one upload_path directive");
+			Log::w("Warning, there is more than one upload_path directive");
 		}
 	} else if (key == "cgi") {
 		if (!route->is_isCGI) {
 			route->isCGI = boolParser(value);
 			route->is_isCGI = true;
 		} else {
-			Log::e("Warning, there is more than one cgi directive");
+			Log::w("Warning, there is more than one cgi directive");
 		}
 	} else {
 		throw (Utils::WebservException ("Error, directive not allowed"));
