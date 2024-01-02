@@ -1,6 +1,8 @@
 #include "../../../webserv.hpp"
 
 bool Response::isLocationHasCGI() {
+    if(this->currentRoute == NULL)
+        return false;
     if(!this->currentRoute->cgi_extension.empty()) {
        if(std::find(this->currentRoute->allowed_methods.begin(), this->currentRoute->allowed_methods.end(), this->request->getRequestLine()["method"]) == this->currentRoute->allowed_methods.end()) {
             if(FULL_LOGGING_ENABLED)

@@ -97,6 +97,8 @@ bool RequestParser::isPathAccessible() {
             this->requestResourcePath.append(slashR->root);
             this->requestResourcePath.append(getRequestLine()["path"]);
         }
+        else return(false);
+
     } else {
         this->route = route;
         this->requestResourcePath.append(File::getWorkingDir());
