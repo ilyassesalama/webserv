@@ -11,7 +11,6 @@ std::string getBoundaryFileName(std::string boundaryContente, std::string conten
 	}
 
 	size_t endPosition = boundaryContente.find("\"", startPosition);
-
 	return startPosition != std::string::npos && !boundaryContente.substr(startPosition, endPosition - startPosition).empty() ? boundaryContente.substr(startPosition, endPosition - startPosition) : File::generateFileName("boundary") + File::getContentTypeExtension(contentType);
 }
 
@@ -39,12 +38,12 @@ void Response::saveOnFile(std::string data) {
     std::ofstream outputFile(this->uploadFilePath.c_str(), std::ios::binary | std::ios::app);
 
     if (!outputFile.is_open()) {
-		std::cout << this->uploadFilePath << std::endl;
-        Log::e("Error opening the output file");
+		this->statusCode = 500;
+		buildErrorResponse();
         throw Utils::WebservException("Error opening the output file");
     } else {
         outputFile << data + '\n';
-        outputFile.close();  // Close the file explicitly
+        outputFile.close();
     }
 }
 
@@ -52,7 +51,12 @@ void Response::uploadFile() {
 	std::ifstream inputFile(this->boundaryFilePath.c_str(), std::ios::binary);
 	std::string line;
 	int count = 100;
-	if(!inputFile.is_open()) throw Utils::WebservException("Error opening the input file");
+	if(!inputFile.is_open()) {
+		this->statusCode = 500;
+		this->responseVector.clear();
+		buildErrorResponse();
+		throw Utils::WebservException("Error opening the input file");
+	}
 	inputFile.seekg((*this).uploadFileOffset);
 	while(std::getline(inputFile,line)) {
 		if(line == "--" + this->boundary + '\r') {

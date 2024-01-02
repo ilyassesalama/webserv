@@ -240,12 +240,11 @@ int ServerInstance::sendResponse(int clientFd) {
         try {
             client->response.uploadFile(); 
             Log::e("uploading ...");
+            return(999);
         }
         catch(Utils::WebservException &ex) {
             std::cout << ex.what() << std::endl;
-            return(DROP_CLIENT);
         }
-        return(999);
     }
     if(client == NULL) {
         Log::e("client NULL");

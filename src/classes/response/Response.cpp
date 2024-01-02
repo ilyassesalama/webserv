@@ -77,6 +77,10 @@ void Response::feedDataToTheSender() {
     to the response verctor to get ready for sending as a response.
 */
 void Response::buildErrorResponse() {
+    this->responseVector.clear();
+    this->response.clear();
+    this->responseHeaders.clear();
+    this->responseBody.clear();
     this->responseBody = getErrorPageHTML();
     this->setHeaders();
     this->setResponseLine();
