@@ -211,6 +211,7 @@ void ConfigurationFile::handleDirectives( std::string file, t_server server ) {
 
 				handleLocation( &file[i], &i, directiveValue, &server );
 	
+				if (file[i] == '{') throw (Utils::WebservException ("Error, opening brace at the end of location directive"));
 			}
 		}
 
