@@ -22,7 +22,7 @@ class ServerInstance {
         bool isInitialized();
 
         //OTHER MEMBERS FUNCTIONS
-        void setupServerConfiguration();
+        bool setupServerConfiguration();
         void dropClient(int clientFd);
         bool isClientFdInPollFd(int clientFd);
         int receiveRequest(int clientFd);

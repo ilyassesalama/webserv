@@ -80,34 +80,39 @@ void ServerInstance::AddToClientProfiles(ClientProfile &client) {
     this->clientProfiles.push_back(client);
 }
 
-void ServerInstance::setupServerConfiguration() {
+bool ServerInstance::setupServerConfiguration() {
     int opt = 1;
-    
+
     Log::i("Configuring local network...");
-    getaddrinfo(getListenAdress().c_str(), getServerPort().c_str(), &this->hint, &this->bindAddress);
+    if(getaddrinfo(getListenAdress().c_str(), getServerPort().c_str(), &this->hint, &this->bindAddress) != 0)
+    {
+        Log::e("Failed to get address info: " + std::string(gai_strerror(errno)));
+        return false;
+    }
     Log::i("Created a listening socket on port " + getServerPort());
     this->listenSocket = socket(this->bindAddress->ai_family, this->bindAddress->ai_socktype, this->bindAddress->ai_protocol);
     if(this->listenSocket < 0) {
         Log::e("Failed to create a listening socket due to: " + std::string(strerror(errno)));
-        exit(1);
+        return false;
     }
     setSocketNonBlocking(this->listenSocket);
     if (setsockopt(getListenSocketFd(), SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
         Log::e("Failed to set socket options: " + std::string(strerror(errno)));
-        exit(1);
+        return false;
     }
     Log::i("Binding socket to local address...");
     if(bind(getListenSocketFd(), this->bindAddress->ai_addr, this->bindAddress->ai_addrlen)) {
         Log::e("Failed to bind socket to local address due to: " + std::string(strerror(errno)));
-        exit(1);
+        return false;
     }
     freeaddrinfo(this->bindAddress);
     Log::i("Listening for incoming connections on port " + getServerPort());
     if(listen(getListenSocketFd(),this->backLog) < 0) {
         Log::e("Failed Listening for incoming connections");
-        exit(1);
+        return false;
     }
     AddFdToPollFds(getListenSocketFd());
+    return true;
 }
 
 std::string extractTheHostFromTheRequest(const std::string& request) {

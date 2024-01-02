@@ -25,8 +25,8 @@ void startTheParty(ConfigurationFile &obj) {
 			server = master.isServerExist(s);
 			if(server == NULL) {
 				// the server in nor duplicated need to lunch the configuration
-				s.setupServerConfiguration();
-				master.addServerToTheSet(s);
+				if(s.setupServerConfiguration() == true)
+					master.addServerToTheSet(s);
 			}
 			else if (server != NULL) {
 				// the server is duplicated
