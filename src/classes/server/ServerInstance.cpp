@@ -2,7 +2,7 @@
 
 ServerInstance::ServerInstance(s_server &serverInfos): backLog(200) {
 
-    (*this).initialized = true;
+    this->initialized = true;
     setListenAdressPort(serverInfos);
     this->duplicated = false;
     this->serverName = serverInfos.server_name;
@@ -34,12 +34,12 @@ void ServerInstance::setListenAdressPort(t_server &serverInfos) {
     this->listenPort =  serverInfos.listen.port;
     if(this->listenPort > 65535) {
         Log::e("Port Out Of Range " + String::to_string(serverInfos.listen.port) + " ... ");
-        (*this).initialized = false;
+        this->initialized = false;
         return;
     }
     this->listenAdress = serverInfos.listen.host;
     // if(String::isIpFormCorrect(this->listenAdress) != true) {
-    //     (*this).initialized = false;
+    //     this->initialized = false;
     //     Log::e("Invalid Host Address " + serverInfos.listen.host + " ... ");
     // }
 }
@@ -244,7 +244,6 @@ int ServerInstance::sendResponse(int clientFd) {
     if(client->response.isUploading()) {
         try {
             client->response.uploadFile(); 
-            Log::e("uploading ...");
             return(999);
         }
         catch(Utils::WebservException &ex) {
