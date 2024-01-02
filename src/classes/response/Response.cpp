@@ -18,7 +18,7 @@ Response::Response() {
     this->uploading = false;
     this->uploadFileOffset = 0;
     this->boundary = "";
-    this->boundaryFilePath = "";
+    this->tmpUploadFilePath = "";
     this->uploadFilePath = "";
 }
 

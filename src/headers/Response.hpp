@@ -44,7 +44,8 @@ class Response {
         bool isLocationHasCGI();
         void CGIhandler();
 
-        void uploadFile();
+        void uploadBoundaryFile();
+        void uploadChunkedFile();
         void saveOnFile(std::string data);
         void handleboundaryStart(std::ifstream& inputfile);
         bool isUploading();
@@ -75,7 +76,7 @@ class Response {
         std::streampos uploadFileOffset;
         bool uploading;
         std::string boundary;
-        std::string boundaryFilePath;
+        std::string tmpUploadFilePath;
         std::string uploadFilePath;
 
 };

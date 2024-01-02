@@ -243,7 +243,7 @@ int ServerInstance::sendResponse(int clientFd) {
     client->connectionTime = std::time(0);
     if(client->response.isUploading()) {
         try {
-            client->response.uploadFile(); 
+            client->response.uploadBoundaryFile(); 
             return(999);
         }
         catch(Utils::WebservException &ex) {

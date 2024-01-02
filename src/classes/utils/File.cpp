@@ -160,8 +160,11 @@ std::string File::getCurrentDir() {
 }
 
 bool File::removeFile(std::string path) {
-    if(std::remove(path.c_str()) != 0) {
-        Log::e("Error Removing File ...");
-        return(false);
-    } else return(true);
+    if(File::isFile(path)) {
+        if(std::remove(path.c_str()) != 0) {
+            Log::e("Error Removing File ...");
+            return(false);
+        }
+    }
+    return true;
 }

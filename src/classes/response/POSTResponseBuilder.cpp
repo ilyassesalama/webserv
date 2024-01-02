@@ -47,8 +47,8 @@ void Response::saveOnFile(std::string data) {
     }
 }
 
-void Response::uploadFile() {
-	std::ifstream inputFile(this->boundaryFilePath.c_str(), std::ios::binary);
+void Response::uploadBoundaryFile() {
+	std::ifstream inputFile(this->tmpUploadFilePath.c_str(), std::ios::binary);
 	std::string line;
 	int count = 100;
 	if(!inputFile.is_open()) {
@@ -78,7 +78,6 @@ void Response::uploadFile() {
 	}
 }
 
-
 void Response::POSTResponseBuilder() {
 	if(isCGIon()) {
 		if(File::isFile(this->path)) {
@@ -102,20 +101,15 @@ void Response::POSTResponseBuilder() {
 		}
 	}
 	else if(this->currentRoute->upload) {
-		//upload File
 		this->statusCode = 201;
-		if (this->request->getIsRequestMultipart()) {
-			this->uploading = true;
-			this->boundary = this->request->getBoundaryInfos(0);
-			this->boundaryFilePath = this->request->getBoundaryInfos(1);
-			this->statusCode = 201;
-			this->responseBody = "";
+		this->uploading = true;
+		this->responseBody = "";
+		this->tmpUploadFilePath = this->request->getBoundaryInfos(1);
 
+		if (this->request->getIsRequestMultipart()) {
+			this->boundary = this->request->getBoundaryInfos(0);
 		}
-		else if (this->request->getIsRequestChunked())
-			std::cout << "will enter if header is chunked" << std::endl;
-		else
-			std::cout << "will enter if header is content-length" << std::endl;
+		else this->uploading = false;
 	}
 	else {
 		this->statusCode = 403;
