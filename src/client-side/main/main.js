@@ -27,15 +27,6 @@ uploadNavButton.addEventListener("click", () => {
 	switchPage("upload");
 });
 
-const fileLabel = document.getElementById("file-label");
-const inputFile = document.getElementById("file");
-
-inputFile.addEventListener("change", () => {
-	const file = inputFile.files[0];
-
-	fileLabel.innerHTML = file.name;
-})
-
 function switchPage(page){
 	var titleText = "Webserver";
 	var subText = "Welcome to Webserver, a mini server that hosts your website!";
@@ -89,14 +80,47 @@ function switchPage(page){
 	}, 300);
 }
 
-const loginBtn = document.getElementById("login-btn");
+const fileLabel = document.getElementById("file-label");
+const inputFile = document.getElementById("file");
+
+inputFile.addEventListener("change", () => {
+	const file = inputFile.files[0];
+	
+	fileLabel.innerHTML = file.name;
+})
+
+const uploadForm = document.getElementById("uploadForm");
+
+uploadForm.addEventListener("submit", e => {
+
+	e.preventDefault();
+
+	const formData = new FormData();
+
+	console.log(inputFile);
+
+	formData.append("file", inputFile.files[0]);
+
+	fetch("/", {
+		method: "POST",
+		body: formData,
+	}).then((res) => {
+		if (res.status === 201) {
+			alert("Uploaded successfully!");
+		} else {
+			alert("Error uploading the file");
+		}
+	}).catch((error) => {
+		console.log(error);
+	});
+});
 
 loginForm.addEventListener("submit", e => {
 	e.preventDefault();
 	const username = document.getElementById("username").value;
 	const password = document.getElementById("password").value;
 
-	fetch("./login.php", {
+	fetch("/login.php", {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json"
