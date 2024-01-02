@@ -1,5 +1,20 @@
 #include "../../../webserv.hpp"
 
+std::string getBoundaryFileName(std::string boundaryContente, std::string contentType) {
+	size_t startPosition = boundaryContente.find("filename=\"");
+	if (startPosition != std::string::npos)
+		startPosition += 10;
+	else {
+		startPosition = boundaryContente.find("name=\"");
+		if (startPosition != std::string::npos)
+			startPosition += 6;
+	}
+
+	size_t endPosition = boundaryContente.find("\"", startPosition);
+
+	return startPosition != std::string::npos && !boundaryContente.substr(startPosition, endPosition - startPosition).empty() ? boundaryContente.substr(startPosition, endPosition - startPosition) : File::generateFileName("boundary") + File::getContentTypeExtension(contentType);
+}
+
 void Response::handleboundaryStart(std::ifstream& inputfile) {
 	std::string boundaryContente;
 	std::string contentType = "";
@@ -11,11 +26,14 @@ void Response::handleboundaryStart(std::ifstream& inputfile) {
 
 		if(line.find("Content-Type: ") != std::string::npos) {
 			contentType = line.substr(14, line.substr(14).find("\r"));
+			std::cout<< "Content-Type: " << contentType << std::endl;
 		}
 		boundaryContente.append(line+'\n');
 	}
 	
-	this->uploadFilePath = File::getWorkingDir() + "/uploads/" + Utils::generateRandomName() + File::getContentTypeExtension(contentType);
+	std::string BoundaryFileName = getBoundaryFileName(boundaryContente, contentType);
+
+	this->uploadFilePath = File::getWorkingDir() + this->currentRoute->upload_path + BoundaryFileName;
 }
 void Response::saveOnFile(std::string data) {
     std::ofstream outputFile(this->uploadFilePath.c_str(), std::ios::binary | std::ios::app);
