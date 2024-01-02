@@ -21,8 +21,9 @@ void Response::saveOnFile(std::string data) {
     std::ofstream outputFile(this->uploadFilePath.c_str(), std::ios::binary | std::ios::app);
 
     if (!outputFile.is_open()) {
+		std::cout << this->uploadFilePath << std::endl;
         Log::e("Error opening the output file");
-        throw std::runtime_error("Error opening the output file");
+        throw Utils::WebservException("Error opening the output file");
     } else {
         outputFile << data + '\n';
         outputFile.close();  // Close the file explicitly
@@ -38,7 +39,11 @@ void Response::uploadFile() {
 	while(std::getline(inputFile,line)) {
 		if(line == "--" + this->boundary + '\r') {
 			handleboundaryStart(inputFile);
-		} else if(line == "--" + this->boundary + "--\r") break;
+		} else if(line == "--" + this->boundary + "--\r") {
+			this->uploading = false;
+			File::removeFile(this->request->getFileName());
+			break; 
+		}
 		  else saveOnFile(line);
 		count --;
 		if(count == 0) break;
@@ -47,20 +52,26 @@ void Response::uploadFile() {
 	if(this->uploadFileOffset == -1) {
 		this->uploading = false;
 		setServingState(false);
+		File::removeFile(this->request->getFileName());
 	}
 }
 
 
 void Response::POSTResponseBuilder() {
 	if(isCGIon()) {
-		if(File::isFile(this->path)) 
+		if(File::isFile(this->path)) {
 			this->handleFileRequest();
+			File::removeFile(this->request->getFileName());
+		}
 		else if(File::isDirectory(this->path)) {
 			size_t slashPos = this->path.find_last_of("/");
 			std::string index = slashPos != this->path.size() - 1 ? "/" : "";
 			index.append(this->currentRoute->index);
+			std::cout << index << std::endl;
 			if(File::isFile(this->path + index)) {
+				this->path.append(index);
 				this->handleFileRequest();
+				File::removeFile(this->request->getFileName());
 			}
 			else {
 				this->statusCode = 404;
@@ -72,7 +83,6 @@ void Response::POSTResponseBuilder() {
 		//upload File
 		this->statusCode = 201;
 		if (this->request->getIsRequestMultipart()) {
-			//note !!!!! : this condition did not triggered even the request is multipart !!!!!
 			this->uploading = true;
 			this->boundary = this->request->getBoundaryInfos(0);
 			this->boundaryFilePath = this->request->getBoundaryInfos(1);

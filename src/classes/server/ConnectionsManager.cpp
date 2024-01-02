@@ -148,8 +148,13 @@ void ConnectionsManager::socketMonitore() {
                 }
             }
             if (it->revents & POLLOUT) {
-                if (getFdServer(it->fd)->sendResponse(it->fd) == 1)
+                int sendStatus = getFdServer(it->fd)->sendResponse(it->fd);
+                if (sendStatus == 1)
                     changeClientMonitoringEvent("read", it->fd);
+                else if(sendStatus == DROP_CLIENT) {
+                    this->deleteFromFdSet(it->fd);
+                    break; 
+                }
                 it->revents = 0;
             }
         }

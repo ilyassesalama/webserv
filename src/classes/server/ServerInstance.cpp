@@ -237,8 +237,14 @@ int ServerInstance::sendResponse(int clientFd) {
     ClientProfile *client = getClientProfile(clientFd);
     client->connectionTime = std::time(0);
     if(client->response.isUploading()) {
-        client->response.uploadFile();
-        //need to be changed
+        try {
+            client->response.uploadFile(); 
+            Log::e("uploading ...");
+        }
+        catch(Utils::WebservException &ex) {
+            std::cout << ex.what() << std::endl;
+            return(DROP_CLIENT);
+        }
         return(999);
     }
     if(client == NULL) {

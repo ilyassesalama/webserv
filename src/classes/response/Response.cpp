@@ -41,6 +41,7 @@ void Response::responseBuilder() {
             return;
         }
     } catch(Utils::WebservException &ex) {
+        File::removeFile(this->request->getFileName());
         buildErrorResponse();
     }
 }
