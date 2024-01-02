@@ -63,7 +63,7 @@ void Response::uploadBoundaryFile() {
 			handleboundaryStart(inputFile);
 		} else if(line == "--" + this->boundary + "--\r") {
 			this->uploading = false;
-			File::removeFile(this->request->getFileName());
+			File::deleteLocation(this->request->getFileName());
 			break; 
 		}
 		  else saveOnFile(line);
@@ -74,7 +74,7 @@ void Response::uploadBoundaryFile() {
 	if(this->uploadFileOffset == -1) {
 		this->uploading = false;
 		setServingState(false);
-		File::removeFile(this->request->getFileName());
+		File::deleteLocation(this->request->getFileName());
 	}
 }
 
@@ -82,7 +82,7 @@ void Response::POSTResponseBuilder() {
 	if(isCGIon()) {
 		if(File::isFile(this->path)) {
 			this->handleFileRequest();
-			File::removeFile(this->request->getFileName());
+			File::deleteLocation(this->request->getFileName());
 		}
 		else if(File::isDirectory(this->path)) {
 			size_t slashPos = this->path.find_last_of("/");
@@ -92,7 +92,7 @@ void Response::POSTResponseBuilder() {
 			if(File::isFile(this->path + index)) {
 				this->path.append(index);
 				this->handleFileRequest();
-				File::removeFile(this->request->getFileName());
+				File::deleteLocation(this->request->getFileName());
 			}
 			else {
 				this->statusCode = 404;

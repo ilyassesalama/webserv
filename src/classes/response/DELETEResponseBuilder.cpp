@@ -3,15 +3,13 @@
 void Response::DELETEResponseBuilder() {
     if(FULL_LOGGING_ENABLED)
         Log::v("DELETE method is requested, we're trying to delete: " + this->path + "...");
-    try {
-        File::deleteLocation(this->path);
+    if(File::deleteLocation(this->path)) {
     	this->setStatusCode(204);
         if(FULL_LOGGING_ENABLED) Log::v("Requested file has been deleted successfully!");
-    } catch (Utils::WebservException &ex) {
+    } else {
     	this->setStatusCode(500);
-        Log::w("DELETE failed due to: " + std::string(ex.what()));
     }
-    this->setResponseBody();
+    this->setResponseBody(); // will always be empty when we delete a file
     this->setHeaders();
     this->setResponseLine();
     this->fileOffset = -2;

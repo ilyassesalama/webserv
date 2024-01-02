@@ -127,22 +127,6 @@ size_t File::getFileSize(std::string path) {
     return static_cast<size_t>(size);
 }
 
-void File::deleteLocation(std::string path) {
-	const char *finalPath = path.c_str();
-	char command[8] = "/bin/rm";
-	char parameters[4] = "-rf";
-	// delete using execve
-	int pid = fork();
-	if (pid == 0) {
-		char *args[] = {command, parameters, const_cast<char *>(finalPath), NULL};
-		execve(args[0], args, NULL);
-	} else if (pid > 0) {
-		waitpid(pid, NULL, 0);
-	} else {
-		throw Utils::WebservException("deleteLocation: Can't delete \"" + path + "\" due to " + std::string(strerror(errno)));
-	}
-}
-
 std::string File::generateFileName(std::string name) {
 	timeval currentTime;
     gettimeofday(&currentTime, 0);
@@ -159,12 +143,6 @@ std::string File::getCurrentDir() {
     return path;
 }
 
-bool File::removeFile(std::string path) {
-    if(File::isFile(path)) {
-        if(std::remove(path.c_str()) != 0) {
-            Log::e("Error Removing File ...");
-            return(false);
-        }
-    }
-    return true;
+bool File::deleteLocation(std::string path) {
+    return(File::isFile(path) && unlink(path.c_str()) == 0);
 }

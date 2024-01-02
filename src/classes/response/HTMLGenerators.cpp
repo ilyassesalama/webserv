@@ -64,7 +64,6 @@ void Response::autoIndexHTMLBuilder(size_t slashPos) {
 		closedir(directory);
 	} else {
 		this->statusCode = 404;
-		std::cerr << "ERROR AUTOINDEX" << std::endl;
 		return ;
 	}
 
