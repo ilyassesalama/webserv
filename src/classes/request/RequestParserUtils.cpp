@@ -133,7 +133,6 @@ std::string normalizeURL(const std::string url) {
 }
 bool RequestParser::isPathAccessible() {
     this->requestLine["path"] = normalizeURL(this->requestLine["path"]);
-    std::cout << this->requestLine["path"] << std::endl;
     this->requestResourcePath = "";
     size_t firstSlash = this->requestLine["path"].find_first_of("/");
     std::string location;
@@ -319,6 +318,8 @@ void RequestParser::logParsedRequest(){
     }
 }
 
-// bool RequestParser::isRedirection() {
-
-// }
+bool RequestParser::isRedirection() {
+    if(this->route->redirection.redirect == "")
+        return false;
+    return true;
+}
