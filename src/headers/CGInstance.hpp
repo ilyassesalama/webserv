@@ -25,6 +25,7 @@ class CGInstance {
         std::string getQueryString(std::map<std::string, std::string> queries);
         size_t getCGIContentLength();
         int getCGIStatusCode();
+        bool hasCGIFailed();
     private:
         RequestParser &request;
         std::string filePath;
@@ -38,4 +39,5 @@ class CGInstance {
         std::string cgiRequestBodySize;
         std::map<std::string, std::string> cgiResponseHeadersMap;
         char **cgiEnv;
+        bool cgiFailureStatus;
 };

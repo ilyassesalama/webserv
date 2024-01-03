@@ -25,6 +25,8 @@
 #include <dirent.h>
 #include <ctime>
 #include <sys/time.h>
+#include <sys/wait.h>
+#include <signal.h>
 
 
 #include "src/headers/CGInstance.hpp"

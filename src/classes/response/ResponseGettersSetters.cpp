@@ -69,6 +69,8 @@ std::string Response::getStringStatus(){
             return "414 Request-URI Too Long";
         case 501:
             return "501 Not Implemented";
+        case 504:
+            return "504 Gateway Timeout";
         default:
             return "500 Internal Server Error"; // fallback
     }

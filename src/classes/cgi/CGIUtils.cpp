@@ -12,13 +12,21 @@ std::string CGInstance::getCGIResponse() {
     return this->cgiResponse;
 }
 
+bool CGInstance::hasCGIFailed() {
+    return this->cgiFailureStatus;
+}
+
 std::string CGInstance::getCGIContentType() {
     if(!Utils::isMapKeyExists(this->cgiResponseHeadersMap, "Content-Type")) return "text/html charset=UTF-8";
     return this->cgiResponseHeadersMap["Content-Type"];
 }
 
 int CGInstance::getCGIStatusCode() {
-    if(!Utils::isMapKeyExists(this->cgiResponseHeadersMap, "Status")) return 200;
+    if(!Utils::isMapKeyExists(this->cgiResponseHeadersMap, "Status")){
+        Log::w("CGI response does not contain a status code " + cgiStatusCode);
+        return String::to_int(cgiStatusCode);
+    }
+    Log::w("CGI response contains a status code " + this->cgiResponseHeadersMap["Status"]);
     return String::to_int(this->cgiResponseHeadersMap["Status"]);
 }
 

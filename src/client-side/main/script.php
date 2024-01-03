@@ -1,5 +1,13 @@
 <?php
     // read from the body
+    $inhanging = true;
+
+    if($inhanging){
+        while(1){
+            echo "Hello World";
+        }
+        return;
+    }
     $body = file_get_contents('php://input');
     
     // decode the body

@@ -172,7 +172,11 @@ void Response::CGIhandler() {
     this->fileOffset = -2;
     CGInstance cgiHandler(*this->request);
     cgiHandler.initCGInstance(); // start the party
-
+    if(cgiHandler.hasCGIFailed()) {
+        this->statusCode = cgiHandler.getCGIStatusCode();
+        this->responseBody = this->getErrorPageHTML();
+        return;
+    }
     // GCI finished doing the cool stuff
     this->responseBody = cgiHandler.getCGIResponse();
     this->statusCode = cgiHandler.getCGIStatusCode();

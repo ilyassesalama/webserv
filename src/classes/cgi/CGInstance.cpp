@@ -2,7 +2,12 @@
 
 CGInstance::CGInstance(RequestParser &request) : request(request) {}
 
+int timeout_occurred = 0;
+
 void CGInstance::initCGInstance() {
+    this->cgiFailureStatus = false;
+    this->cgiStatusCode = "200";
+    timeout_occurred = 0;
     setFilePath(request.getRequestedResourcePath());
     setCGIPath(File::getCGIbinary(this->filePath,this->request.getRoute()));
     setCGIServer();
@@ -39,7 +44,15 @@ void CGInstance::setEnvironnementVariables() {
     this->cgiEnv = Utils::convertMapToChar2D(env_map);
 }
 
+void execution_timeout(int sig) {
+    (void)sig;
+    timeout_occurred = 1;
+}
+
 void CGInstance::executeScript() {
+    signal(SIGALRM, execution_timeout);
+    alarm(5); // set a 15-second timer
+
     int readBytes;
     FILE *file_in = tmpfile(), *file_out = tmpfile();
     int fd_in = fileno(file_in), fd_out = fileno(file_out);
@@ -62,10 +75,21 @@ void CGInstance::executeScript() {
         throw Utils::WebservException("Cannot fork a new child process to execute the script");
     } else {
         // parent process
+        int status;
+        while (waitpid(pid, &status, WNOHANG) == 0) {
+            if (timeout_occurred) {
+                kill(pid, SIGKILL); // kill the child process
+                cgiFailureStatus = true;
+                this->cgiStatusCode = "504";
+                break;
+            }
+            usleep(1000); // sleep for a short time before trying again since we're not hanging the process anymore using WNOHANG
+        }
+        alarm(0); // cancel the alarm
+    }
+    if (!timeout_occurred) {
+        lseek(fd_out, 0, SEEK_SET);
         char buffer[1024];
-        waitpid(pid, NULL, 0);
-        lseek(fd_out, 0, SEEK_SET); // reset the file pointer to the beginning of the file
-        
         while ((readBytes = read(fd_out, buffer, sizeof(buffer) - 1)) > 0) {
             buffer[readBytes] = '\0';
             cgiResponse += buffer;
