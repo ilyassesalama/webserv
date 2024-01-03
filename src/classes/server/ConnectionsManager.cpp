@@ -70,9 +70,9 @@ void ConnectionsManager::acceptNewIncommingConnections(ServerInstance *serverId)
     client.serverName = "NONE";
     client.address_length = sizeof(client.address);
     client.isReceiving = false;
-    client.SocketFD = accept(serverId->getListenSocketFd(),(struct sockaddr*)&client.address,&client.address_length);
+    client.SocketFD = accept(serverId->getListenSocketFd(), (struct sockaddr*)&client.address,&client.address_length);
     if(client.SocketFD < 0) {
-        Log::e("accept Failed ...");
+        Log::e("Failed to accept new connection");
         exit(1);
     }
     setSocketNonBlocking(client.SocketFD);
@@ -80,10 +80,10 @@ void ConnectionsManager::acceptNewIncommingConnections(ServerInstance *serverId)
     serverId->AddFdToPollFds(client.SocketFD);
     char address_buffer[100];
     getnameinfo((struct sockaddr*)&client.address, client.address_length, address_buffer, sizeof(address_buffer), 0, 0, NI_NUMERICHOST);
-    std::string ipAdress(address_buffer);
+    std::string ipAddress(address_buffer);
     client.connectionTime = std::time(0);
     serverId->AddToClientProfiles(client);
-    Log::d("New client connected: " + ipAdress + " on Port " + serverId->getServerPort());
+    Log::d("New client connected: " + ipAddress + " on port " + serverId->getServerPort());
 }
 
 
@@ -120,13 +120,13 @@ bool ConnectionsManager::isaListeningSocket(int fd) {
     return(false);
 }
 
-void ConnectionsManager::socketMonitore() {
+void ConnectionsManager::socketMonitor() {
     int pollResult;
     while (true) {
         checkClientTimeOut();
         pollResult = poll(&masterFdSet[0], masterFdSet.size(), -1);
         if (pollResult < 0) {
-            Log::e("Poll Failed ...");
+            Log::e("Poll failed");
             exit(1);
         }
         for (std::vector<struct pollfd>::iterator it = masterFdSet.begin(); it != masterFdSet.end(); ++it) {
@@ -149,9 +149,10 @@ void ConnectionsManager::socketMonitore() {
             }
             if (it->revents & POLLOUT) {
                 int sendStatus = getFdServer(it->fd)->sendResponse(it->fd);
-                if (sendStatus == 1)
+                if (sendStatus == 1){
+                    Log::v("Response sent successfully");
                     changeClientMonitoringEvent("read", it->fd);
-                else if(sendStatus == DROP_CLIENT) {
+                } else if(sendStatus == DROP_CLIENT) {
                     this->deleteFromFdSet(it->fd);
                     break; 
                 }

@@ -36,7 +36,7 @@ void startTheParty(ConfigurationFile &obj) {
 		}
     }
 	if(master.getServerCount() > 0)
-		master.socketMonitore();
+		master.socketMonitor();
 	else {
 		Log::e("No valid server to monitor");
 		exit(1);

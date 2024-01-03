@@ -9,7 +9,7 @@ class ConnectionsManager {
         ConnectionsManager();
         ~ConnectionsManager();
         
-        void socketMonitore();
+        void socketMonitor();
         void acceptNewIncommingConnections(ServerInstance *serverId);
         // int receiveRequest(int clientFd,Server* serverId);
         void addFdToTheSet(int clientFd);

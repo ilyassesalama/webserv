@@ -33,7 +33,7 @@ std::string ServerInstance::getServerName() {
 void ServerInstance::setListenAdressPort(t_server &serverInfos) {
     this->listenPort =  serverInfos.listen.port;
     if(this->listenPort > 65535) {
-        Log::e("Port Out Of Range " + String::to_string(serverInfos.listen.port) + " ... ");
+        Log::e("Specified port '" + String::to_string(this->listenPort) + "' is invalid, port must be between 0 and 65535");
         this->initialized = false;
         return;
     }
@@ -138,7 +138,7 @@ int ServerInstance::receiveRequest(int clientFd) {
 	}
 	
     if(bytesRead <= 0) {
-        Log::e("Client closed the connection");
+        Log::w("Client closed the connection");
         this->dropClient(clientFd);
         return(DROP_CLIENT);
     }
@@ -154,7 +154,6 @@ int ServerInstance::receiveRequest(int clientFd) {
         }
         else {
             Host = extractTheHostFromTheRequest(receivedRequest);
-            std::cout << Host << std::endl;
             client->serverName = Host;
             server = getTheServerConfiguration(Host);
             client->isReceiving = true;
@@ -179,7 +178,7 @@ int ServerInstance::receiveRequest(int clientFd) {
 				client->request.mergeRequestChunks(receivedRequest);
 		} catch (Utils::WebservException &e) {
 			Log::e(e.what());
-			// return(INVALIDE_REQUEST); // TODO: check if this is needed
+			// return(INVALID_REQUEST); // TODO: check if this is needed
 		}
 	}
 
@@ -199,7 +198,7 @@ int ServerInstance::receiveRequest(int clientFd) {
         client->isReceiving = false;
         return(FULL_REQUEST_RECEIVED);
     }
-    return(INVALIDE_REQUEST);
+    return(INVALID_REQUEST);
 }
 
 void ServerInstance::dropClient(int clientFd) {
@@ -245,13 +244,12 @@ int ServerInstance::sendResponse(int clientFd) {
         try {
             client->response.uploadBoundaryFile(); 
             return(999);
-        }
-        catch(Utils::WebservException &ex) {
-            std::cout << ex.what() << std::endl;
+        } catch(Utils::WebservException &ex) {
+            Log::e("Failed to send response due to: " + std::string(ex.what()));
         }
     }
     if(client == NULL) {
-        Log::e("client NULL");
+        Log::e("Client is NULL, wtf?");
     }
     signal(SIGPIPE, SIG_IGN);
     size_t bytesSent = send(clientFd, &client->response.getResponse()[0],client->response.getResponse().size(),0);
@@ -260,7 +258,7 @@ int ServerInstance::sendResponse(int clientFd) {
     }
     // Log::d("Serving clinet ... " + String::to_string(count++));
     if(bytesSent < 0) {
-        Log::e("send failed");;
+        Log::e("Failed to send bytes, less than 0!");;
     }
     client->response.setBytesSent(bytesSent);
     client->response.feedDataToTheSender();

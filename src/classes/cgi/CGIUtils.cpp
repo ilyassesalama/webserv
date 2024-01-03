@@ -22,11 +22,8 @@ std::string CGInstance::getCGIContentType() {
 }
 
 int CGInstance::getCGIStatusCode() {
-    if(!Utils::isMapKeyExists(this->cgiResponseHeadersMap, "Status")){
-        Log::w("CGI response does not contain a status code " + cgiStatusCode);
+    if(!Utils::isMapKeyExists(this->cgiResponseHeadersMap, "Status"))
         return String::to_int(cgiStatusCode);
-    }
-    Log::w("CGI response contains a status code " + this->cgiResponseHeadersMap["Status"]);
     return String::to_int(this->cgiResponseHeadersMap["Status"]);
 }
 

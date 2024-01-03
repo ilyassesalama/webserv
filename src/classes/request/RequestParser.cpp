@@ -55,7 +55,7 @@ void RequestParser::mergeRequestChunks(std::string &requestInput) {
     	this->parsingState.ok = parsingState.headLineOk && parsingState.headsOk; // don't care about the body since it's optional
 	else
 		this->parsingState.ok = parsingState.headLineOk && parsingState.headsOk && parsingState.bodyOk; // don't care about the body since it's optional
-    Log::d("Request parsing finished with status: " + String::to_string(parsingState.ok));
+    Log::v(std::string("Request has been received and parsed with ") +  (parsingState.ok ? "success" : "failure"));
     if (parsingState.ok && FULL_LOGGING_ENABLED) {
         logParsedRequest();
     }

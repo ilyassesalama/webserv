@@ -25,7 +25,6 @@ void Response::handleboundaryStart(std::ifstream& inputfile) {
 
 		if(line.find("Content-Type: ") != std::string::npos) {
 			contentType = line.substr(14, line.substr(14).find("\r"));
-			std::cout<< "Content-Type: " << contentType << std::endl;
 		}
 		boundaryContent.append(line+'\n');
 	}
