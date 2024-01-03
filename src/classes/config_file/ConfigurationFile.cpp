@@ -220,6 +220,10 @@ void ConfigurationFile::handleDirectives( std::string file, t_server server ) {
 	if (server.server_name.empty()) {
 		throw (Utils::WebservException("Error, server_name directive must have at least one value"));
 	}
+
+	if (!checkRootExist(server.routes)) {
+		throw (Utils::WebservException("Error, there is no root directive in one of the location blocks"));
+	}
 	
 	if (checkDuplicateServers(this->ConfigFileServers, server))
 		this->ConfigFileServers.push_back(server);

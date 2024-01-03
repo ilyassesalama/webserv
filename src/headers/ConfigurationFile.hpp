@@ -109,6 +109,7 @@ std::vector<std::string> multipleValuesParser( std::string value );
 void parseClientBodySize( size_t *body_size, std::string &body_size_unit, std::string value );
 std::vector<t_error_page> parseErrorPage( std::string value );
 std::string singleValueParser( std::string value );
+bool checkRootExist(std::vector<t_route> routes);
 
 /* location tools */
 
