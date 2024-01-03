@@ -9,6 +9,11 @@ typedef struct s_listen {
 	int listenSocket;
 } t_listen;
 
+typedef struct s_redirect {
+	size_t code;
+	std::string redirect;
+} t_redirect;
+
 typedef struct s_error_page {
 	int error_code;
 	std::string error_page;
@@ -18,7 +23,7 @@ typedef struct s_route {
 	std::string path;
 
 	std::string root;
-	std::string redirection;
+	t_redirect redirection;
 	std::vector<std::string>allowed_methods;
 	std::string index;
 	std::string upload_path;
@@ -115,3 +120,4 @@ void skipRoute(std::string file, size_t *startIndex);
 void checkAllowedMethods(std::vector<std::string>allowed_methods);
 std::string getRouteDirectiveValue(std::string key, std::string file, size_t *startIndex);
 bool boolParser(std::string &value);
+t_redirect parseRedirect(std::string value);

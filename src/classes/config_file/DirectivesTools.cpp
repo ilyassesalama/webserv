@@ -251,6 +251,46 @@ std::vector<t_error_page> parseErrorPage(std::string value)
 	return errors;
 }
 
+bool checkRedirectionCode(size_t code) {
+	if (code == 301 || code == 302)
+		return true;
+	return false;
+}
+
+t_redirect parseRedirect(std::string value) {
+	if (onlySpaces(value) || value.empty()) throw(Utils::WebservException("Error, redirection syntax error"));
+
+	t_redirect redirection;
+
+	size_t pos = value.find(" ");
+
+	if (pos == std::string::npos || onlySpaces(value.substr(pos))) throw(Utils::WebservException("Error, redirection syntax error"));
+
+	if (!isDigits(value.substr(0, pos))) throw(Utils::WebservException("Error, redirection syntax error"));
+
+	size_t code = String::to_int(value.substr(0, pos));
+
+	value = value.substr(pos);
+
+	pos = 0;
+	skipSpaces(value, &pos);
+	value = value.substr(pos);
+
+	pos = 0;
+	pos = value.find(" ");
+
+	if (pos != std::string::npos && !onlySpaces(value.substr(pos))) throw(Utils::WebservException("Error, redirection syntax error"));
+
+	std::string path = value.substr(0, pos);
+
+	if (!checkRedirectionCode(code)) throw(Utils::WebservException("Error, redirection code not allowed"));
+
+	redirection.code = code;
+	redirection.redirect = path;
+
+	return redirection;
+}
+
 std::string getDirectiveValue(std::string key, std::string file, size_t *startIndex)
 {
 	return key != "error_page" ? getSingleValue(file, startIndex) : getMultipleValues(file, startIndex);

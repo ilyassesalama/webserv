@@ -94,7 +94,7 @@ void ConfigurationFile::parseRouteValue( std::string key, std::string value, t_r
 		}
 	} else if (key == "redirection") {
 		if (!route->is_redirection) {
-			route->redirection = singleValueParser(value);
+			route->redirection = parseRedirect(value);
 			route->is_redirection = true;
 		} else {
 			Log::w("Warning, there is more than one redirection directive");

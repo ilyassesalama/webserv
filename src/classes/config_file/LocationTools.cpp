@@ -74,7 +74,7 @@ void checkAllowedMethods(std::vector<std::string>allowed_methods) {
 
 std::string getRouteDirectiveValue(std::string key, std::string file, size_t *startIndex)
 {
-	return key != "allowed_methods" && key != "cgi_extension" ? getSingleValue(file, startIndex) : getMultipleValues(file, startIndex);
+	return key != "allowed_methods" && key != "cgi_extension" && key != "redirection" ? getSingleValue(file, startIndex) : getMultipleValues(file, startIndex);
 }
 
 bool boolParser(std::string &value) {
