@@ -65,6 +65,7 @@ class RequestParser {
         bool isPathAccessible();
         bool isMethodAllowed();
         bool isHeaderLineValid();
+        bool isRedirection();
 
 		void getChunkedData(std::string &body);
 		void getBoundary(std::string contentType);
