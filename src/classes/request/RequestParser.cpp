@@ -98,11 +98,11 @@ void RequestParser::verifyIfRequestIsSafe(){
         this->parsingState.statusMessage = "Not Found";
         return;
     }
-    if(isRedirection()) {
-        this->parsingState.statusCode = this->route->redirection.code;
-        this->parsingState.statusMessage = "Redirection";
-        return;
-    }
+    // if(isRedirection()) {
+    //     this->parsingState.statusCode = this->route->redirection.code;
+    //     this->parsingState.statusMessage = "Redirection";
+    //     return;
+    // }
     if(File::isDirectory(this->requestResourcePath) && this->requestResourcePath[this->requestResourcePath.length() - 1] != '/'
 			&& this->requestLine["method"] != "DELETE" && this->requestLine["method"] != "POST"){
         this->parsingState.statusCode = 301;
