@@ -123,8 +123,10 @@ void Response::setHeaders() {
             this->responseHeadersMap["Content-Length"] = "0";
         }
         if(statusCode == 301) {
-            this->responseHeadersMap["Location"] = this->currentRoute->redirection.redirect;
-            //this->request->getRequestLine()["path"] + "/";
+            if(this->currentRoute->redirection.redirect.empty())
+                this->responseHeadersMap["Location"] = this->request->getRequestLine()["path"] + "/";
+            else
+                this->responseHeadersMap["Location"] = this->currentRoute->redirection.redirect;
         }
         if(statusCode != 204 && statusCode != 201){
             size_t contentLength = File::getFileSize(this->path);
