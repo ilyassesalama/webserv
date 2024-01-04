@@ -148,13 +148,17 @@ bool RequestParser::isPathAccessible() {
     t_route *route = NULL;
     t_route *slashR = NULL;
     for(std::vector<t_route>::iterator it = this->server->routes.begin(); it != this->server->routes.end(); ++it) {
+        if(this->requestLine["path"] == it->path) {
+            route = &(*it);
+            break;
+        }
         if(it->path == "/" && location != "/" && slashRoute == false) {
             slashRoute = true;
             slashR = &(*it);
         }
         if(location == it->path) {
             route = &(*it);
-            break;
+            //break;
         }
     }
     if(route == NULL) {
