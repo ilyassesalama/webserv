@@ -34,14 +34,16 @@ void Response::handleboundaryStart(std::ifstream& inputfile) {
 	this->uploadFilePath = File::getWorkingDir() + this->currentRoute->upload_path + BoundaryFileName;
 }
 void Response::saveOnFile(std::string data) {
-    std::ofstream outputFile(this->uploadFilePath.c_str(), std::ios::binary | std::ios::app);
+    if(data == "")
+		return;
+	std::ofstream outputFile(this->uploadFilePath.c_str(), std::ios::binary | std::ios::app);
 
     if (!outputFile.is_open()) {
 		this->statusCode = 500;
 		buildErrorResponse();
         throw Utils::WebservException("Error opening the output file");
     } else {
-        outputFile << data + '\n';
+        outputFile << data;
         outputFile.close();
     }
 }
@@ -50,6 +52,8 @@ void Response::uploadBoundaryFile() {
 	std::ifstream inputFile(this->tmpUploadFilePath.c_str(), std::ios::binary);
 	std::string line;
 	int count = 100;
+	std::string data = "";
+
 	if(!inputFile.is_open()) {
 		this->statusCode = 500;
 		this->responseVector.clear();
@@ -59,18 +63,28 @@ void Response::uploadBoundaryFile() {
 	inputFile.seekg(this->uploadFileOffset);
 	while(std::getline(inputFile,line)) {
 		if(line == "--" + this->boundary + '\r') {
+			saveOnFile(data);
 			handleboundaryStart(inputFile);
 		} else if(line == "--" + this->boundary + "--\r") {
-			this->uploading = false;
-			File::deleteLocation(this->request->getFileName());
+			std::cout << "boundary end" << std::endl;
+			//this->uploading = false;
+			saveOnFile(data);
+			//File::deleteLocation(this->request->getFileName());
 			break; 
 		}
-		  else saveOnFile(line);
+		else {
+			data.append(line + '\n');
+		} 
 		count --;
-		if(count == 0) break;
+		if(count == 0) 
+		{
+		  	saveOnFile(data);
+		  	break;
+		}
 	}
 	this->uploadFileOffset = inputFile.tellg();
 	if(this->uploadFileOffset == -1) {
+		std::cout << "hello world" << std::endl;
 		this->uploading = false;
 		setServingState(false);
 		File::deleteLocation(this->request->getFileName());
