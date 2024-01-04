@@ -111,6 +111,8 @@ void ConfigurationFile::parseRouteValue( std::string key, std::string value, t_r
 	} else if (key == "upload_path") {
 		if (!route->is_upload_path) {
 			route->upload_path = singleValueParser(value);
+			if (!File::isDirectory(File::getWorkingDir() + route->upload_path))
+				throw (Utils::WebservException("Error, upload_path must be a directory"));
 			route->is_upload_path = true;
 		} else {
 			Log::w("Warning, there is more than one upload_path directive");

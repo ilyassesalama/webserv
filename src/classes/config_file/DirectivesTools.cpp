@@ -37,7 +37,7 @@ std::string getSingleValue(std::string value, size_t *startPos)
 	skipSpaces(value, &end);
 
 	if (value[end] == ';') end++;
-	else throw(Utils::WebservException("Error, there is more than one value for directive or it does not end with a semi-colon"));
+	else throw(Utils::WebservException("Something is wrong in the configuration file"));
 
 	if (end + 1 != value.size() && value[end + 1] == ';') throw(Utils::WebservException("Error, there is more than one semi-colon at directive end"));
 
