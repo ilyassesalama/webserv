@@ -138,7 +138,7 @@ int ServerInstance::receiveRequest(int clientFd) {
 	}
 	
     if(bytesRead <= 0) {
-        Log::w("Client closed the connection");
+        Log::d("Client closed the connection");
         this->dropClient(clientFd);
         return(DROP_CLIENT);
     }

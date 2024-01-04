@@ -122,11 +122,12 @@ void Response::setHeaders() {
         if(statusCode == 201){
             this->responseHeadersMap["Content-Length"] = "0";
         }
-        if(statusCode == 301) {
-            if(this->currentRoute->redirection.redirect.empty())
+        if(statusCode == 301 || statusCode == 302) {
+            std::string redirectedLocation = this->currentRoute->redirection.redirect;
+            if(redirectedLocation.empty())
                 this->responseHeadersMap["Location"] = this->request->getRequestLine()["path"] + "/";
-            else
-                this->responseHeadersMap["Location"] = this->currentRoute->redirection.redirect;
+            else 
+                this->responseHeadersMap["Location"] = redirectedLocation;
         }
         if(statusCode != 204 && statusCode != 201){
             size_t contentLength = File::getFileSize(this->path);
