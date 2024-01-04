@@ -9,7 +9,7 @@ std::string String::getExtension(const std::string &path){
 }
 
 bool String::endsWith(const std::string &str, const std::string &suffix){
-    return getExtension(str) == suffix;
+    return str.size() >= suffix.size() && str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
 }
 
 int String::to_int(const std::string &str){
