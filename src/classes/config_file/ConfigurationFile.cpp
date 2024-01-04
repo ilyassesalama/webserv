@@ -59,6 +59,8 @@ void ConfigurationFile::parseRouteValue( std::string key, std::string value, t_r
 	if (key == "root") {
 		if (!route->is_root) {
 			route->root = singleValueParser(value);
+			if (String::endsWith(route->root, "/"))
+				route->root.append("/");
 			route->is_root = true;
 		} else {
 			Log::w("Warning, there is more than one root directive");
@@ -261,6 +263,8 @@ void ConfigurationFile::configFileParsing( void ) {
 ConfigurationFile::ConfigurationFile( std::string file ) {
 	try {
 		this->file = File::getFileContent(file);
+
+		if (this->file.empty() || onlySpaces(this->file)) throw(Utils::WebservException("Error, config file is empty"));
 
 		this->configFileParsing();
 
