@@ -20,17 +20,20 @@
 		</div>
 	</a>
 
-	<a href="upload.html" class="to-upload">
+	<a id="navigationUploadBtn" class="to-upload">
 		<div class="upload-file__container">
 			<img src="assets/images/img_upload.png" alt="image-upload" class="upload-file__image">
 			<h2 class="upload-file__title">Upload a new file</h2>
 		</div>
 	</a>
 
-	<a href="login.html" class="to-login">
+	<a id="navigationLoginBtn" class="to-login">
 		<div class="login__container">
 			<img src="assets/images/login-icon.png" alt="image-login" class="login__image">
-			<h2 class="login__title">Login to<br> your account</h2>
+			<div>
+				<h2 id="navigationLoginText" class="login__title">Login to<br> your account</h2>
+				<p id="navigationLoginSubtitle" class="login__subtitle">You can login to your account to see your files</p>
+			</div>
 		</div>
 	</a>
 	
@@ -50,7 +53,20 @@
 				</div>
 			</div>
 		</div>
-		<div class="upload__container">
+
+		<div id="login" class="login_page__container">
+			<h2 class="loginpage__title">Login</h2>
+			<p class="loginpage__subtitle">Use the slavery account given by the slaves</p>
+			<form id="loginForm" class="login-form">
+				<input id="username" class="username" type="text" name="username" placeholder="Username" autocomplete="off">
+				<input id="password" class="password" type="password" name="password" placeholder="Password">
+				<button id="login-btn" role="button"class="login-btn" type="submit">Login</button>
+			</form>
+		</div>
+
+
+
+		<div id="upload" class="upload__container">
 			<form id="uploadForm" class="upload-form">
 				<div class="file-container">
 					<i class="fa-solid fa-cloud-arrow-up cloud-icon"></i>
