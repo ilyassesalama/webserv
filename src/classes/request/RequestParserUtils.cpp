@@ -180,6 +180,7 @@ bool RequestParser::isPathAccessible() {
             this->requestResourcePath.append(getRequestLine()["path"]);
         
     }
+    this->requestResourcePath = normalizeURL(this->requestResourcePath);
     if(FULL_LOGGING_ENABLED)
         Log::v("RequestParser: Request resource path after merge: " + this->requestResourcePath);
     return(File::isFile(this->requestResourcePath) || File::isDirectory(this->requestResourcePath));
