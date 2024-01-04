@@ -53,20 +53,26 @@ std::string Response::getStringStatus(){
             return "204 No Content";
 		case 301:
             return "301 Moved Permanently";
+        case 302:
+            return "302 Found";
         case 400:
             return "400 Bad Request";
+        case 401:
+            return "401 Unauthorized";
         case 404:
             return "404 Not Found";
         case 403:
             return "403 Forbidden";
         case 405:
             return "405 Method Not Allowed";
+        case 408:
+            return "408 Request Timeout";
         case 409:
             return "409 Conflict";
         case 413:
-            return "413 Request Entity Too Large";
+            return "413 Content Too Large";
         case 414:
-            return "414 Request-URI Too Long";
+            return "414 URI Too Long";
         case 501:
             return "501 Not Implemented";
         case 504:
