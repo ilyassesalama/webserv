@@ -177,7 +177,6 @@ void Response::CGIhandler() {
         return;
     }
     this->responseBody = cgiHandler.getCGIResponse();
-    // GCI finished doing the cool stuff
     this->responseHeadersMap["Content-Type"] = cgiHandler.getCGIContentType();
     this->responseHeadersMap["Content-Length"] = String::to_string(cgiHandler.getCGIContentLength());
 }
@@ -185,7 +184,6 @@ void Response::CGIhandler() {
 void Response::handleFileRequest() {
     this->isCGI = this->isLocationHasCGI();
     if(this->isCGI){
-        //salama khaso ydir khdamto
         CGIhandler();
         return;
     }
@@ -193,7 +191,7 @@ void Response::handleFileRequest() {
         this->responseBody = readFileByOffset();
     else {
         this->statusCode = 403;
-        throw(Utils::WebservException("403 FORBIDEN ..."));
+        throw(Utils::WebservException("403 Forbidden"));
     }
 }
 
@@ -221,6 +219,6 @@ void Response::buildResourcePath(t_route *route) {
 }
 
 
-bool Response::isCGIon() {
+bool Response::isCGIEnabled() {
     return(this->currentRoute->isCGI);
 }

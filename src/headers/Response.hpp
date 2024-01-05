@@ -49,7 +49,7 @@ class Response {
         void saveOnFile(std::string data);
         void handleboundaryStart(std::ifstream& inputfile);
         bool isUploading();
-        bool isCGIon();
+        bool isCGIEnabled();
 
     private:
         std::string path;

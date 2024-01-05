@@ -92,7 +92,7 @@ void Response::uploadBoundaryFile() {
 }
 
 void Response::POSTResponseBuilder() {
-	if(isCGIon()) {
+	if(isCGIEnabled()) {
 		if(File::isFile(this->path)) {
 			this->handleFileRequest();
 			File::deleteLocation(this->request->getFileName());
