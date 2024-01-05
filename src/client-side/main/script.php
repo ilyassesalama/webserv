@@ -1,6 +1,6 @@
 <?php
     // read from the body
-    $inhanging = true;
+    $inhanging = false;
 
     if($inhanging){
         while(1){

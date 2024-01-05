@@ -70,7 +70,6 @@ void Response::uploadBoundaryFile() {
 			saveOnFile(data);
 			handleboundaryStart(inputFile);
 		} else if(line == "--" + this->boundary + "--\r") {
-			std::cout << "boundary end" << std::endl;
 			//this->uploading = false;
 			saveOnFile(data);
 			//File::deleteLocation(this->request->getFileName());
@@ -88,7 +87,6 @@ void Response::uploadBoundaryFile() {
 	}
 	this->uploadFileOffset = inputFile.tellg();
 	if(this->uploadFileOffset == -1) {
-		std::cout << "hello world" << std::endl;
 		this->uploading = false;
 		setServingState(false);
 		File::deleteLocation(this->request->getFileName());
@@ -105,7 +103,6 @@ void Response::POSTResponseBuilder() {
 			size_t slashPos = this->path.find_last_of("/");
 			std::string index = slashPos != this->path.size() - 1 ? "/" : "";
 			index.append(this->currentRoute->index);
-			std::cout << index << std::endl;
 			if(File::isFile(this->path + index)) {
 				this->path.append(index);
 				this->handleFileRequest();

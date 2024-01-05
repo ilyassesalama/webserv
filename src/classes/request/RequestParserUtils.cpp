@@ -316,7 +316,6 @@ void RequestParser::logParsedRequest(){
         Log::v("RequestParser: No body found");
     } else {
         Log::v("RequestParser: Parsed body:");
-        // std::cout << this->body << "\n";
     }
     if(this->parsingState.statusCode != 0 && this->parsingState.statusCode != 200 && this->parsingState.statusCode != 201){
         Log::e("RequestParser: Parsing failed with code " + String::to_string(this->parsingState.statusCode) + " and reason: " + this->parsingState.statusMessage);
