@@ -9,7 +9,7 @@
     $username = $data['username'];
     $password = $data['password'];
 
-    if ($username != 'admin' && $password != 'admin') {
+    if ($username != 'admin' || $password != 'admin') {
         http_response_code(401);
         printfJSON(array('status' => false, 'message' => 'Invalid username or password'));
         return;

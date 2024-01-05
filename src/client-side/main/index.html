@@ -1,71 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Home page - webserv</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="preconnect" href="https://fonts.googleapis.com">
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=Jost" rel="stylesheet">
-    <link rel="stylesheet" href="./styles.css">
-</head>
-<body>
-	<div class="container">
-		<div class="content article">
-			<div class="glows"></div>
-			<nav>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Home page - webserv</title>
+
+		<link rel="stylesheet" href="styles.css" />
+	</head>
+	<body>
+		<div class="welcome__container">
+			<lottie-player class="welcome__image" src="./assets/images/anim_welcome.json" loop autoplay></lottie-player>
+			<h1 class="welcome__title">Welcome to<br />webserv</h1>
+		</div>
+
+		<a id="anchor" href="#about" class="scroll-to-about">
+			<div class="learn-more__container">
+				<lottie-player class="learn-more__image" src="./assets/images/anim_working.json" loop autoplay></lottie-player>
 				<div>
-					<div id="webservTitle"></div>
-					<div id="webservSubtitle"></div>
+					<h2 class="learn-more__title">Learn more about<br>the project</h2>
+					<p class="learn-more__subtitle">Scroll down or click here to discover<br>the project features</p>
 				</div>
-				<ul>
-					<li id="homeNavButton"><a href="#"><button><img src="./icons/ic_home.svg">Home</button></a></li>
-					<li id="uploadNavButton"><a href="#"><button><img src="./icons/ic_upload.svg">File upload</button></a></li>
-					<li id="loginNavButton"><a href="#"><button><img src="./icons/ic_login.svg">Login</button></a></li>
-				</ul>
-			</nav>
-			<div class="line"></div>
-			<main>
-				<div id="home" class="home active">
-					<h3>Slaves:</h3>
-					<div class="images">
-						<div class="image article">
-							<h1>Badr Eddine El Kalai</h1>
-						</div>
-						<div class="image article">
-							<h1>Abdellah Bahsine</h1>
-						</div>
-						<div class="image article">
-							<h1>Ilyasse Salama</h1>
-						</div>
+			</div>
+		</a>
+
+		<a id="navigationUploadBtn" href="./upload.html" class="to-upload">
+			<div class="upload-file__container">
+				<img src="assets/images/img_upload_2.png" alt="image-upload" class="upload-file__image" />
+				<div>
+					<h2 class="upload-file__title">Upload a<br />new file</h2>
+					<p class="upload-file__subtitle">Click here to choose a file to upload to our amazing server</p>
+				</div>
+			</div>
+		</a>
+
+		<a id="navigationLoginBtn" class="to-login">
+			<div class="login__container">
+				<img src="assets/images/img_login_2.png" alt="image-login" class="login__image" />
+				<div>
+					<h2 id="navigationLoginText" class="login__title">
+						Login to<br />
+						your account
+					</h2>
+					<p id="navigationLoginSubtitle" class="login__subtitle">
+						Click here to login to your useless account and do nothing
+					</p>
+				</div>
+			</div>
+		</a>
+
+		<div class="interactions__container">
+			<div class="team__container">
+				<h2 class="team__title">- Team -</h2>
+				<p class="team__subtitle">The team people behind this project</p>
+				<div class="images">
+					<div class="image">
+						<h1 class="names">Badr Eddine<br />El Kalai</h1>
+					</div>
+					<div class="image">
+						<h1 class="names">Abdellah<br />Bahsine</h1>
+					</div>
+					<div class="image">
+						<h1 class="names">Ilyasse<br />Salama</h1>
 					</div>
 				</div>
+			</div>
 
-				<div id="login" class="login">
-					<form id="loginForm" class="login-form">
-						<input id="username" class="username" type="text" name="username" placeholder="Username" autocomplete="off">
-						<input id="password" class="password" type="password" name="password" placeholder="Password">
-						<button id="login-btn" class="login-btn" type="submit">Login</button>
-					</form>
-				</div>
-
-				<div id="upload" class="upload">
-					<form id="uploadForm" class="upload-form">
-						<div class="file-container">
-							<i class="fa-solid fa-cloud-arrow-up cloud-icon"></i>
-							<label id="file-label" class="file-label" for="file">Browse file to upload</label>
-							<input id="file" class="file" type="file" name="file" placeholder="File">
-						</div>
-						<input class="upload-btn" type="submit" value="Upload">
-					</form>
-				</div>
-			</main>
+			<div id="login" class="login_page__container">
+				<h2 id="loginpage__title" class="loginpage__title">Login</h2>
+				<p class="loginpage__subtitle">Use the cool account given by the team</p>
+				<form id="loginForm" class="login-form">
+					<input
+						id="username"
+						class="username"
+						type="text"
+						name="username"
+						placeholder="Username"
+						autocomplete="off" />
+					<input id="password" class="password" type="password" name="password" placeholder="Password" />
+					<button id="login-btn" role="button" class="login-btn" type="submit">Login</button>
+				</form>
+			</div>
 		</div>
-	</div>
 
-	<script src="main.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.9/dat.gui.min.js" integrity="sha512-WoO4Ih0CDOSLYafy22wZD/mcJ7k0ESLqtQsFa6zFKnEUrbtuGU+GkLtVhgt93xa2qewG5gKEC6CWlN8OaCTSVg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.9/dat.gui.js" integrity="sha512-Mcz+Mt8k23j06ycA5EJGfyXbtzB6xqEoJxjGftQQoed/zQzem9Lt21LRymjlcm+NUsbF0LOHgfdN8LO8GtKDOw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-	<script src="https://kit.fontawesome.com/f1ecab7344.js" crossorigin="anonymous"></script>
-</body>
+		<div id="about" class="about__container">
+			<img src="assets/images/img_about_2.png" class="about__image">
+			<div class="about__content">
+				<h2 class="about__title">About the project</h2>
+				<p class="about__subtitle">
+					This project is here to make us write our own HTTP server. We were able to test it with a real browser. HTTP is one of the most used protocol on internet. Knowing its arcane will be useful, even if we won't be working on a website even though we did lmao.
+				</p>
+			</div>
+		</div>
+
+		<script src="main.js"></script>
+		<script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+	</body>
 </html>
