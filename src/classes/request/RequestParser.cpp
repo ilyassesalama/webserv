@@ -230,11 +230,7 @@ void RequestParser::parseRequestBody(std::string &requestData){
 		if (this->isFirstRequest)
 			this->fileName = File::getWorkingDir() + this->route->root + this->route->upload_path + File::generateFileName("uploaded") + File::getContentTypeExtension(this->headers["Content-Type"]);
 		std::fstream myFile(this->fileName, std::ios::binary | std::ios::app);
-		if (!myFile.is_open()) {
-			this->parsingState.ok = true;
-			this->parsingState.statusCode = 500;
-			throw Utils::WebservException("Error opening file: " + this->fileName);
-		}
+		if (!myFile.is_open()) throw Utils::WebservException("Error opening file: " + this->fileName);
 		myFile << requestBody;
 		myFile.close();
 	} else if (isRequestChunked) {

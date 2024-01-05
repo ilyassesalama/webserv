@@ -256,7 +256,7 @@ void ConfigurationFile::configFileParsing( void ) {
 
 	t_server server;
 
-	while ( serverPos != std::string::npos ) {
+	while (serverPos != std::string::npos) {
 
 		getServerCoords(&tmpFile[serverPos + strlen("server")], &startIndex, &endIndex);
 
@@ -281,8 +281,7 @@ ConfigurationFile::ConfigurationFile( std::string file ) {
 		this->configFileParsing();
 
 		setDefaultErrors(this->getConfigFileServers());
-	}
-	catch (std::exception &e) {
+	} catch (std::exception &e) {
 		Log::e("Caught exception due to: " + std::string(e.what()));
 		exit(1);
 	}

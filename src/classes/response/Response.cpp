@@ -39,7 +39,7 @@ void Response::responseBuilder() {
             POSTResponseBuilder();
             return;
         }
-    } catch(Utils::WebservException &ex) {
+    } catch(std::exception &ex) {
         File::deleteLocation(this->request->getFileName());
         buildErrorResponse();
     }
@@ -65,7 +65,7 @@ void Response::feedDataToTheSender() {
         responseVector.clear();
         try {
             addDataToResponse(this->readFileByOffset());
-        } catch (Utils::WebservException &ex) {
+        } catch (std::exception &ex) {
             addDataToResponse("");
         }
     }

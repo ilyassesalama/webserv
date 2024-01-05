@@ -1,7 +1,6 @@
 #include "../../../webserv.hpp"
 
 ServerInstance::ServerInstance(s_server &serverInfos): backLog(200) {
-
     this->initialized = true;
     setListenAdressPort(serverInfos);
     this->duplicated = false;
@@ -12,8 +11,6 @@ ServerInstance::ServerInstance(s_server &serverInfos): backLog(200) {
     std::memset(&this->hint,0,sizeof(this->hint));
     this->hint.ai_family = AF_INET;
     this->hint.ai_socktype = SOCK_STREAM;
-    // this->hint.ai_flags = AI_PASSIVE;
-
 }
 
 std::vector<struct pollfd>& ServerInstance::getClientFdSet() {
@@ -180,9 +177,10 @@ int ServerInstance::receiveRequest(int clientFd) {
 			}
 			else
 				client->request.mergeRequestChunks(receivedRequest);
-		} catch (Utils::WebservException &e) {
-			Log::e(e.what());
-			// return(INVALID_REQUEST); // TODO: check if this is needed
+		} catch (std::exception &e) {
+            Log::e("Failed to merge request chunks due to: " + std::string(e.what()));
+            client->request.setParsingState(true);
+            client->request.setStatusCode(500);
 		}
 	}
 
@@ -254,7 +252,7 @@ int ServerInstance::sendResponse(int clientFd) {
         try {
             client->response.uploadBoundaryFile(); 
             return(999);
-        } catch(Utils::WebservException &ex) {
+        } catch(std::exception &ex) {
             Log::e("Failed to send response due to: " + std::string(ex.what()));
         }
     }

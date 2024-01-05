@@ -19,7 +19,7 @@ void CGInstance::setRequestBody() {
     std::string requestBody = "";
     try {
         requestBody = File::getFileContent(request.getFileName());
-    } catch (Utils::WebservException &e) {}
+    } catch (std::exception &e) {}
     this->cgiRequestBodySize = String::to_string(requestBody.size());
     this->cgiRequestBody = requestBody;
 }

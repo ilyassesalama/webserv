@@ -47,7 +47,9 @@ class RequestParser {
         void parseRequestBody(std::string &requestData);
         void verifyIfRequestIsSafe();
 
+        void setParsingState(bool isOK);
 		void setServerInformation(t_server *server);
+        void setStatusCode(int statusCode);
 
         t_route *getRoute();
         t_server *getServerInformation();
