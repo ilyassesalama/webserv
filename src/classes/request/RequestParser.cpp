@@ -63,7 +63,7 @@ void RequestParser::mergeRequestChunks(std::string &requestInput) {
 	}
     if(parsingState.headsOk && !parsingState.bodyOk) {
         parseRequestBody(requestData);
-		if (this->getRequestLine()["method"] == "POST" && getFileLength(this->parsingState, this->fileName) > this->server->client_body_size){
+		if (this->getRequestLine()["method"] == "POST" && this->requestData.size() > this->server->client_body_size){
 			this->parsingState.statusCode = 413;
 			this->parsingState.statusMessage = "Request Entity Too Large";
 			this->parsingState.ok = true;
