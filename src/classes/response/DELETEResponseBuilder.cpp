@@ -9,9 +9,9 @@ void Response::DELETEResponseBuilder() {
     } else {
     	this->setStatusCode(500);
     }
-    this->setResponseBody(); // will always be empty when we delete a file
     this->setHeaders();
     this->setResponseLine();
+    this->responseBody = "";
     this->fileOffset = -2;
     addDataToResponse(this->responseLine);
     addDataToResponse(this->responseHeaders);
