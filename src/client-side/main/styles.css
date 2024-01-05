@@ -2,6 +2,7 @@
 	--text-color: #292929;
 	--bg: #f4f4f4;
 	--border-radius: 18px;
+    --primary-color: #f94f46;
 }
 
 *,
@@ -86,19 +87,6 @@ body {
 	box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 }
 
-.upload__container {
-	position: absolute;
-	top: 0;
-	left: -100%;
-	transition: 0.6s;
-	background-color: red;
-}
-
-.upload__container.hidden {
-	left: 0;
-	transition: 0.6s;
-}
-
 .team__container,
 .upload__container {
 	height: 100%;
@@ -122,7 +110,7 @@ body {
 .upload-file__container,
 .login__container,
 .about__container,
-.login_page__container {
+.login_page__container, .upload-files-container {
 	user-select: none;
 	border: 1px solid #ccc;
 	text-align: center;
@@ -137,7 +125,7 @@ body {
 .upload-file__container:hover,
 .login__container:hover,
 .about__container:hover,
-.login_page__container {
+.login_page__container, .upload-files-container {
 	transform: scale(1.05);
 	transition: 0.4s;
 	border: 1px solid rgba(100, 100, 100, 0.3);
@@ -338,6 +326,11 @@ body {
 
 /* Login styles */
 
+.uploadpage__container {
+	left: 0;
+	z-index: 343;
+}
+
 .login_page__container {
 	position: absolute;
 	top: 0;
@@ -355,7 +348,7 @@ body {
 	justify-content: center;
 }
 
-.login_page__container.hidden {
+.login_page__container.hidden, .upload-files-container.hidden {
 	left: 0;
 	transition: 0.4s;
 }
@@ -510,4 +503,112 @@ body {
 
 .slide-right-fade-in {
     animation: slideRightFadeIn 0.2s forwards;
+}
+
+/* Upload styles */
+
+.form-container {
+	width: 100%;
+	height: 100%;
+	padding: 30px 60px;
+	border-radius: 40px;
+	display: flex;
+   	align-items: center;
+   	justify-content: center;
+	flex-direction: column;
+}
+
+
+.upload-files-container {
+	position: absolute;
+	top: 0;
+	left: -120%;
+	width: 100%;
+	height: 100%;
+	padding: 30px 60px;
+	border-radius: 40px;
+	display: flex;
+   	align-items: center;
+   	justify-content: center;
+	flex-direction: column;
+}
+.drag-file-area {
+	border: 2px dashed var(--primary-color);
+	border-radius: 40px;
+	margin: 10px 0 15px;
+	padding: 30px 50px;
+	width: 100%;
+    max-width: 450px;
+	text-align: center;
+}
+.drag-file-area .upload-icon {
+	font-size: 50px;
+}
+.drag-file-area h3 {
+	font-size: 26px;
+	margin: 15px 0;
+}
+.drag-file-area label {
+	font-size: 19px;
+}
+.drag-file-area label .browse-files-text {
+	color: var(--primary-color);
+	font-weight: bolder;
+	cursor: pointer;
+}
+.default-file-input{
+	display: none;
+}
+.browse-files span {
+	position: relative;
+	top: -25px;
+}
+
+.browse-files-text {
+	color: var(--primary-color);
+	font-weight: bolder;
+	cursor: pointer;
+
+}
+
+.cannot-upload-message {
+	background-color: #ffc6c4;
+	font-size: 17px;
+	display: flex;
+	align-items: center;
+	width: 100%;
+    max-width: 450px;
+	justify-content: space-between;
+	margin: 5px 0;
+	padding: 5px 10px 5px 30px;
+	border-radius: 50px;
+	color: #BB0000;
+	display: none;
+}
+@keyframes fadeIn {
+  0% {opacity: 0;}
+  100% {opacity: 1;}
+}
+.cannot-upload-message span, .upload-button-icon {
+	padding-right: 10px;
+}
+.cannot-upload-message span:last-child {
+	padding-left: 20px;
+	cursor: pointer;
+}
+
+.upload-button {
+	background-color: var(--primary-color);
+	color: #f7fff7;
+	display: flex;
+	align-items: center;
+	width: 100%;
+    max-width: 450px;
+    justify-content: center;
+	font-size: 18px;
+	border: none;
+	border-radius: 50px;
+	margin: 10px;
+	padding: 14px 50px;
+	cursor: pointer;
 }

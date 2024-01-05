@@ -4,6 +4,9 @@ const navigationLoginText = document.getElementById("navigationLoginText");
 const navigationLoginSubtitle = document.getElementById("navigationLoginSubtitle");
 const loginpage__title = document.getElementById("loginpage__title");
 
+const upload = document.getElementById("upload");
+const login = document.getElementById('login');
+
 
 anchor.addEventListener('click', function (e) {
 	e.preventDefault();
@@ -14,7 +17,6 @@ anchor.addEventListener('click', function (e) {
 });
 
 const navigationLoginBtn = document.getElementById('navigationLoginBtn');
-const login = document.getElementById('login');
 
 navigationLoginBtn.addEventListener('click', function (e) {
 	if (isLoggedIn()) {
@@ -89,6 +91,7 @@ function switchLoginPage(page, showLogin = true) {
 		}
 	if(showLogin){
 		login.classList.toggle('hidden');
+		upload.classList.remove('hidden');
 		login.style.zIndex = 100;
 	
 	}
@@ -165,3 +168,73 @@ function changeTextWithAnimation(element, newText) {
         }, { once: true });
     }, { once: true });
 }
+
+/* Upload file */
+
+let uploadIcon = document.querySelector(".upload-icon");
+let dragDropText = document.querySelector(".dynamic-message");
+let fileInput = document.querySelector(".default-file-input");
+let cannotUploadMessage = document.querySelector(".cannot-upload-message");
+let cancelAlertButton = document.querySelector(".cancel-alert-button");
+let uploadedFile = document.querySelector(".file-block");
+let uploadButton = document.querySelector(".upload-button");
+
+fileInput.addEventListener("click", () => {
+	fileInput.value = "";
+    uploadIcon.innerHTML = "file_upload";
+    uploadIcon.classList.add("material-icons-outlined");
+    uploadIcon.classList.add("upload-icon");
+    dragDropText.innerHTML = "Click browse below to select a file";
+});
+
+fileInput.addEventListener("change", (e) => {
+    cannotUploadMessage.style.cssText = "display: none;";
+	uploadIcon.innerHTML = "check_circle";
+    if (fileInput.files[0].name.length > 20) {
+        dragDropText.innerHTML = `Selected file: ${fileInput.files[0].name.substring(0, 20)}...`;
+    } else {
+        dragDropText.innerHTML = `Selected file: ${fileInput.files[0].name}`;
+    }
+	uploadButton.innerHTML = `Upload`;
+});
+
+uploadButton.addEventListener("click", () => {
+    // e.preventDefault();
+    let isFileUploaded = fileInput.value;
+	if(isFileUploaded == '') {
+        cannotUploadMessage.style.cssText = "display: flex; animation: fadeIn linear 1.5s;";
+        return;
+    }
+    uploadButton.disabled = true;
+    uploadButton.innerHTML = "Uplaoding...";
+	const formData = new FormData();
+	formData.append("file", fileInput.files[0]);
+	fetch("/", {
+		method: "POST",
+		body: formData,
+	}).then((res) => {
+        uploadButton.disabled = false;
+        uploadButton.innerHTML = "Upload";
+		if (res.status === 201) {
+            fileInput.value = "";
+			dragDropText.innerHTML = "Uploaded successfully!";
+		} else {
+			dragDropText.innerHTML = "Upload failed!";
+		}
+	})
+	.catch((error) => {
+		console.log(error);
+	});
+});
+
+cancelAlertButton.addEventListener("click", () => {
+	cannotUploadMessage.style.cssText = "display: none;";
+});
+
+const navigationUploadBtn = document.getElementById('navigationUploadBtn');
+
+navigationUploadBtn.addEventListener("click", () => {
+	upload.classList.toggle('hidden');
+	login.classList.remove('hidden');
+	upload.style.zIndex = 1012;
+});
