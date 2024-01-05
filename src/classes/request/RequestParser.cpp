@@ -24,6 +24,20 @@ void RequestParser::nullOutVars(){
 	this->isRequestMultipart = false;
 }
 
+size_t getFileLength(ParsingState &parsingState, std::string fileName) {
+	std::fstream myFile(fileName, std::ios::binary | std::ios::app);
+	if (!myFile.is_open()) {
+		parsingState.ok = true;
+		parsingState.statusCode = 500;
+		throw Utils::WebservException("Error opening file : " + fileName);
+	}
+	myFile.seekg(0, std::ios::end);
+    std::size_t length = myFile.tellg();
+    myFile.seekg(0, std::ios::beg);
+	myFile.close();
+	return length;
+}
+
 /*
     The first function to be called, specifically by ServerInstance::receiveRequest()
     to receive and merge the final full request.
@@ -49,6 +63,12 @@ void RequestParser::mergeRequestChunks(std::string &requestInput) {
 	}
     if(parsingState.headsOk && !parsingState.bodyOk) {
         parseRequestBody(requestData);
+		if (this->getRequestLine()["method"] == "POST" && getFileLength(this->parsingState, this->fileName) > this->server->client_body_size){
+			this->parsingState.statusCode = 413;
+			this->parsingState.statusMessage = "Request Entity Too Large";
+			this->parsingState.ok = true;
+			return;
+		}
         if(FULL_LOGGING_ENABLED) Log::v("Parsing request body finished with status: " + String::to_string(parsingState.bodyOk));
     }
 	if (this->getRequestLine()["method"] == "GET" || this->getRequestLine()["method"] == "DELETE")
@@ -85,12 +105,6 @@ void RequestParser::verifyIfRequestIsSafe(){
     if(this->requestLine["path"].length() > 2048){
         this->parsingState.statusCode = 414;
         this->parsingState.statusMessage = "URI Too Long";
-        return;
-    }
-    size_t bodyMaxSizeFromConfig = this->server->client_body_size;
-    if(this->body.length() > bodyMaxSizeFromConfig){
-        this->parsingState.statusCode = 413;
-        this->parsingState.statusMessage = "Request Entity Too Large";
         return;
     }
     if (!isPathAccessible()) {
@@ -198,20 +212,6 @@ void RequestParser::parseRequestParams(std::string &requestData){
             this->params[key] = value;
         }
     }
-}
-
-size_t getFileLength(ParsingState &parsingState, std::string fileName) {
-	std::fstream myFile(fileName, std::ios::binary | std::ios::app);
-	if (!myFile.is_open()) {
-		parsingState.ok = true;
-		parsingState.statusCode = 500;
-		throw Utils::WebservException("Error opening file : " + fileName);
-	}
-	myFile.seekg(0, std::ios::end);
-    std::size_t length = myFile.tellg();
-    myFile.seekg(0, std::ios::beg);
-	myFile.close();
-	return length;
 }
 
 /*
