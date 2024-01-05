@@ -27,8 +27,7 @@ void startTheParty(ConfigurationFile &obj) {
 				// the server in nor duplicated need to lunch the configuration
 				if(s.setupServerConfiguration() == true)
 					master.addServerToTheSet(s);
-			}
-			else if (server != NULL) {
+			} else if (server != NULL) {
 				// the server is duplicated
 				server->setDuplicated(true);
 				server->addDuplicatedServers(&(*it));
@@ -41,7 +40,6 @@ void startTheParty(ConfigurationFile &obj) {
 		Log::e("No valid server to monitor");
 		exit(1);
 	}
-
 }
 
 int main(int ac, char **av) {

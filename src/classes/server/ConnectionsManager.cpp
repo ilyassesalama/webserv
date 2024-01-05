@@ -12,18 +12,11 @@ void ConnectionsManager::addServerToTheSet(ServerInstance &serverInstance) {
     this->serversSet.push_back(serverInstance);
     addFdToTheSet(serverInstance.getListenSocketFd());
     this->serverCount++;
-
-    // std::vector<struct pollfd> clientFdSet = serverInstance.getClientFdSet();
-    // std::vector<struct pollfd>::iterator it = clientFdSet.begin();
-
-    // this->masterFdSet.push_back((*it));
-
 }
 void ConnectionsManager::deleteFromFdSet(int clientFd) {
     for(std::vector<struct pollfd>::iterator it = this->masterFdSet.begin(); it != this->masterFdSet.end(); it++) {
         if(it->fd == clientFd) {
             this->masterFdSet.erase(it);
-            // close(clientFd);
             break;
         }
     }
@@ -78,12 +71,9 @@ void ConnectionsManager::acceptNewIncommingConnections(ServerInstance *serverId)
     setSocketNonBlocking(client.SocketFD);
     addFdToTheSet(client.SocketFD);
     serverId->AddFdToPollFds(client.SocketFD);
-    char address_buffer[100];
-    getnameinfo((struct sockaddr*)&client.address, client.address_length, address_buffer, sizeof(address_buffer), 0, 0, NI_NUMERICHOST);
-    std::string ipAddress(address_buffer);
     client.connectionTime = std::time(0);
     serverId->AddToClientProfiles(client);
-    Log::d("New client connected: " + ipAddress + " on port " + serverId->getServerPort());
+    Log::d("New client connected");
 }
 
 
@@ -174,7 +164,6 @@ ServerInstance* ConnectionsManager::isServerExist(ServerInstance &server) {
     return(NULL);
 }
 
-
 void ConnectionsManager::printMasterFdSet() {
     for(std::vector<struct pollfd>::iterator it = this->masterFdSet.begin(); it != this->masterFdSet.end(); it++) {
         std::cout << "client Fd : " << it->fd << " client event : " << it->events << " client revent : " << it->revents << std::endl;
@@ -186,9 +175,3 @@ void ConnectionsManager::printServers() {
         std::cout <<"Server name : "<< it->getServerName() <<  " listen Socket Fd : " << it->getListenSocketFd() << std::endl;
     }
 }
-
-
-
-
-
-
