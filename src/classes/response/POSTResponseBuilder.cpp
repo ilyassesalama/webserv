@@ -31,7 +31,7 @@ void Response::handleboundaryStart(std::ifstream& inputfile) {
 	
 	std::string BoundaryFileName = getBoundaryFileName(boundaryContent, contentType);
 
-	this->uploadFilePath = File::getWorkingDir() + this->currentRoute->upload_path + BoundaryFileName;
+	this->uploadFilePath = File::getWorkingDir() + this->currentRoute->root + this->currentRoute->upload_path + BoundaryFileName;
 }
 void Response::saveOnFile(std::string data) {
     if(data == "")
@@ -51,7 +51,7 @@ void Response::saveOnFile(std::string data) {
 void Response::uploadBoundaryFile() {
 	std::ifstream inputFile(this->tmpUploadFilePath.c_str(), std::ios::binary);
 	std::string line;
-	int count = 100;
+	int count = 500;
 	std::string data = "";
 
 	if(!inputFile.is_open()) {
