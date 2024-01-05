@@ -59,7 +59,7 @@ void ConfigurationFile::parseRouteValue( std::string key, std::string value, t_r
 	if (key == "root") {
 		if (!route->is_root) {
 			route->root = singleValueParser(value);
-			if (String::endsWith(route->root, "/"))
+			if (!String::endsWith(route->root, "/"))
 				route->root.append("/");
 			route->is_root = true;
 		} else {
@@ -111,8 +111,10 @@ void ConfigurationFile::parseRouteValue( std::string key, std::string value, t_r
 	} else if (key == "upload_path") {
 		if (!route->is_upload_path) {
 			route->upload_path = singleValueParser(value);
+			if (!String::endsWith(route->upload_path, "/"))
+				route->upload_path.append("/");
 			if (!File::isDirectory(File::getWorkingDir() + route->upload_path))
-				throw (Utils::WebservException("Error, upload_path must be a directory"));
+				throw (Utils::WebservException("Error, upload_path must be an existing directory in client-side folder and should start with a slash"));
 			route->is_upload_path = true;
 		} else {
 			Log::w("Warning, there is more than one upload_path directive");
@@ -173,7 +175,6 @@ void ConfigurationFile::handleDirectives( std::string file, t_server server ) {
 	if (endIndex == std::string::npos) endIndex = file.size();
 
 	size_t startIndex = findOpeningBrace( file, endIndex );
-
 
 	std::string directiveKey;
 	std::string directiveValue;
@@ -240,7 +241,12 @@ void ConfigurationFile::configFileParsing( void ) {
 	std::string tmpFile = this->file;
 
 	size_t serverPos = serverStartPosition( tmpFile );
+	if (serverPos == std::string::npos) throw(Utils::WebservException("Error, there is no server block"));
 
+	for (size_t i = serverPos - 1; i > 0; i--)
+		if (!isspace(tmpFile[i]))
+			throw(Utils::WebservException("Error, there is a syntax error"));
+	
 	size_t startIndex;
 	size_t endIndex;
 
