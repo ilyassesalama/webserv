@@ -178,7 +178,10 @@ std::string Response::readFileByOffset() {
 void Response::CGIhandler() {
     this->fileOffset = -2;
     CGInstance cgiHandler(*this->request);
+    cgiHandler.setFilePath(this->path);
     cgiHandler.initCGInstance(); // start the party
+
+
     this->statusCode = cgiHandler.getCGIStatusCode();
     if(cgiHandler.hasCGIFailed()) {
         this->responseBody = this->getErrorPageHTML();

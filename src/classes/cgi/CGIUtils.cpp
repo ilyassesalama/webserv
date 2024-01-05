@@ -1,6 +1,6 @@
 #include "../../../webserv.hpp"
 
-void CGInstance::setFilePath(std::string filePath) {
+void CGInstance::setFilePath(const std::string &filePath) {
     this->filePath = filePath;
 }
 

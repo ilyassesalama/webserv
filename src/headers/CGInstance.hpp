@@ -8,7 +8,7 @@ class CGInstance {
     public:
         CGInstance(RequestParser &request);
 
-        void setFilePath(std::string filePath);
+        void setFilePath(const std::string &filePath);
         void setCGIPath(std::string cgiPath);
         void setEnvironnementVariables();
         void setCGIServer();

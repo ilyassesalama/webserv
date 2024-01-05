@@ -8,7 +8,6 @@ void CGInstance::initCGInstance() {
     this->cgiFailureStatus = false;
     this->cgiStatusCode = "200";
     timeout_occurred = 0;
-    setFilePath(request.getRequestedResourcePath());
     setCGIPath(File::getCGIbinary(this->filePath,this->request.getRoute()));
     setCGIServer();
     setRequestBody();
