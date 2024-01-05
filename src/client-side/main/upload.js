@@ -53,6 +53,25 @@ var isAdvancedUpload = function() {
                     }
               }
             }
+
+			// e.preventDefault();
+
+			const formData = new FormData();
+
+			formData.append("file", fileInput.files[0]);
+
+			fetch("/", {
+				method: "POST",
+				body: formData,
+			}).then((res) => {
+				if (res.status === 201) {
+					alert("Uploaded successfully!");
+				} else {
+					alert("Error uploading the file");
+				}
+			}).catch((error) => {
+				console.log(error);
+			});
       } else {
           cannotUploadMessage.style.cssText = "display: flex; animation: fadeIn linear 1.5s;";
       }
@@ -78,7 +97,7 @@ var isAdvancedUpload = function() {
               dragDropText.innerHTML = 'Drop your file here!';
           });
       });
-  
+
       draggableFileArea.addEventListener("drop", e => {
           uploadIcon.innerHTML = 'check_circle';
           dragDropText.innerHTML = 'File Dropped Successfully!';
@@ -96,12 +115,12 @@ var isAdvancedUpload = function() {
           fileFlag = 0;
       });
   }
-  
-  removeFileButton.addEventListener("click", () => {
-      uploadedFile.style.cssText = "display: none;";
-      fileInput.value = '';
-      uploadIcon.innerHTML = 'file_upload';
-      dragDropText.innerHTML = 'Drag & drop any file here';
-      document.querySelector(".label").innerHTML = `or <span class="browse-files"> <input type="file" class="default-file-input"/> <span class="browse-files-text">browse file</span> <span>from device</span> </span>`;
-      uploadButton.innerHTML = `Upload`;
-  });
+
+removeFileButton.addEventListener("click", () => {
+	uploadedFile.style.cssText = "display: none;";
+	fileInput.value = '';
+	uploadIcon.innerHTML = 'file_upload';
+	dragDropText.innerHTML = 'Drag & drop any file here';
+	document.querySelector(".label").innerHTML = `or <span class="browse-files"> <input type="file" class="default-file-input"/> <span class="browse-files-text">browse file</span> <span>from device</span> </span>`;
+	uploadButton.innerHTML = `Upload`;
+});
