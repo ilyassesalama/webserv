@@ -145,7 +145,7 @@ void Response::handleDirectoryRequest() {
     }
     else if (File::isFile(this->path + indexHTML)) {
 		this->path += indexHTML;
-        this->handleFileRequest();
+        this->responseBody = readFileByOffset();
     } else {
         bool directory_listing = this->currentRoute->directory_listing;
 
