@@ -59,6 +59,8 @@ void ConfigurationFile::parseRouteValue( std::string key, std::string value, t_r
 	if (key == "root") {
 		if (!route->is_root) {
 			route->root = singleValueParser(value);
+			if (route->root[0] != '/')
+				throw (Utils::WebservException("Error, root directive must start with a slash"));
 			if (!String::endsWith(route->root, "/"))
 				route->root.append("/");
 			route->is_root = true;
