@@ -242,7 +242,7 @@ ClientProfile *ServerInstance::getClientProfile(int clientFd) {
 
 //add more status codes 
 bool isErrorCode(int code) {
-    if(code == 413)
+    if(code == 413 || code == 405 || code == 404 || code == 400 || code == 500 || code == 501 || code == 505)
         return true;
     return false;
 }
