@@ -180,3 +180,7 @@ void Response::setBytesSent(size_t bytes) {
 bool Response::isUploading() {
     return(this->uploading);
 }
+
+int Response::getStatusCode() {
+    return(this->statusCode);
+}

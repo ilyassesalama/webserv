@@ -12,7 +12,7 @@ ServerInstance::ServerInstance(s_server &serverInfos): backLog(200) {
     std::memset(&this->hint,0,sizeof(this->hint));
     this->hint.ai_family = AF_INET;
     this->hint.ai_socktype = SOCK_STREAM;
-    this->hint.ai_flags = AI_PASSIVE;
+    // this->hint.ai_flags = AI_PASSIVE;
 
 }
 
@@ -239,6 +239,14 @@ ClientProfile *ServerInstance::getClientProfile(int clientFd) {
     return(NULL);
 }
 
+
+//add more status codes 
+bool isErrorCode(int code) {
+    if(code == 413)
+        return true;
+    return false;
+}
+
 int ServerInstance::sendResponse(int clientFd) {
     ClientProfile *client = getClientProfile(clientFd);
     client->connectionTime = std::time(0);
@@ -252,7 +260,7 @@ int ServerInstance::sendResponse(int clientFd) {
     }
     signal(SIGPIPE, SIG_IGN);
     size_t bytesSent = send(clientFd, &client->response.getResponse()[0],client->response.getResponse().size(),0);
-    if(bytesSent == 0) {
+    if(bytesSent == 0 || isErrorCode(client->response.getStatusCode())) {
         Log::e("Client Closed Connection ... ");
         this->dropClient(clientFd);
         return(DROP_CLIENT); 

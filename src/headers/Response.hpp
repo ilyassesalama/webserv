@@ -26,6 +26,7 @@ class Response {
         std::string getErrorPageHTML();
         std::string readFileByOffset();
         // std::string getAllowedMethod(std::string location, std::string method);
+        int getStatusCode();
 
 
 		void buildResourcePath(t_route *route);
