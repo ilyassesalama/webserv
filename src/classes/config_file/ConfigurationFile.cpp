@@ -42,7 +42,7 @@ void ConfigurationFile::parseValue( std::string key, std::string value, t_server
 		for (it = errors.begin(); it != errors.end(); it++) {
 			if (!findVal(server->error_pages, it->error_code)) {
 				if(access(it->error_page.c_str(), R_OK) == -1) {
-					Log::e("The custom error page " + String::to_string(it->error_code) + " you specified in the config file isn't accessible. We'll use our own error page.");
+					Log::w("The custom error page " + String::to_string(it->error_code) + " you specified in the config file isn't accessible. We'll use our own error page.");
 				} else {
 					server->error_pages.push_back(*it);
 				}
