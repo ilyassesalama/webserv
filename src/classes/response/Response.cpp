@@ -135,9 +135,17 @@ void Response::handleDirectoryRequest() {
 
     std::string indexHTML = slashPos != this->path.size() - 1 ? "/index.html" : "index.html";
 
-    if (File::isFile(this->path + indexHTML)) {
+    size_t slashPosIndex = this->path.find_last_of("/");
+    std::string index = slashPosIndex != this->path.size() - 1 ? "/" : "";
+    index.append(this->currentRoute->index);
+
+    if (!this->currentRoute->index.empty() && File::isFile(this->path + index)) {
+        this->path.append(index);
+        this->handleFileRequest();
+    }
+    else if (File::isFile(this->path + indexHTML)) {
 		this->path += indexHTML;
-        this->responseBody = readFileByOffset();
+        this->handleFileRequest();
     } else {
         bool directory_listing = this->currentRoute->directory_listing;
 
