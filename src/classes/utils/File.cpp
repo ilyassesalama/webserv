@@ -131,7 +131,11 @@ std::string File::generateFileName(std::string name) {
 	timeval currentTime;
     gettimeofday(&currentTime, 0);
 	long long microseconds = static_cast<long long>(currentTime.tv_sec) * 1000000LL + currentTime.tv_usec;
-	std::string fileName = "file_" + String::to_string(microseconds) + "_" + name;
+	std::string number;
+	std::stringstream strstream;
+	strstream << microseconds;
+	strstream >> number;
+	std::string fileName = "file_" + number + "_" + name;
 	return fileName;
 }
 
