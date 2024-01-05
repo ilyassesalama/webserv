@@ -113,6 +113,8 @@ void ConfigurationFile::parseRouteValue( std::string key, std::string value, t_r
 	} else if (key == "upload_path") {
 		if (!route->is_upload_path) {
 			route->upload_path = singleValueParser(value);
+			if (route->upload_path[0] != '/')
+				throw (Utils::WebservException("Error, upload path directive must start with a slash"));
 			if (!String::endsWith(route->upload_path, "/"))
 				route->upload_path.append("/");
 			if (!File::isDirectory(File::getWorkingDir() + "/main" + route->upload_path))
