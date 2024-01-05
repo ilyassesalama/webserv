@@ -31,6 +31,10 @@ void Response::handleboundaryStart(std::ifstream& inputfile) {
 	
 	std::string BoundaryFileName = getBoundaryFileName(boundaryContent, contentType);
 
+	if (File::isFile(File::getWorkingDir() + this->currentRoute->root + this->currentRoute->upload_path + BoundaryFileName)) {
+		BoundaryFileName = File::generateFileName("boundary") + File::getContentTypeExtension(contentType);
+	}
+
 	this->uploadFilePath = File::getWorkingDir() + this->currentRoute->root + this->currentRoute->upload_path + BoundaryFileName;
 }
 void Response::saveOnFile(std::string data) {
