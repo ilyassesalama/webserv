@@ -7,6 +7,8 @@ const loginpage__title = document.getElementById("loginpage__title");
 const upload = document.getElementById("upload");
 const login = document.getElementById('login');
 
+let loginPageState = "login_default";
+
 
 anchor.addEventListener('click', function (e) {
 	e.preventDefault();
@@ -69,6 +71,7 @@ loginForm.addEventListener("submit", e => {
 });
 
 function switchLoginPage(page, showLogin = true) {
+	loginPageState = page;
 	const navigationLoginText = document.getElementById("navigationLoginText");
 	console.log(page);
 	switch (page) {
@@ -202,7 +205,7 @@ uploadButton.addEventListener("click", () => {
     // e.preventDefault();
     let isFileUploaded = fileInput.value;
 	if(isFileUploaded == '') {
-        cannotUploadMessage.style.cssText = "display: flex; animation: fadeIn linear 1.5s;";
+        cannotUploadMessage.style.cssText = "display: flex; animation: fadeIn linear 0.2s;";
         return;
     }
     uploadButton.disabled = true;
@@ -234,6 +237,9 @@ cancelAlertButton.addEventListener("click", () => {
 const navigationUploadBtn = document.getElementById('navigationUploadBtn');
 
 navigationUploadBtn.addEventListener("click", () => {
+	if(loginPageState == "trying_to_login"){
+		switchLoginPage("login_default", false);
+	}
 	upload.classList.toggle('hidden');
 	login.classList.remove('hidden');
 	upload.style.zIndex = 1012;

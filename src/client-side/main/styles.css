@@ -3,6 +3,7 @@
 	--bg: #f4f4f4;
 	--border-radius: 18px;
     --primary-color: #f94f46;
+    --primary-color-onFocus: #ff463c;
 }
 
 *,
@@ -50,6 +51,7 @@ body {
 	grid-area: 2 / 1 / 3 / 3;
 	text-decoration: none;
 	color: var(--text-color);
+	cursor: pointer;
 }
 
 .upload-file__container {
@@ -396,7 +398,7 @@ body {
 }
 
 .login-btn:hover {
-	background-color: #ff695e;
+	background-color: var(--primary-color-onFocus);
 	transition: 0.4s;
 	scale: 1.02;
 }
@@ -423,7 +425,7 @@ body {
 .login-btn {
 	appearance: button;
 	backface-visibility: hidden;
-	background-color: #fa7971;
+	background-color: var(--primary-color);
 	margin-top: 5px;
 	border-width: 0;
 	box-shadow: rgba(50, 50, 93, 0.1) 0 0 0 1px inset, rgba(50, 50, 93, 0.1) 0 2px 5px 0,
@@ -518,7 +520,6 @@ body {
 	flex-direction: column;
 }
 
-
 .upload-files-container {
 	position: absolute;
 	top: 0;
@@ -532,6 +533,7 @@ body {
    	justify-content: center;
 	flex-direction: column;
 }
+
 .drag-file-area {
 	border: 2px dashed var(--primary-color);
 	border-radius: 40px;
@@ -540,7 +542,14 @@ body {
 	width: 100%;
     max-width: 450px;
 	text-align: center;
+	transition: 0.4s;
 }
+
+.drag-file-area:hover {
+	transition: 0.4s;
+	scale: 1.02;
+}
+
 .drag-file-area .upload-icon {
 	font-size: 50px;
 }
@@ -582,7 +591,7 @@ body {
 	margin: 5px 0;
 	padding: 5px 10px 5px 30px;
 	border-radius: 50px;
-	color: #BB0000;
+	color: var(--primary-color);
 	display: none;
 }
 @keyframes fadeIn {
@@ -611,4 +620,11 @@ body {
 	margin: 10px;
 	padding: 14px 50px;
 	cursor: pointer;
+	transition: 0.4s;
+}
+
+.upload-button:hover {
+	transition: 0.4s;
+	scale: 1.02;
+	background-color: var(--primary-color-onFocus);
 }
