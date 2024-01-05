@@ -73,7 +73,7 @@ void ConnectionsManager::acceptNewIncommingConnections(ServerInstance *serverId)
     client.SocketFD = accept(serverId->getListenSocketFd(), (struct sockaddr*)&client.address,&client.address_length);
     if(client.SocketFD < 0) {
         Log::e("Failed to accept new connection");
-        exit(1);
+        return;
     }
     setSocketNonBlocking(client.SocketFD);
     addFdToTheSet(client.SocketFD);
@@ -127,7 +127,7 @@ void ConnectionsManager::socketMonitor() {
         pollResult = poll(&masterFdSet[0], masterFdSet.size(), -1);
         if (pollResult < 0) {
             Log::e("Poll failed");
-            exit(1);
+            continue;
         }
         for (std::vector<struct pollfd>::iterator it = masterFdSet.begin(); it != masterFdSet.end(); ++it) {
             if (it->revents & POLLIN) {
