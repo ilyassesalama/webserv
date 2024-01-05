@@ -35,3 +35,4 @@ webserv
 webserverLogs.txt
 src/client-side/uploads/
 out
+*.mp4
