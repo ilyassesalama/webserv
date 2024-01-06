@@ -107,6 +107,11 @@ void RequestParser::verifyIfRequestIsSafe(){
         this->parsingState.statusMessage = "URI Too Long";
         return;
     }
+    if (!Utils::isMapKeyExists(this->headers, "Host") || this->headers["Host"].empty()) {
+        this->parsingState.statusCode = 400;
+        this->parsingState.statusMessage = "Bad Request";
+        return;
+    }
     if (!isPathAccessible()) {
         this->parsingState.statusCode = 404;
         this->parsingState.statusMessage = "Not Found";
