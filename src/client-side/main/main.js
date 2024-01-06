@@ -57,13 +57,16 @@ loginForm.addEventListener("submit", e => {
 				document.cookie = "username=" + username;
 				loginpage__title.innerHTML = "Login";
 				switchLoginPage("logged_in");
+			} if (res.status === 200) { 
+				triggerShakeAnimation(loginpage__title);
+				loginpage__title.innerHTML = res.statusText;
 			} else {
 				triggerShakeAnimation(loginpage__title);
 				loginpage__title.innerHTML = "Wrong username or password";
-				setTimeout(() => {
-					changeTextWithAnimation(loginpage__title, "Login");
-				}, 2000);
 			}
+			setTimeout(() => {
+				changeTextWithAnimation(loginpage__title, "Login");
+			}, 2000);
 		}, 800);
 	}).catch((error) => {
 		console.log(error);
@@ -132,46 +135,6 @@ function isLoggedIn() {
 
 checkInitialLogin();
 
-
-
-
-
-
-
-
-// miscllaneous functions
-
-function triggerShakeAnimation(element) {
-    element.classList.add("shake-animation");
-
-    // Remove the class after the animation completes
-    element.addEventListener('animationend', function() {
-        element.classList.remove("shake-animation");
-    }, {once: true});
-}
-
-function changeTextWithAnimation(element, newText) {
-    // Step 1: Slide left and fade out
-    element.classList.add("slide-left-fade-out");
-
-    // Step 2: Once the fade-out animation is complete, change the text and slide in
-    element.addEventListener('animationend', function() {
-        // Remove the old animation class
-        element.classList.remove("slide-left-fade-out");
-
-        // Change the text
-        element.textContent = newText;
-
-        // Add the new animation class
-        element.classList.add("slide-right-fade-in");
-
-        // Clean up after the slide-in animation is complete
-        element.addEventListener('animationend', function() {
-            element.classList.remove("slide-right-fade-in");
-        }, { once: true });
-    }, { once: true });
-}
-
 /* Upload file */
 
 let uploadIcon = document.querySelector(".upload-icon");
@@ -185,18 +148,19 @@ let uploadButton = document.querySelector(".upload-button");
 fileInput.addEventListener("click", () => {
 	fileInput.value = "";
     uploadIcon.innerHTML = "file_upload";
-    uploadIcon.classList.add("material-icons-outlined");
-    uploadIcon.classList.add("upload-icon");
     dragDropText.innerHTML = "Click browse below to select a file";
+	uploadButton.style.cssText = "background-color: #6d6d6d;";
+	cannotUploadMessage.style.cssText = "display: none;";
 });
 
 fileInput.addEventListener("change", (e) => {
     cannotUploadMessage.style.cssText = "display: none;";
-	uploadIcon.innerHTML = "check_circle";
+	uploadIcon.innerHTML = "attach_file";
+	uploadButton.style.cssText = "background-color: #f94f46;";
     if (fileInput.files[0].name.length > 20) {
-        dragDropText.innerHTML = `Selected file: ${fileInput.files[0].name.substring(0, 20)}...`;
+        dragDropText.innerHTML = `Attached file: ${fileInput.files[0].name.substring(0, 20)}...`;
     } else {
-        dragDropText.innerHTML = `Selected file: ${fileInput.files[0].name}`;
+        dragDropText.innerHTML = `Attached file: ${fileInput.files[0].name}`;
     }
 	uploadButton.innerHTML = `Upload`;
 });
@@ -218,6 +182,8 @@ uploadButton.addEventListener("click", () => {
 	}).then((res) => {
         uploadButton.disabled = false;
         uploadButton.innerHTML = "Upload";
+		uploadIcon.innerHTML = "check_circle";
+		uploadButton.style.cssText = "background-color: #6d6d6d;";
 		if (res.status === 201) {
             fileInput.value = "";
 			dragDropText.innerHTML = "Uploaded successfully!";
@@ -244,3 +210,25 @@ navigationUploadBtn.addEventListener("click", () => {
 	login.classList.remove('hidden');
 	upload.style.zIndex = 1012;
 });
+
+
+// miscllaneous functions
+
+function triggerShakeAnimation(element) {
+    element.classList.add("shake-animation");
+    element.addEventListener('animationend', function() {
+        element.classList.remove("shake-animation");
+    }, {once: true});
+}
+
+function changeTextWithAnimation(element, newText) {
+    element.classList.add("slide-left-fade-out");
+    element.addEventListener('animationend', function() {
+        element.classList.remove("slide-left-fade-out");
+        element.textContent = newText;
+        element.classList.add("slide-right-fade-in");
+        element.addEventListener('animationend', function() {
+            element.classList.remove("slide-right-fade-in");
+        }, { once: true });
+    }, { once: true });
+}
