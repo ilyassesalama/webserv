@@ -90,16 +90,19 @@ bool ServerInstance::setupServerConfiguration() {
     this->listenSocket = socket(this->bindAddress->ai_family, this->bindAddress->ai_socktype, this->bindAddress->ai_protocol);
     if(this->listenSocket < 0) {
         Log::e("Failed to create a listening socket due to: " + std::string(strerror(errno)));
+        freeaddrinfo(this->bindAddress);
         return false;
     }
     setSocketNonBlocking(this->listenSocket);
     if (setsockopt(getListenSocketFd(), SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
         Log::e("Failed to set socket options: " + std::string(strerror(errno)));
+        freeaddrinfo(this->bindAddress);
         return false;
     }
     Log::i("Binding socket to local address...");
-    if(bind(getListenSocketFd(), this->bindAddress->ai_addr, this->bindAddress->ai_addrlen)) {
+    if(bind(getListenSocketFd(), this->bindAddress->ai_addr, this->bindAddress->ai_addrlen) < 0) {
         Log::e("Failed to bind socket to local address due to: " + std::string(strerror(errno)));
+        freeaddrinfo(this->bindAddress);
         return false;
     }
     freeaddrinfo(this->bindAddress);

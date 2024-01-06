@@ -40,19 +40,9 @@ std::string Log::formatLoggingMessage(std::string message){
         }
     }
     // start logging activity
-    std::time_t currentTime = std::time(0);
-    std::tm* localTime = std::localtime(&currentTime);
     std::string finalMessage = "";
-    std::ostringstream timeStream;
-    timeStream << localTime->tm_year + 1900 << '-'
-               << std::setw(2) << std::setfill('0') << localTime->tm_mon + 1 << '-'
-               << std::setw(2) << std::setfill('0') << localTime->tm_mday << ' '
-               << std::setw(2) << std::setfill('0') << localTime->tm_hour << ':'
-               << std::setw(2) << std::setfill('0') << localTime->tm_min << ':'
-               << std::setw(2) << std::setfill('0') << localTime->tm_sec;
-    std::string timeString = timeStream.str();
     std::ofstream logFile("webserverLogs.txt", std::ios::app);
-    finalMessage = "[" + timeString + "] " + message;
+    finalMessage = "[+] " + message;
     if (logFile.is_open()) {
         logFile << finalMessage << std::endl;
         logFile.close();

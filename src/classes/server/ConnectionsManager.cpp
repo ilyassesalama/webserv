@@ -63,7 +63,7 @@ void ConnectionsManager::acceptNewIncommingConnections(ServerInstance *serverId)
     client.serverName = "NONE";
     client.address_length = sizeof(client.address);
     client.isReceiving = false;
-    client.SocketFD = accept(serverId->getListenSocketFd(), (struct sockaddr*)&client.address,&client.address_length);
+    client.SocketFD = accept(serverId->getListenSocketFd(), NULL,NULL);
     if(client.SocketFD < 0) {
         Log::e("Failed to accept new connection");
         return;
