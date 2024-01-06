@@ -127,8 +127,12 @@ std::vector<std::string> multipleValuesParser(std::string value)
 	size_t pos = value.find(" ");
 
 	if (pos == std::string::npos) {
-			values.push_back(value);
-			return values;
+		values.push_back(value);
+		return values;
+	}
+	if (onlySpaces(value.substr(pos))) {
+		values.push_back(value.substr(0, pos));
+		return values;
 	}
 
 	while (pos != std::string::npos) {
@@ -143,10 +147,13 @@ std::vector<std::string> multipleValuesParser(std::string value)
 				break;
 
 			pos = value.find(" ");
-			if (pos == std::string::npos)
-			{
+			if (pos == std::string::npos) {
 				values.push_back(value);
 				break;
+			}
+			if (onlySpaces(value.substr(pos))) {
+				values.push_back(value.substr(0, pos));
+				return values;
 			}
 	}
 
