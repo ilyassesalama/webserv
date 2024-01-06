@@ -82,7 +82,7 @@ std::string File::getCGIbinary(std::string path, t_route *route) {
     } else if (String::endsWith(path, ".py") && std::find(route->cgi_extension.begin(), route->cgi_extension.end(), "py") != route->cgi_extension.end()) {
         return cgiBinPath.append("/py-cgi");
     } else {
-        return "" ; // :3 
+        return "";
     }
 }
 
