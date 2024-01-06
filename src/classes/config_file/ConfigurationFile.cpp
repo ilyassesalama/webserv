@@ -186,8 +186,6 @@ void ConfigurationFile::handleDirectives( std::string file, t_server server ) {
 	server.is_client_body_size = false;
 	server.is_listen = false;
 	server.is_server_name = false;
-	server.listen.port = 8080;
-	server.listen.host = "0.0.0.0";
 
 	for (size_t i = ++startIndex; i < endIndex; i++) {
 
@@ -226,8 +224,16 @@ void ConfigurationFile::handleDirectives( std::string file, t_server server ) {
 
 	}
 
-	if (server.server_name.empty()) {
+	if (!server.is_listen) {
+		throw (Utils::WebservException ("Error, there is no listen directive"));
+	}
+
+	if (!server.is_server_name) {
 		throw (Utils::WebservException("Error, server_name directive must have at least one value"));
+	}
+
+	if (server.routes.empty()) {
+		throw (Utils::WebservException("Error, each server must have at least one location block"));
 	}
 
 	if (!checkRootExist(server.routes)) {
