@@ -51,16 +51,11 @@ std::string Log::formatLoggingMessage(std::string message){
 }
 
 void setSocketNonBlocking(int socketFd) {
-    int flag = fcntl(socketFd, F_GETFL, 0);
-
+    int flag = fcntl(socketFd, F_SETFL, O_NONBLOCK);
     if(flag == -1) {
         Log::e("fcntl eroor");
         close(socketFd);
         return;
-    }
-    if(fcntl(socketFd, F_SETFL, flag | O_NONBLOCK) == -1) {
-        Log::e("fcntl eroor");
-        close(socketFd);
     }
 }
 
