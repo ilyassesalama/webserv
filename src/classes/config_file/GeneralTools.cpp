@@ -60,9 +60,9 @@ bool isDigits( std::string value ) {
 }
 
 bool checkErrorCode(int errorCode) {
-	int errorCodes[11] = {301, 400, 403, 404, 405, 409, 413, 414, 500, 501, 504};
+	int errorCodes[10] = {400, 403, 404, 405, 409, 413, 414, 500, 501, 504};
 
-	for (size_t i = 0; i < 11; i++)
+	for (size_t i = 0; i < 10; i++)
 		if (errorCode == errorCodes[i]) return 1;
 	return 0;
 }
@@ -77,11 +77,11 @@ void setErrorCode(std::list<t_server>::iterator &it, int errorCode) {
 void setDefaultErrors(std::list<t_server> &servers) {
 	std::list<t_server>::iterator it;
 	std::vector<t_error_page>::iterator errorsIt;
-	int errorCodes[11] = {301, 400, 403, 404, 405, 409, 413, 414, 500, 501, 504};
+	int errorCodes[10] = {400, 403, 404, 405, 409, 413, 414, 500, 501, 504};
 	bool isFound;
 
 	for (it = servers.begin(); it != servers.end(); it++) {
-		for (size_t i = 0; i < 11; i++) {
+		for (size_t i = 0; i < 10; i++) {
 			isFound = false;
 			for (errorsIt = it->error_pages.begin(); errorsIt != it->error_pages.end(); errorsIt++) {
 				if (errorCodes[i] == errorsIt->error_code) {
