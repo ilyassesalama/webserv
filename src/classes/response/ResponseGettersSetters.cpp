@@ -154,7 +154,8 @@ void Response::setResponseBody() {
     } else if (File::isFile(this->path)) {
         this->handleFileRequest();
     } else {
-        this->responseBody = "";
+		this->statusCode = 404;
+        this->responseBody = this->getErrorPageHTML();
     }
 }
 
