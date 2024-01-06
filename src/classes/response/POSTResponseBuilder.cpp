@@ -94,12 +94,11 @@ void Response::uploadBoundaryFile() {
 }
 
 void Response::POSTResponseBuilder() {
-	if(isCGIEnabled()) {
+	if(isCGIEnabled() && !File::getCGIbinary(this->path, this->currentRoute).empty()) {
 		if(File::isFile(this->path)) {
 			this->handleFileRequest();
 			File::deleteLocation(this->request->getFileName());
-		}
-		else if(File::isDirectory(this->path)) {
+		} else if(File::isDirectory(this->path)) {
 			size_t slashPos = this->path.find_last_of("/");
 			std::string index = slashPos != this->path.size() - 1 ? "/" : "";
 			index.append(this->currentRoute->index);
@@ -107,25 +106,23 @@ void Response::POSTResponseBuilder() {
 				this->path.append(index);
 				this->handleFileRequest();
 				File::deleteLocation(this->request->getFileName());
-			}
-			else {
+			} else {
 				this->statusCode = 404;
-				throw(Utils::WebservException("File Not Found ..."));
+				throw(Utils::WebservException("File not found ..."));
 			}
 		}
-	}
-	else if(this->currentRoute->upload) {
+	} else if(this->currentRoute->upload) {
 		this->statusCode = 201;
 		this->uploading = true;
 		this->responseBody = "";
 		this->tmpUploadFilePath = this->request->getBoundaryInfos(1);
 
-		if (this->request->getIsRequestMultipart()) {
+		if (this->request->getIsRequestMultipart())
 			this->boundary = this->request->getBoundaryInfos(0);
-		}
-		else this->uploading = false;
-	}
-	else {
+		else
+			this->uploading = false;
+
+	} else {
 		this->statusCode = 403;
 		throw(Utils::WebservException("ResponseBuilder: 403 Forbidden"));
 	}
