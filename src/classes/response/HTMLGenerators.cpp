@@ -52,10 +52,9 @@ void Response::autoIndexHTMLBuilder(size_t slashPos) {
 
 			if (stat(filePath.c_str(), &stats) == 0) {
 				lastUpdateTime = stats.st_mtime;
-
 			} else {
 				this->statusCode = 404;
-				std::cerr << "ERROR 2: AUTOINDEX" << std::endl;
+				this->responseBody = this->getErrorPageHTML();
 				return ;
 			}
 
@@ -64,6 +63,7 @@ void Response::autoIndexHTMLBuilder(size_t slashPos) {
 		closedir(directory);
 	} else {
 		this->statusCode = 404;
+		this->responseBody = this->getErrorPageHTML(); 
 		return ;
 	}
 
