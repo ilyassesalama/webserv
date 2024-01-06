@@ -118,7 +118,6 @@ bool RequestParser::isPathAccessible() {
         }
         if(location == it->path) {
             route = &(*it);
-            //break;
         }
     }
     if(route == NULL) {
