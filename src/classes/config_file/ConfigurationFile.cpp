@@ -276,6 +276,10 @@ void ConfigurationFile::configFileParsing( void ) {
 		serverPos = serverStartPosition(tmpFile);
 	}
 
+	if (this->ConfigFileServers.empty()) {
+		throw(Utils::WebservException("Error, there is no server block"));
+	}
+
 }
 
 ConfigurationFile::ConfigurationFile( std::string file ) {
