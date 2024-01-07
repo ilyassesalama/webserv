@@ -47,12 +47,6 @@ void RequestParser::mergeRequestChunks(std::string &requestInput) {
 	}
     if(parsingState.headersOK && !parsingState.bodyOK) {
         parseRequestBody(requestData);
-		if (this->getRequestLine()["method"] == "POST" && this->requestData.size() > this->server->client_body_size){
-			this->parsingState.statusCode = 413;
-			this->parsingState.statusMessage = "Request Entity Too Large";
-			this->parsingState.ok = true;
-			return;
-		}
         if (FULL_LOGGING_ENABLED) Log::v("Parsing request body finished with status: " + String::to_string(parsingState.bodyOK));
     }
 	if (this->getRequestLine()["method"] == "GET" || this->getRequestLine()["method"] == "DELETE")
@@ -159,6 +153,13 @@ void RequestParser::parseRequestBody(std::string &requestData){
 	size_t found = requestData.find("\r\n\r\n") + 4;
 	std::string requestBody = this->isFirstRequest ? requestData.substr(found) : requestData;
 
+	if (requestBody.size() > this->server->client_body_size) {
+		this->parsingState.statusCode = 413;
+		this->parsingState.statusMessage = "Request Entity Too Large";
+		this->parsingState.ok = true;
+		return;
+	}
+
 	if (!isRequestChunked && !isRequestMultipart) {
 		if (this->isFirstRequest)
 			this->fileName = File::getWorkingDir() + this->route->root + this->route->upload_path + File::generateFileName("uploaded") + File::getContentTypeExtension(this->headers["Content-Type"]);
@@ -188,7 +189,6 @@ void RequestParser::parseRequestBody(std::string &requestData){
         parsingState.bodyOK = true;
     }
 }
-
 
 /*
     The last function to be called when the parsing has finished, this
