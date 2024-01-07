@@ -205,6 +205,11 @@ void RequestParser::verifyIfRequestIsSafe(){
         this->parsingState.statusMessage = "Bad Request";
         return;
     }
+	if (this->isRequestChunked && this->isRequestMultipart) {
+		this->parsingState.statusCode = 400;
+        this->parsingState.statusMessage = "Bad Request";
+        return;
+	}
     if (!isHeaderLineValid()){
         this->parsingState.statusCode = 400;
         this->parsingState.statusMessage = "Bad Request";
