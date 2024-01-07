@@ -22,6 +22,7 @@ void RequestParser::nullOutVars(){
 	this->isCRLF = false;
 	this->isRequestChunked = false;
 	this->isRequestMultipart = false;
+    this->route = NULL;
 }
 
 size_t getFileLength(ParsingState &parsingState, std::string fileName) {
