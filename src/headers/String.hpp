@@ -11,4 +11,5 @@ class String {
         static std::string to_string(int num);
         static bool is_a_num(std::string str);
         static bool isIpFormCorrect(std::string ip);
+        static std::string to_upper(std::string str);
 };

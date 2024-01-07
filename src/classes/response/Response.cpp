@@ -190,6 +190,10 @@ void Response::CGIhandler() {
     this->responseBody = cgiHandler.getCGIResponse();
     this->responseHeadersMap["Content-Type"] = cgiHandler.getCGIContentType();
     this->responseHeadersMap["Content-Length"] = String::to_string(cgiHandler.getCGIContentLength());
+
+    if(Utils::isMapKeyExists(cgiHandler.getCGIResponseHeadersMap(), "Set-Cookie")) {
+        this->responseHeadersMap["Set-Cookie"] = cgiHandler.getCGIResponseHeadersMap()["Set-Cookie"];
+    }
 }
 
 void Response::handleFileRequest() {

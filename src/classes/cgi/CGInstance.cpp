@@ -43,6 +43,11 @@ void CGInstance::setEnvironnementVariables() {
     env_map["CONTENT_TYPE"] = request.getHeaders()["Content-Type"];
     env_map["SERVER_PORT"] = String::to_string(this->request.getServerInformation()->listen.port);
     env_map["REDIRECT_STATUS"] = "1"; 
+    for (std::map<std::string, std::string>::iterator it = request.getHeaders().begin(); it != request.getHeaders().end(); it++) {
+        std::string key = "HTTP_" + String::to_upper(it->first);
+        std::string value = it->second;
+        env_map[key] = value;
+    }
     this->cgiEnv = Utils::convertMapToChar2D(env_map);
 
     if(FULL_LOGGING_ENABLED){
@@ -117,6 +122,7 @@ void CGInstance::executeScript() {
     parseResponseHeaders();
     parseResponseBody();
     printCGIResponse();
+    saveSessionCookie();
 }
 
 void CGInstance::parseResponseHeaders() {
@@ -146,4 +152,16 @@ void CGInstance::setCGIServer() {
     } else if (String::endsWith(this->cgiPath, "py-cgi")) {
         this->cgiServer = "python";
     }
+}
+
+void CGInstance::saveSessionCookie(){
+    if(!Utils::isMapKeyExists(this->cgiResponseHeadersMap, "SessionID")) return;
+    std::string cookie = this->cgiResponseHeadersMap["SessionID"];
+    if(FULL_LOGGING_ENABLED) Log::w("Found a session cookie, saving it now...");
+    std::ofstream cookieSessionsFile("sessions.txt", std::ios::app);
+    if(!cookieSessionsFile.is_open()) {
+        Log::e("Can't open sessions file");
+        return;
+    }
+    cookieSessionsFile << "sessionId=" << cookie << std::endl;
 }

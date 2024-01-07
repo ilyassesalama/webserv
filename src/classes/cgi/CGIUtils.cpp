@@ -21,6 +21,10 @@ std::string CGInstance::getCGIContentType() {
     return this->cgiResponseHeadersMap["Content-Type"];
 }
 
+std::map<std::string, std::string> CGInstance::getCGIResponseHeadersMap() {
+    return this->cgiResponseHeadersMap;
+}
+
 int CGInstance::getCGIStatusCode() {
     if(!Utils::isMapKeyExists(this->cgiResponseHeadersMap, "Status"))
         return String::to_int(cgiStatusCode);

@@ -68,20 +68,10 @@ bool String::isIpFormCorrect(std::string ip) {
     return(true);
 }
 
-// bool String::isIpFormCorrect(std::string ip) {
-//     std::istringstream ss(ip);
-//     std::string segment;
-//     int dotCount = 0;
-
-//     while (std::getline(ss, segment, '.')) {
-//         if (++dotCount > 3) {
-//             return false; // Too many segments
-//         }
-
-//         if (!is_a_num(segment)) {
-//             return false;
-//         }
-//     }
-
-//     return dotCount == 3;
-// }
+std::string String::to_upper(std::string str){
+    std::string upperStr = "";
+    for (size_t i = 0; i < str.length(); i++) {
+        upperStr += toupper(str[i]);
+    }
+    return upperStr;
+}

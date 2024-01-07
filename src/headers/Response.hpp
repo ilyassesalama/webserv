@@ -44,6 +44,7 @@ class Response {
         void feedDataToTheSender();
         bool isLocationHasCGI();
         void CGIhandler();
+        bool compareCookie(std::string cookie);
 
         void uploadBoundaryFile();
         void uploadChunkedFile();

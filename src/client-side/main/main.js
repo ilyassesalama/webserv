@@ -21,10 +21,12 @@ anchor.addEventListener('click', function (e) {
 const navigationLoginBtn = document.getElementById('navigationLoginBtn');
 
 navigationLoginBtn.addEventListener('click', function (e) {
-	if (isLoggedIn()) {
-		logout();
-		return;
-	}
+	isLoggedIn().then(isLogged => {
+		if (isLogged) {
+			logout();
+			return;
+		}
+	});
 	if(tryingToLogin())
 		switchLoginPage("login_default");
 	else
@@ -35,11 +37,12 @@ loginForm.addEventListener("submit", e => {
 	e.preventDefault();
 	const username = document.getElementById("username").value;
 	const password = document.getElementById("password").value;
+	const sessionId = generateRandomString();
 
 	loginpage__title.innerHTML = "Logging in...";
 	document.getElementById("login-btn").disabled = true; // to avoid making the cool effect shit
 
-	fetch("/login.php", {
+	fetch("/login.php?sessionId=" + sessionId, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json"
@@ -51,15 +54,10 @@ loginForm.addEventListener("submit", e => {
 	}).then((res) => {
 		setTimeout(() => { // for the cool effect
 			document.getElementById("login-btn").disabled = false;
-
 			if (res.status === 200) {
-				document.cookie = "logged_in=true";
-				document.cookie = "username=" + username;
+				document.cookie = "sessionId=" + sessionId;
 				loginpage__title.innerHTML = "Login";
 				switchLoginPage("logged_in");
-			} if (res.status === 200) { 
-				triggerShakeAnimation(loginpage__title);
-				loginpage__title.innerHTML = res.statusText;
 			} else {
 				triggerShakeAnimation(loginpage__title);
 				loginpage__title.innerHTML = "Wrong username or password";
@@ -83,7 +81,7 @@ function switchLoginPage(page, showLogin = true) {
 			navigationLoginSubtitle.innerHTML = "Click here to login to your useless account and do nothing";
 			break;
 		case "logged_in":
-			navigationLoginText.innerHTML = "Logged in as<br>\"" + document.cookie.split("username=")[1] + "\"";
+			navigationLoginText.innerHTML = "Logged in as<br>1337";
 			navigationLoginSubtitle.innerHTML = "You can always click here to log out";
 			break;
 		case "trying_to_login":
@@ -103,11 +101,13 @@ function switchLoginPage(page, showLogin = true) {
 }
 
 function checkInitialLogin() {
-	if (isLoggedIn()) {
-		switchLoginPage("logged_in", false);
-	} else {
-		switchLoginPage("login_default", false);
-	}
+	isLoggedIn().then(isLogged => {
+		if (isLogged) {
+			switchLoginPage("logged_in", false);
+		} else {
+			switchLoginPage("login_default", false);
+		}
+	});
 }
 
 function logout() {
@@ -128,8 +128,22 @@ function tryingToLogin() {
 	return navigationLoginText.innerHTML == "Trying to<br>login...";
 }
 
-function isLoggedIn() {
-	return document.cookie.includes("logged_in=true");
+async function isLoggedIn() {
+	const sessionId = document.cookie.split("=")[1];
+	fetch("/is_logged_in.php?sessionId=" + sessionId, {
+		method: "GET",
+		headers: {
+			"Content-Type": "application/json"
+		},
+	}).then((res) => {
+		if (res.status === 200) {
+			return true;
+		} else {
+			return false;
+		}
+	}).catch((error) => {
+		return false;
+	});
 }
 
 checkInitialLogin();
@@ -230,4 +244,8 @@ function changeTextWithAnimation(element, newText) {
             element.classList.remove("slide-right-fade-in");
         }, { once: true });
     }, { once: true });
+}
+
+function generateRandomString() {
+	return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 }

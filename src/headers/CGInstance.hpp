@@ -19,9 +19,11 @@ class CGInstance {
         void parseResponseHeaders();
         void parseResponseBody();
         void printCGIResponse();
+        void saveSessionCookie();
 
         std::string getCGIResponse();
         std::string getCGIContentType();
+        std::map<std::string, std::string> getCGIResponseHeadersMap();
         std::string getQueryString(std::map<std::string, std::string> queries);
         size_t getCGIContentLength();
         int getCGIStatusCode();

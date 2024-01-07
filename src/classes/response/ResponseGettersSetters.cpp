@@ -116,6 +116,19 @@ std::string addHeaders(std::string key, std::string value) {
     return(header.str());
 }
 
+bool Response::compareCookie(std::string cookie){
+    if(!Utils::isMapKeyExists(this->request->getHeaders(), "Set-Cookie")) return(false);
+    std::string sessions = File::getFileContent("sessions.txt");
+    std::stringstream ss(sessions);
+
+    std::string line;
+    while(std::getline(ss, line)) {
+        if(line == cookie)
+            return(true);
+    }
+    return(false);
+}
+
 /*
     Add headers to the response headers accrordingly depending on the status code.
 */
@@ -140,7 +153,12 @@ void Response::setHeaders() {
 			this->responseHeadersMap["Content-Length"] = String::to_string(contentLength);
             this->responseHeadersMap["Content-Type"] = File::getContentType(this->path);
         }
+        if(compareCookie(this->request->getHeaders()["Set-Cookie"])){
+            this->responseHeadersMap.erase("Set-Cookie");
+            this->responseHeadersMap["Cookie"] = this->request->getHeaders()["Set-Cookie"];
+        }
     }
+
     // convert map to string headers
     for(std::map<std::string, std::string>::iterator it = this->responseHeadersMap.begin(); it != this->responseHeadersMap.end(); it++) {
         this->responseHeaders.append(addHeaders(it->first, it->second));
