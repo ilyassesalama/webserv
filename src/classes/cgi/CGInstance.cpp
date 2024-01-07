@@ -164,4 +164,5 @@ void CGInstance::saveSessionCookie(){
         return;
     }
     cookieSessionsFile << "sessionId=" << cookie << std::endl;
+	cookieSessionsFile.close();
 }
