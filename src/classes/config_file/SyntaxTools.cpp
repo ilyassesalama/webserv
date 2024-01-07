@@ -20,9 +20,11 @@ void curlyBracesChecker( std::string file, size_t startIndex, size_t endIndex ) 
 		}
 		else if (file[i] == '}' && countOpeners > 1) countOpeners--;
 		else if (file[i] == '}' && countOpeners == 0) throw(Utils::WebservException("Error, there is a syntax error "));
+
 		if ((file[i] == '{' || file[i] == '}') && i + 1 < endIndex && file[i + 1] == ';') throw(Utils::WebservException("Error, there is a syntax error"));
 	}
 
+	// If count openers is not equal zero or server is not closed that means there is an error
 	if (countOpeners != 0 || !serverClosed) throw(Utils::WebservException("Error, there is a syntax error"));
 }
 

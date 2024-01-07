@@ -179,6 +179,7 @@ void ConfigurationFile::handleLocation( std::string file, size_t *startIndex, st
 
 void ConfigurationFile::handleDirectives( std::string file, t_server server ) {
 
+	// Even though endIndex is set to next server or file size I only check until the closing curly brace is found at the beginning of a loop cycle because I treat every directive at every loop cycle if the closing curly brace is at the beginning it means there is no other directive.
 	size_t endIndex = serverStartPosition( file );
 	if (endIndex == std::string::npos) endIndex = file.size();
 
