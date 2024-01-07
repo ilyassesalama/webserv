@@ -70,9 +70,7 @@ void Response::uploadBoundaryFile() {
 			saveOnFile(data);
 			handleboundaryStart(inputFile);
 		} else if(line == "--" + this->boundary + "--\r") {
-			//this->uploading = false;
 			saveOnFile(data);
-			//File::deleteLocation(this->request->getFileName());
 			break; 
 		}
 		else {

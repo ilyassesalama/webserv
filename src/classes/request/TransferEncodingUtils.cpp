@@ -71,7 +71,7 @@ void RequestParser::getChunkedData(std::string &body) {
 
 		if (this->chunkRemainder == 0) { // maybe this block is useless now
 			openFile(myFile);
-			this->parsingState.bodyOk = true;
+			this->parsingState.bodyOK = true;
 			myFile.close();
 			return ;
 		}

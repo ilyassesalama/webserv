@@ -118,7 +118,6 @@ bool RequestParser::isPathAccessible() {
         }
         if(location == it->path) {
             route = &(*it);
-            //break;
         }
     }
     if(route == NULL) {
@@ -283,7 +282,5 @@ void RequestParser::logParsedRequest(){
 }
 
 bool RequestParser::isRedirection() {
-    if(this->route->redirection.redirect == "")
-        return false;
-    return true;
+    return !this->route->redirection.redirect.empty();
 }

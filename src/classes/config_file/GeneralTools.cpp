@@ -95,11 +95,3 @@ void setDefaultErrors(std::list<t_server> &servers) {
 		}
 	}
 }
-
-bool checkRootExist(std::vector<t_route> routes) {
-	std::vector<t_route>::iterator it;
-
-	for (it = routes.begin(); it != routes.end(); it++)
-		if (!it->is_root) return false;
-	return true;
-}

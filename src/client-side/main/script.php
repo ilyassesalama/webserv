@@ -1,20 +1,18 @@
 <?php
-    // read from the body
-    $inhanging = false;
 
-    if($inhanging){
-        while(1){
-            echo "Hello World";
+    if($_SERVER['REQUEST_METHOD'] == 'POST') {
+        $body = file_get_contents('php://input');
+        $body = json_decode($body, true);
+
+        if(!isset($body['name'])) {
+            http_response_code(400);
+            echo "Can you specify your cool name in the body (as JSON) so I can welcome you?";
+            return;
         }
-        return;
+        $name = $body['name'];
+        echo "Welcome $name to our webserver!";
+    } else if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+        echo "Welcome to our webserver!";
     }
-    $body = file_get_contents('php://input');
     
-    // decode the body
-    $body = json_decode($body, true);
-
-    $number1 = $body['number1'];
-    $number2 = $body['number2'];
-    $result = $number1 + $number2;
-    echo "Result is: $result";
 ?>

@@ -4,9 +4,9 @@
 #include "ConfigurationFile.hpp"
 
 typedef struct ParsingState {
-    bool headLineOk;
-    bool headsOk;
-    bool bodyOk;
+    bool headerLineOK;
+    bool headersOK;
+    bool bodyOK;
     bool ok;
     int statusCode;
     std::string statusMessage;

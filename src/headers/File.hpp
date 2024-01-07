@@ -15,4 +15,5 @@ class File {
         static std::string getCurrentDir();
 		static std::string getContentTypeExtension(const std::string &type);
         static bool deleteLocation(std::string path);
+        static size_t getFileLength(ParsingState &parsingState, std::string fileName);
 };

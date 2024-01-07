@@ -99,7 +99,6 @@ function switchLoginPage(page, showLogin = true) {
 		login.classList.toggle('hidden');
 		upload.classList.remove('hidden');
 		login.style.zIndex = 100;
-	
 	}
 }
 
@@ -122,7 +121,7 @@ function logout() {
         const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
         document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
     }
-	switchLoginPage("logged_out");
+	switchLoginPage("logged_out", false);
 }
 
 function tryingToLogin() {
