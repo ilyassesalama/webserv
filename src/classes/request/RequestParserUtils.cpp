@@ -191,6 +191,7 @@ std::vector<std::string> getAllowedTypes() {
 	allowedTypes.push_back("video/mp4");
 	allowedTypes.push_back("application/octet-stream");
 	allowedTypes.push_back("text/plain");
+	allowedTypes.push_back("plain/text");
 	allowedTypes.push_back("application/x-www-form-urlencoded");
 	allowedTypes.push_back("application/pdf");
 	allowedTypes.push_back("application/zip");
