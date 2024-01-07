@@ -194,6 +194,8 @@ void ConfigurationFile::handleDirectives( std::string file, t_server server ) {
 	server.is_client_body_size = false;
 	server.is_listen = false;
 	server.is_server_name = false;
+	server.client_body_size = 12582912;
+	server.body_size_unit = "M";
 
 	for (size_t i = ++startIndex; i < endIndex; i++) {
 

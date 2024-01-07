@@ -156,7 +156,7 @@ void RequestParser::parseRequestBody(std::string &requestData){
 	if (requestBody.size() > this->server->client_body_size) {
 		this->parsingState.statusCode = 413;
 		this->parsingState.statusMessage = "Request Entity Too Large";
-		this->parsingState.ok = true;
+		this->parsingState.bodyOK = true;
 		return;
 	}
 
