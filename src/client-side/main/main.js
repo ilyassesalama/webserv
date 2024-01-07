@@ -130,7 +130,7 @@ function tryingToLogin() {
 
 async function isLoggedIn() {
 	const sessionId = document.cookie.split("=")[1];
-	fetch("/is_logged_in.php?sessionId=" + sessionId, {
+	return fetch("/is_logged_in.php?sessionId=" + sessionId, {
 		method: "GET",
 		headers: {
 			"Content-Type": "application/json"
