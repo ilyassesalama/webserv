@@ -117,8 +117,6 @@ void ConfigurationFile::parseRouteValue( std::string key, std::string value, t_r
 				throw (Utils::WebservException("Error, upload path directive must start with a slash"));
 			if (!String::endsWith(route->upload_path, "/"))
 				route->upload_path.append("/");
-			if (!File::isDirectory(File::getWorkingDir() + "/main" + route->upload_path))
-				throw (Utils::WebservException("Error, upload_path must be an existing directory in client-side/main folder and should start with a slash"));
 			route->is_upload_path = true;
 		} else {
 			Log::w("Warning, there is more than one upload_path directive");
@@ -165,6 +163,12 @@ void ConfigurationFile::handleLocation( std::string file, size_t *startIndex, st
 
 		parseRouteValue(directiveKey, directiveValue, &route);
 	}
+
+	if (!route.is_root)
+		throw (Utils::WebservException("Error, there is no root directive in one of the location blocks"));
+
+	if (route.is_upload_path && !File::isDirectory(File::getWorkingDir() + route.root + route.upload_path))
+		throw (Utils::WebservException("Error, upload_path must be an existing directory in client-side" + route.root + " folder and should start with a slash"));
 
 	server->routes.push_back(route);
 
@@ -234,10 +238,6 @@ void ConfigurationFile::handleDirectives( std::string file, t_server server ) {
 
 	if (server.routes.empty()) {
 		throw (Utils::WebservException("Error, each server must have at least one location block"));
-	}
-
-	if (!checkRootExist(server.routes)) {
-		throw (Utils::WebservException("Error, there is no root directive in one of the location blocks"));
 	}
 	
 	if (checkDuplicateServers(this->ConfigFileServers, server))
