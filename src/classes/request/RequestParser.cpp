@@ -225,6 +225,11 @@ void RequestParser::verifyIfRequestIsSafe(){
         this->parsingState.statusMessage = "Not Found";
         return;
     }
+    if (!isMethodAllowed()){
+        this->parsingState.statusCode = 405;
+        this->parsingState.statusMessage = "Method Not Allowed";
+        return;
+    }
     if (isRedirection()) {
         this->parsingState.statusCode = 301;
         this->parsingState.statusMessage = "Moved Permanently";
@@ -234,11 +239,6 @@ void RequestParser::verifyIfRequestIsSafe(){
 			&& this->requestLine["method"] != "DELETE" && this->requestLine["method"] != "POST"){
         this->parsingState.statusCode = 301;
         this->parsingState.statusMessage = "Moved Permanently";
-        return;
-    }
-    if (!isMethodAllowed()){
-        this->parsingState.statusCode = 405;
-        this->parsingState.statusMessage = "Method Not Allowed";
         return;
     }
 	if (!parseContentType()) {
