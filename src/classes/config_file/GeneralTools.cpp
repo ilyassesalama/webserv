@@ -5,20 +5,6 @@ size_t serverStartPosition( std::string file ) {
 	return (pos == std::string::npos ? file.find("server{") : pos);
 }
 
-void getServerCoords(std::string file, size_t *startIndex, size_t *endIndex) {
-
-	// Here I am checking the next server block position if there is only one I set it to file size
-	*endIndex = serverStartPosition(file);
-	if (*endIndex == std::string::npos) *endIndex = file.size();
-
-	for (*startIndex = 0; *startIndex < *endIndex; (*startIndex)++) {
-		if (file[*startIndex] != '{' && !isspace(file[*startIndex])) throw(Utils::WebservException("Error, there is a syntax error"));
-		else if (file[*startIndex] == '{') break ;
-	}
-
-	if (*startIndex == *endIndex || file[*startIndex] != '{') throw(Utils::WebservException("Error, there is a syntax error"));
-}
-
 size_t findOpeningBrace( std::string file, size_t endIndex ) {
 
 	size_t startIndex;
@@ -31,6 +17,16 @@ size_t findOpeningBrace( std::string file, size_t endIndex ) {
 	if (startIndex == endIndex || file[startIndex] != '{') throw(Utils::WebservException("Error, there is a syntax error"));
 
 	return startIndex;
+}
+
+void getServerCoords(std::string file, size_t *startIndex, size_t *endIndex) {
+
+	// Here I am checking the next server block position if there is only one I set it to file size
+	*endIndex = serverStartPosition(file);
+	if (*endIndex == std::string::npos) *endIndex = file.size();
+
+	// Here I put startIndex at `{` position
+	*startIndex = findOpeningBrace( file, *endIndex );
 }
 
 void skipSpaces( std::string str, size_t *idx )
