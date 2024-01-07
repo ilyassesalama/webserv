@@ -282,7 +282,5 @@ void RequestParser::logParsedRequest(){
 }
 
 bool RequestParser::isRedirection() {
-    if(this->route->redirection.redirect == "")
-        return false;
-    return true;
+    return !this->route->redirection.redirect.empty();
 }

@@ -48,10 +48,11 @@ std::string CGInstance::getQueryString(std::map<std::string, std::string> querie
 
 void CGInstance::printCGIResponse() {
     if(!FULL_LOGGING_ENABLED) return;
-    Log::v("CGI Response: Parsed headers:");
+    Log::v("CGI Response:");
+    Log::d("Parsed headers:");
     for (std::map<std::string, std::string>::iterator it = this->cgiResponseHeadersMap.begin(); it != this->cgiResponseHeadersMap.end(); it++) {
         std::cout << "- " << it->first << ": " << it->second << std::endl;
     }
-    Log::v("Body: ");
+    Log::d("Body: ");
     std::cout << this->cgiResponse << std::endl;
 }

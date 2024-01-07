@@ -150,3 +150,17 @@ std::string File::getCurrentDir() {
 bool File::deleteLocation(std::string path) {
     return(File::isFile(path) && unlink(path.c_str()) == 0);
 }
+
+size_t File::getFileLength(ParsingState &parsingState, std::string fileName) {
+	std::fstream myFile(fileName, std::ios::binary | std::ios::app);
+	if (!myFile.is_open()) {
+		parsingState.ok = true;
+		parsingState.statusCode = 500;
+		throw Utils::WebservException("Error opening file : " + fileName);
+	}
+	myFile.seekg(0, std::ios::end);
+    std::size_t length = myFile.tellg();
+    myFile.seekg(0, std::ios::beg);
+	myFile.close();
+	return length;
+}
