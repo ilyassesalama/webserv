@@ -170,6 +170,9 @@ void ConfigurationFile::handleLocation( std::string file, size_t *startIndex, st
 	if (route.is_upload_path && !File::isDirectory(File::getWorkingDir() + route.root + route.upload_path))
 		throw (Utils::WebservException("Error, upload_path must be an existing directory in client-side" + route.root + " folder and should start with a slash"));
 
+	if (route.is_upload && route.upload && !route.is_upload_path)
+		throw (Utils::WebservException("Error, upload is on and upload path is missing"));
+
 	server->routes.push_back(route);
 
 	if (file[i] && file[i] == '}') i++;
