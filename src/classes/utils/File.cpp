@@ -152,7 +152,7 @@ bool File::deleteLocation(std::string path) {
 }
 
 size_t File::getFileLength(ParsingState &parsingState, std::string fileName) {
-	std::fstream myFile(fileName, std::ios::binary | std::ios::app);
+	std::fstream myFile(fileName.c_str(), std::ios::binary | std::ios::app);
 	if (!myFile.is_open()) {
 		parsingState.ok = true;
 		parsingState.statusCode = 500;

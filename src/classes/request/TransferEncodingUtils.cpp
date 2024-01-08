@@ -54,7 +54,7 @@ size_t RequestParser::getChunkSize(std::string &body) {
 }
 
 void RequestParser::openFile(std::fstream &myFile) {
-	myFile.open(this->fileName, std::ios::binary | std::ios::app);
+	myFile.open(this->fileName.c_str(), std::ios::binary | std::ios::app);
 	if (!myFile.is_open()) {
 		throw Utils::WebservException("Error opening file : " + this->fileName);
 	}

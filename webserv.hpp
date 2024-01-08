@@ -18,6 +18,7 @@
 #include <ctime>
 #include <vector>
 #include <list>
+#include <algorithm>
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <sys/types.h>

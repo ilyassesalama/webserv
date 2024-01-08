@@ -152,11 +152,10 @@ int ServerInstance::receiveRequest(int clientFd) {
     if(this->isDuplicated()) {
         //there is multi server
         if(client->serverName != "NONE" && client->isReceiving) {
-            server = server = getTheServerConfiguration(client->serverName);
+            server = getTheServerConfiguration(client->serverName);
             if(server == NULL)
                 server = this->serverInformations;
-        }
-        else {
+        } else {
             Host = extractTheHostFromTheRequest(receivedRequest);
             client->serverName = Host;
             server = getTheServerConfiguration(Host);
@@ -164,9 +163,7 @@ int ServerInstance::receiveRequest(int clientFd) {
             if(server == NULL)
                 server = this->serverInformations;
         }
-    }
-    else
-        server = this->serverInformations;
+    } else server = this->serverInformations;
 	client->connectionTime = std::time(0);
 	client->request.setServerInformation(server);
 
@@ -177,9 +174,7 @@ int ServerInstance::receiveRequest(int clientFd) {
 			if (client->isHeaders) {
 				client->request.mergeRequestChunks(client->requestBuffered);
 				client->isHeaders = false;
-			}
-			else
-				client->request.mergeRequestChunks(receivedRequest);
+			} else client->request.mergeRequestChunks(receivedRequest);
 		} catch (std::exception &e) {
             Log::e("Failed to merge request chunks due to: " + std::string(e.what()));
             client->request.setParsingState(true);
@@ -263,11 +258,6 @@ int ServerInstance::sendResponse(int clientFd) {
     size_t bytesSent = send(clientFd, &client->response.getResponse()[0],client->response.getResponse().size(),0);
     if(bytesSent == 0 || isErrorCode(client->response.getStatusCode())) {
         Log::e("Client Closed Connection ... ");
-        this->dropClient(clientFd);
-        return(DROP_CLIENT); 
-    }  
-    if(bytesSent < 0) {
-        Log::e("Failed to send bytes, less than 0!");
         this->dropClient(clientFd);
         return(DROP_CLIENT); 
     }

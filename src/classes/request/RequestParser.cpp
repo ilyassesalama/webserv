@@ -68,10 +68,9 @@ void RequestParser::parseRequestLine(std::string &requestData) {
     std::string line;
 
     std::stringstream httpStream(requestData);
-    // only get the first line
-    if(std::getline(httpStream, line))
-    ;
-    line = line.substr(0, line.find("\r"));
+    if(std::getline(httpStream, line)){
+        line = line.substr(0, line.find("\r"));  // only get the first line
+    }
     std::string method = line.substr(0, line.find(" "));
     std::string path = line.substr(line.find(" ") + 1, line.rfind(" ") - line.find(" ") - 1);
     std::string httpVersion = line.substr(line.rfind(" ") + 1);
@@ -147,8 +146,9 @@ void RequestParser::parseRequestHeaders(std::string &requestData) {
 */
 void RequestParser::parseRequestBody(std::string &requestData){
 
-    if (this->requestLine["method"] == "GET" || this->requestLine["method"] == "DELETE")
-        return ;
+    if (this->requestLine["method"] == "GET" || this->requestLine["method"] == "DELETE"){
+        return;
+    }
 
 	size_t found = requestData.find("\r\n\r\n") + 4;
 	std::string requestBody = this->isFirstRequest ? requestData.substr(found) : requestData;
@@ -163,7 +163,7 @@ void RequestParser::parseRequestBody(std::string &requestData){
 	if (!isRequestChunked && !isRequestMultipart) {
 		if (this->isFirstRequest)
 			this->fileName = File::getWorkingDir() + this->route->root + this->route->upload_path + File::generateFileName("uploaded") + File::getContentTypeExtension(this->headers["Content-Type"]);
-		std::fstream myFile(this->fileName, std::ios::binary | std::ios::app);
+		std::fstream myFile(this->fileName.c_str(), std::ios::binary | std::ios::app);
 		if (!myFile.is_open()) throw Utils::WebservException("Error opening file: " + this->fileName);
 		myFile << requestBody;
 		myFile.close();
